@@ -72,7 +72,8 @@ fun AppNameItem(
     useDarkBottomSheetStatusBarIcons: Boolean? = null,
     useDarkBottomSheetNavigationBarIcons: Boolean? = null,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
-    shadow: Shadow? = null
+    shadow: Shadow? = null,
+    secondaryText: String? = null
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     val lineHeight by remember { derivedStateOf { textSize * 1.2 } }
@@ -166,6 +167,16 @@ fun AppNameItem(
                 overflow = TextOverflow.Ellipsis,
                 style = LocalTextStyle.current.copy(shadow = shadow)
             )
+
+            if (secondaryText != null) {
+                Text(
+                    text = "  ·  $secondaryText",
+                    color = textColor.copy(alpha = 0.55f),
+                    fontSize = textSize * 0.65f,
+                    maxLines = 1,
+                    style = LocalTextStyle.current.copy(shadow = shadow)
+                )
+            }
 
             if (showAppIcon && appIconAlignment == AppIconAlignment.Right) {
                 Spacer(modifier = Modifier.width(Dimens.APP_ICON_LABEL_SPACING))

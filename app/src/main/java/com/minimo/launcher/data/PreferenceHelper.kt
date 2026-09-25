@@ -19,6 +19,7 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
@@ -131,6 +132,8 @@ class PreferenceHelper @Inject constructor(
         private val KEY_WEATHER_CITY = stringPreferencesKey("KEY_WEATHER_CITY")
         private val KEY_WEATHER_LATITUDE = doublePreferencesKey("KEY_WEATHER_LATITUDE")
         private val KEY_WEATHER_LONGITUDE = doublePreferencesKey("KEY_WEATHER_LONGITUDE")
+        private val KEY_HOME_CLOCK_STYLE = stringPreferencesKey("KEY_HOME_CLOCK_STYLE")
+        private val KEY_SHOW_APP_SCREEN_TIME = booleanPreferencesKey("KEY_SHOW_APP_SCREEN_TIME")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -369,6 +372,18 @@ class PreferenceHelper @Inject constructor(
         }
     }
 
+    suspend fun setHomeClockStyle(style: HomeClockStyle) {
+        preferences.edit {
+            it[KEY_HOME_CLOCK_STYLE] = style.name
+        }
+    }
+
+    suspend fun setShowAppScreenTime(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_APP_SCREEN_TIME] = enable
+        }
+    }
+
     suspend fun setShowWeather(enable: Boolean) {
         preferences.edit {
             it[KEY_SHOW_WEATHER] = enable
@@ -604,7 +619,11 @@ class PreferenceHelper @Inject constructor(
                 showWeather = prefs[KEY_SHOW_WEATHER] ?: false,
                 weatherCity = prefs[KEY_WEATHER_CITY] ?: "",
                 weatherLatitude = prefs[KEY_WEATHER_LATITUDE],
-                weatherLongitude = prefs[KEY_WEATHER_LONGITUDE]
+                weatherLongitude = prefs[KEY_WEATHER_LONGITUDE],
+                homeClockStyle = HomeClockStyle.entries.find {
+                    it.name == prefs[KEY_HOME_CLOCK_STYLE]
+                } ?: HomeClockStyle.Normal,
+                showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false
             )
         }
     }
@@ -681,7 +700,11 @@ class PreferenceHelper @Inject constructor(
                 showWeather = prefs[KEY_SHOW_WEATHER] ?: false,
                 weatherCity = prefs[KEY_WEATHER_CITY] ?: "",
                 weatherLatitude = prefs[KEY_WEATHER_LATITUDE],
-                weatherLongitude = prefs[KEY_WEATHER_LONGITUDE]
+                weatherLongitude = prefs[KEY_WEATHER_LONGITUDE],
+                homeClockStyle = HomeClockStyle.entries.find {
+                    it.name == prefs[KEY_HOME_CLOCK_STYLE]
+                } ?: HomeClockStyle.Normal,
+                showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false
             )
         }
     }

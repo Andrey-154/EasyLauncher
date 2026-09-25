@@ -51,6 +51,10 @@ enum class HomeClockMode {
     Full, TimeOnly, DateOnly
 }
 
+enum class HomeClockStyle {
+    Normal, Large, LargeThin
+}
+
 enum class SearchMode {
     Contains, StartsWith
 }

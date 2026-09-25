@@ -66,6 +66,7 @@ import com.minimo.launcher.ui.settings.customisation.components.AppsAlignmentHor
 import com.minimo.launcher.ui.settings.customisation.components.AppsAlignmentVerticalDropdown
 import com.minimo.launcher.ui.settings.customisation.components.ClockAlignmentDropdown
 import com.minimo.launcher.ui.settings.customisation.components.ClockModeDropdown
+import com.minimo.launcher.ui.settings.customisation.components.ClockStyleDropdown
 import com.minimo.launcher.ui.settings.customisation.components.DimPercentageSlider
 import com.minimo.launcher.ui.settings.customisation.components.EnableAccessibilityDialog
 import com.minimo.launcher.ui.settings.customisation.components.EnableAppUsageDialog
@@ -520,6 +521,13 @@ fun CustomisationScreen(
                     onOptionSelected = viewModel::onHomeClockModeChanged
                 )
 
+                if (state.homeClockMode != HomeClockMode.DateOnly) {
+                    ClockStyleDropdown(
+                        selectedStyle = state.homeClockStyle,
+                        onStyleSelected = viewModel::onHomeClockStyleChanged
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(4.dp))
 
                 ToggleItem(
@@ -788,6 +796,21 @@ fun CustomisationScreen(
                         onChooseClick = { showScreenTimeAppPicker = true }
                     )
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                ToggleItem(
+                    title = stringResource(R.string.show_app_screen_time),
+                    subtitle = stringResource(R.string.show_app_screen_time_description),
+                    isChecked = state.showAppScreenTime,
+                    onToggleClick = {
+                        if (state.showAppScreenTime || context.isAppUsagePermissionGranted()) {
+                            viewModel.onToggleShowAppScreenTime()
+                        } else {
+                            showEnableAppUsagePermissionDialog = true
+                        }
+                    }
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))

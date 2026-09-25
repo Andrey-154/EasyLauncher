@@ -1,7 +1,10 @@
 package com.minimo.launcher.utils
 
 import android.app.AppOpsManager
+import android.app.SearchManager
 import android.app.admin.DevicePolicyManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -105,6 +108,31 @@ fun Context.openHomeSettings() {
     } catch (exception: Exception) {
         Timber.e(exception)
     }
+}
+
+/** Web search in the default search app/browser, falling back to a Google URL. */
+fun Context.searchWeb(query: String) {
+    try {
+        val intent = Intent(Intent.ACTION_WEB_SEARCH).apply {
+            putExtra(SearchManager.QUERY, query)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        startActivity(intent)
+    } catch (_: Exception) {
+        try {
+            val url = "https://www.google.com/search?q=" + Uri.encode(query)
+            startActivity(
+                Intent(Intent.ACTION_VIEW, url.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (exception: Exception) {
+            Timber.e(exception)
+        }
+    }
+}
+
+fun Context.copyToClipboard(text: String) {
+    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    clipboard.setPrimaryClip(ClipData.newPlainText(text, text))
 }
 
 fun Context.lockScreen() {

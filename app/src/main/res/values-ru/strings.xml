@@ -184,7 +184,7 @@
     <string name="about_app_based_on">Основан на Minimo Launcher © Vaibhav Lakhera (лицензия MIT).</string>
 
     <string name="show_weather">Показывать погоду</string>
-    <string name="show_weather_description">Текущая погода на главном экране (данные Open-Meteo, нужен интернет). Нажмите на погоду, чтобы обновить.</string>
+    <string name="show_weather_description">Текущая погода на главном экране (данные Open-Meteo, нужен интернет). Нажмите на погоду, чтобы открыть прогноз.</string>
     <string name="weather_city">Город для погоды</string>
     <string name="weather_city_not_set">Не выбран</string>
     <string name="weather_enter_city">Название города</string>
@@ -201,4 +201,18 @@
     <string name="weather_snow_showers">Снегопад</string>
     <string name="weather_thunderstorm">Гроза</string>
     <string name="weather_unknown">—</string>
+
+    <string name="clock_style">Стиль часов</string>
+    <string name="clock_style_normal">Обычные</string>
+    <string name="clock_style_large">Крупные</string>
+    <string name="clock_style_large_thin">Крупные тонкие</string>
+    <string name="show_app_screen_time">Экранное время у приложений</string>
+    <string name="show_app_screen_time_description">Показывать время использования за сегодня рядом с каждым приложением в списке</string>
+    <string name="search_web">Искать «%1$s» в интернете</string>
+    <string name="copied">Скопировано</string>
+    <string name="weather_forecast">Прогноз</string>
+    <string name="weather_forecast_error">Не удалось загрузить прогноз. Проверьте подключение к интернету.</string>
+    <string name="weather_next_24_hours">Ближайшие 24 часа</string>
+    <string name="weather_tomorrow">Завтра</string>
+    <string name="weather_day_after_tomorrow">Послезавтра</string>
 </resources>

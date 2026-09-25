@@ -8,6 +8,7 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
@@ -82,7 +83,9 @@ data class HomePreferences(
     val showWeather: Boolean = false,
     val weatherCity: String = "",
     val weatherLatitude: Double? = null,
-    val weatherLongitude: Double? = null
+    val weatherLongitude: Double? = null,
+    val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
+    val showAppScreenTime: Boolean = false
 )
 
 data class CustomisationPreferences(
@@ -144,5 +147,7 @@ data class CustomisationPreferences(
     val showWeather: Boolean = false,
     val weatherCity: String = "",
     val weatherLatitude: Double? = null,
-    val weatherLongitude: Double? = null
+    val weatherLongitude: Double? = null,
+    val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
+    val showAppScreenTime: Boolean = false
 )

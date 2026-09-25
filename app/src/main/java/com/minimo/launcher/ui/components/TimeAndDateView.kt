@@ -25,6 +25,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeClockStyle
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -34,6 +35,7 @@ import java.time.temporal.ChronoUnit
 fun TimeAndDateView(
     horizontalAlignment: Alignment.Horizontal,
     clockMode: HomeClockMode,
+    clockStyle: HomeClockStyle = HomeClockStyle.Normal,
     twentyFourHourFormat: Boolean,
     showBatteryLevel: Boolean,
     textColor: Color,
@@ -64,6 +66,15 @@ fun TimeAndDateView(
         }
     }
 
+    val timeFontSize = when (clockStyle) {
+        HomeClockStyle.Normal -> 30.sp
+        HomeClockStyle.Large, HomeClockStyle.LargeThin -> 72.sp
+    }
+    val timeFontWeight = when (clockStyle) {
+        HomeClockStyle.LargeThin -> FontWeight.Light
+        else -> FontWeight.Bold
+    }
+
     val dateFontSize = if (clockMode == HomeClockMode.DateOnly) 26.sp else 18.sp
     val dateFontWeight = if (clockMode == HomeClockMode.DateOnly) FontWeight.Bold else null
 
@@ -75,8 +86,9 @@ fun TimeAndDateView(
             Text(
                 modifier = Modifier.clickable(onClick = onClockClick),
                 text = currentDateTime.format(timeFormatter).uppercase(),
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = timeFontSize,
+                lineHeight = timeFontSize,
+                fontWeight = timeFontWeight,
                 color = textColor,
                 style = LocalTextStyle.current.copy(shadow = textShadow)
             )

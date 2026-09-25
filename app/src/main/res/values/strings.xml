@@ -183,7 +183,7 @@
     <string name="about_app_based_on">Based on Minimo Launcher © Vaibhav Lakhera (MIT License).</string>
 
     <string name="show_weather">Show Weather</string>
-    <string name="show_weather_description">Show current weather on the home screen (data by Open-Meteo, requires internet). Tap the weather to refresh.</string>
+    <string name="show_weather_description">Show current weather on the home screen (data by Open-Meteo, requires internet). Tap the weather to open the forecast.</string>
     <string name="weather_city">Weather City</string>
     <string name="weather_city_not_set">Not set</string>
     <string name="weather_enter_city">City name</string>
@@ -200,4 +200,18 @@
     <string name="weather_snow_showers">Snow showers</string>
     <string name="weather_thunderstorm">Thunderstorm</string>
     <string name="weather_unknown">—</string>
+
+    <string name="clock_style">Clock Style</string>
+    <string name="clock_style_normal">Normal</string>
+    <string name="clock_style_large">Large</string>
+    <string name="clock_style_large_thin">Large thin</string>
+    <string name="show_app_screen_time">Screen Time per App</string>
+    <string name="show_app_screen_time_description">Show today\'s usage next to each app in the app drawer</string>
+    <string name="search_web">Search “%1$s” on the web</string>
+    <string name="copied">Copied</string>
+    <string name="weather_forecast">Forecast</string>
+    <string name="weather_forecast_error">Could not load the forecast. Check the internet connection.</string>
+    <string name="weather_next_24_hours">Next 24 hours</string>
+    <string name="weather_tomorrow">Tomorrow</string>
+    <string name="weather_day_after_tomorrow">Day after tomorrow</string>
 </resources>

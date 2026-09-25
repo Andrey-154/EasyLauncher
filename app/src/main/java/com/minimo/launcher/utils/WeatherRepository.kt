@@ -9,6 +9,8 @@ import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,6 +25,24 @@ data class WeatherCity(
 data class CurrentWeather(
     val temperature: Int,
     @param:StringRes val descriptionRes: Int
+)
+
+data class HourlyWeather(
+    val time: LocalDateTime,
+    val temperature: Int,
+    @param:StringRes val descriptionRes: Int
+)
+
+data class DailyWeather(
+    val date: LocalDate,
+    val minTemperature: Int,
+    val maxTemperature: Int,
+    @param:StringRes val descriptionRes: Int
+)
+
+data class WeatherForecast(
+    val hourly: List<HourlyWeather>,
+    val daily: List<DailyWeather>
 )
 
 /** Free weather data from Open-Meteo (https://open-meteo.com), no API key required. */
@@ -68,6 +88,49 @@ class WeatherRepository @Inject constructor() {
             }
         }
 
+    /** Next 24 hours (hourly) and 3 days (daily min/max). */
+    suspend fun loadForecast(latitude: Double, longitude: Double): WeatherForecast? =
+        withContext(Dispatchers.IO) {
+            try {
+                val json = request(
+                    "https://api.open-meteo.com/v1/forecast" +
+                            "?latitude=$latitude&longitude=$longitude" +
+                            "&hourly=temperature_2m,weather_code" +
+                            "&daily=weather_code,temperature_2m_max,temperature_2m_min" +
+                            "&timezone=auto&forecast_days=3&forecast_hours=24"
+                )
+                val hourlyJson = json.getJSONObject("hourly")
+                val hourTimes = hourlyJson.getJSONArray("time")
+                val hourTemps = hourlyJson.getJSONArray("temperature_2m")
+                val hourCodes = hourlyJson.getJSONArray("weather_code")
+                val hourly = (0 until hourTimes.length()).map { i ->
+                    HourlyWeather(
+                        time = LocalDateTime.parse(hourTimes.getString(i)),
+                        temperature = hourTemps.getDouble(i).roundToInt(),
+                        descriptionRes = weatherCodeToText(hourCodes.getInt(i))
+                    )
+                }
+
+                val dailyJson = json.getJSONObject("daily")
+                val dayDates = dailyJson.getJSONArray("time")
+                val dayMax = dailyJson.getJSONArray("temperature_2m_max")
+                val dayMin = dailyJson.getJSONArray("temperature_2m_min")
+                val dayCodes = dailyJson.getJSONArray("weather_code")
+                val daily = (0 until dayDates.length()).map { i ->
+                    DailyWeather(
+                        date = LocalDate.parse(dayDates.getString(i)),
+                        minTemperature = dayMin.getDouble(i).roundToInt(),
+                        maxTemperature = dayMax.getDouble(i).roundToInt(),
+                        descriptionRes = weatherCodeToText(dayCodes.getInt(i))
+                    )
+                }
+                WeatherForecast(hourly = hourly, daily = daily)
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                null
+            }
+        }
+
     private fun request(url: String): JSONObject {
         val connection = URL(url).openConnection() as HttpURLConnection
         return try {
@@ -95,3 +158,7 @@ class WeatherRepository @Inject constructor() {
         else -> R.string.weather_unknown
     }
 }
+
+/** "+5°", "-3°", "0°" */
+fun formatTemperature(temperature: Int): String =
+    if (temperature > 0) "+$temperature°" else "$temperature°"

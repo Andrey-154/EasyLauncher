@@ -7,6 +7,7 @@ import com.minimo.launcher.utils.AppIconAlignment
 import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.FastScrollerAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.SearchMode
 
@@ -71,7 +72,12 @@ data class HomeScreenState(
     val compactAppTouchArea: Boolean = false,
     val keyboardDoneOpensFirstApp: Boolean = false,
     val showWeather: Boolean = false,
+    val weatherCity: String = "",
     val weatherLatitude: Double? = null,
     val weatherLongitude: Double? = null,
-    val weatherText: String = ""
+    val weatherText: String = "",
+    val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
+    val showAppScreenTime: Boolean = false,
+    /** Package name -> formatted screen time today, e.g. "1 ч 20 мин" */
+    val appScreenTime: Map<String, String> = emptyMap()
 )

@@ -36,6 +36,56 @@ class ScreenTimeHelper @Inject constructor(
         }
     }
 
+    /** Today's foreground time per package name (the launcher itself excluded). */
+    fun getTodayScreenTimePerApp(): Map<String, Long> {
+        try {
+            val usageStatsManager =
+                context.getSystemService(Context.USAGE_STATS_SERVICE) as? UsageStatsManager
+                    ?: return emptyMap()
+
+            val startTimestamp = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+            val endTimestamp = System.currentTimeMillis()
+
+            val usageEvents = usageStatsManager.queryEvents(startTimestamp, endTimestamp)
+                ?: return emptyMap()
+            // Activity (package + class) -> resume time
+            val resumedActivities = mutableMapOf<String, Pair<String, Long>>()
+            val totals = mutableMapOf<String, Long>()
+
+            while (usageEvents.hasNextEvent()) {
+                val event = UsageEvents.Event()
+                if (!usageEvents.getNextEvent(event)) continue
+                val packageName = event.packageName ?: continue
+                if (packageName == context.packageName) continue
+                val activityKey = event.className ?: packageName
+
+                when (event.eventType) {
+                    UsageEvents.Event.ACTIVITY_RESUMED -> {
+                        resumedActivities[activityKey] = packageName to event.timeStamp
+                    }
+
+                    UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> {
+                        resumedActivities.remove(activityKey)?.let { (resumedPackage, resumeTime) ->
+                            val duration = event.timeStamp - max(resumeTime, startTimestamp)
+                            if (duration > 0) {
+                                totals[resumedPackage] = (totals[resumedPackage] ?: 0L) + duration
+                            }
+                        }
+                    }
+                }
+            }
+            return totals
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            return emptyMap()
+        }
+    }
+
     private fun getScreenTimeMillis(
         usageStatsManager: UsageStatsManager,
         startTimestamp: Long,

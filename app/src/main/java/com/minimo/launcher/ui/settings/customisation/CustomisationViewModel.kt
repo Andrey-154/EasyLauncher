@@ -12,6 +12,7 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.WeatherRepository
@@ -133,7 +134,9 @@ class CustomisationViewModel @Inject constructor(
                             compactAppTouchArea = prefs.compactAppTouchArea,
                             keyboardDoneOpensFirstApp = prefs.keyboardDoneOpensFirstApp,
                             showWeather = prefs.showWeather,
-                            weatherCity = prefs.weatherCity
+                            weatherCity = prefs.weatherCity,
+                            homeClockStyle = prefs.homeClockStyle,
+                            showAppScreenTime = prefs.showAppScreenTime
                         )
                     }
                 }
@@ -412,6 +415,18 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleShowScreenTimeWidget() {
         viewModelScope.launch {
             preferenceHelper.showScreenTimeWidget(_state.value.showScreenTimeWidget.not())
+        }
+    }
+
+    fun onHomeClockStyleChanged(style: HomeClockStyle) {
+        viewModelScope.launch {
+            preferenceHelper.setHomeClockStyle(style)
+        }
+    }
+
+    fun onToggleShowAppScreenTime() {
+        viewModelScope.launch {
+            preferenceHelper.setShowAppScreenTime(_state.value.showAppScreenTime.not())
         }
     }
 

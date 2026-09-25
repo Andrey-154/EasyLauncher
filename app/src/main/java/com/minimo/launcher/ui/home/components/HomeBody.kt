@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
 import com.minimo.launcher.ui.components.TimeAndDateView
+import com.minimo.launcher.ui.components.WeatherForecastDialog
 import com.minimo.launcher.ui.components.WeatherView
 import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.ui.home.HomeScreenState
@@ -89,6 +92,15 @@ fun HomeBody(
         }
     }
 
+    var showWeatherForecast by remember { mutableStateOf(false) }
+    if (showWeatherForecast) {
+        WeatherForecastDialog(
+            cityName = state.weatherCity,
+            loadForecast = viewModel::loadWeatherForecast,
+            onDismiss = { showWeatherForecast = false }
+        )
+    }
+
     val lazyColumnPadding = remember(systemNavigationHeight, paddingValues) {
         PaddingValues(
             bottom = max(systemNavigationHeight, paddingValues.calculateBottomPadding()) + 16.dp
@@ -111,6 +123,7 @@ fun HomeBody(
                     TimeAndDateView(
                         horizontalAlignment = state.homeClockAlignment,
                         clockMode = state.homeClockMode,
+                        clockStyle = state.homeClockStyle,
                         twentyFourHourFormat = state.twentyFourHourFormat,
                         showBatteryLevel = state.showBatteryLevel,
                         textColor = textColor,
@@ -142,7 +155,7 @@ fun HomeBody(
                         horizontalAlignment = state.homeClockAlignment,
                         weatherText = state.weatherText,
                         refreshWeather = viewModel::refreshWeather,
-                        onClick = { viewModel.refreshWeather(force = true) },
+                        onClick = { showWeatherForecast = true },
                         textColor = textColor,
                         textShadow = textShadow
                     )

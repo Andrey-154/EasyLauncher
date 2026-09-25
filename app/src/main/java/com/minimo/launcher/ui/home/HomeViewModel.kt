@@ -28,7 +28,9 @@ import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.StringUtils
+import com.minimo.launcher.utils.WeatherForecast
 import com.minimo.launcher.utils.WeatherRepository
+import com.minimo.launcher.utils.formatTemperature
 import com.minimo.launcher.utils.isAppUsagePermissionGranted
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.startShortcut
@@ -66,6 +68,7 @@ class HomeViewModel @Inject constructor(
 
     private var lastScreenTimeUpdateTime = 0L
     private var lastWeatherUpdateTime = 0L
+    private var lastAppScreenTimeUpdateTime = 0L
 
     init {
         viewModelScope.launch {
@@ -279,9 +282,13 @@ class HomeViewModel @Inject constructor(
                             compactAppTouchArea = prefs.compactAppTouchArea,
                             keyboardDoneOpensFirstApp = prefs.keyboardDoneOpensFirstApp,
                             showWeather = prefs.showWeather,
+                            weatherCity = prefs.weatherCity,
                             weatherLatitude = prefs.weatherLatitude,
                             weatherLongitude = prefs.weatherLongitude,
                             weatherText = newWeatherText,
+                            homeClockStyle = prefs.homeClockStyle,
+                            showAppScreenTime = prefs.showAppScreenTime,
+                            appScreenTime = if (prefs.showAppScreenTime) state.appScreenTime else emptyMap(),
                             allApps = newAllApps,
                             filteredAllApps = newFilteredApps,
                             searchText = clearSearchText
@@ -570,6 +577,42 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    suspend fun loadWeatherForecast(): WeatherForecast? {
+        val state = _state.value
+        val latitude = state.weatherLatitude ?: return null
+        val longitude = state.weatherLongitude ?: return null
+        // Opening the forecast also refreshes the short weather line
+        refreshWeather(force = true)
+        return weatherRepository.loadForecast(latitude, longitude)
+    }
+
+    /** Per-app screen time shown in the app drawer; refreshed at most once a minute. */
+    fun refreshAppScreenTime() {
+        if (!_state.value.showAppScreenTime) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+            !applicationContext.isAppUsagePermissionGranted()
+        ) return
+        if (System.currentTimeMillis() - lastAppScreenTimeUpdateTime < 60_000) return
+        lastAppScreenTimeUpdateTime = System.currentTimeMillis()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val formatted = screenTimeHelper.getTodayScreenTimePerApp()
+                .filterValues { it >= 60_000 }
+                .mapValues { (_, millis) -> formatScreenTime(millis) }
+            _state.update { it.copy(appScreenTime = formatted) }
+        }
+    }
+
+    private fun formatScreenTime(totalMillis: Long): String {
+        val hours = TimeUnit.MILLISECONDS.toHours(totalMillis)
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(totalMillis) % 60
+        return if (hours > 0) {
+            applicationContext.getString(R.string.screen_time_hours_minutes, hours, minutes)
+        } else {
+            applicationContext.getString(R.string.screen_time_minutes, minutes)
+        }
+    }
+
     fun refreshWeather(force: Boolean = false) {
         val state = _state.value
         if (!state.showWeather) return
@@ -589,11 +632,7 @@ class HomeViewModel @Inject constructor(
                 lastWeatherUpdateTime = 0L
                 return@launch
             }
-            val temperature = if (weather.temperature > 0) {
-                "+${weather.temperature}°"
-            } else {
-                "${weather.temperature}°"
-            }
+            val temperature = formatTemperature(weather.temperature)
             val description = applicationContext.getString(weather.descriptionRes)
             _state.update {
                 if (it.weatherLatitude == latitude && it.weatherLongitude == longitude) {
@@ -613,13 +652,7 @@ class HomeViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 val totalMillis = screenTimeHelper.getTodayScreenTimeMillis()
 
-                val hours = TimeUnit.MILLISECONDS.toHours(totalMillis)
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(totalMillis) % 60
-                val formattedTime = if (hours > 0) {
-                    applicationContext.getString(R.string.screen_time_hours_minutes, hours, minutes)
-                } else {
-                    applicationContext.getString(R.string.screen_time_minutes, minutes)
-                }
+                val formattedTime = formatScreenTime(totalMillis)
 
                 _state.update { it.copy(screenTime = formattedTime) }
 

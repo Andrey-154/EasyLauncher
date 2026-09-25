@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home
 
+import android.widget.Toast
 import android.app.Activity
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -69,12 +70,16 @@ import com.minimo.launcher.ui.home.components.AppDrawerFastScroller
 import com.minimo.launcher.ui.home.components.AppDrawerSearch
 import com.minimo.launcher.ui.home.components.AppLaunchConfirmationDialog
 import com.minimo.launcher.ui.home.components.AppNameItem
+import com.minimo.launcher.ui.home.components.DrawerActionItem
 import com.minimo.launcher.ui.home.components.LaunchDelayDialog
 import com.minimo.launcher.ui.home.components.MinimoSettingsItem
 import com.minimo.launcher.ui.home.components.appIconSizeFor
+import com.minimo.launcher.utils.Calculator
 import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.FastScrollerAlignment
+import com.minimo.launcher.utils.copyToClipboard
 import com.minimo.launcher.utils.launchAppInfo
+import com.minimo.launcher.utils.searchWeb
 import com.minimo.launcher.utils.uninstallApp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -144,6 +149,12 @@ fun AppDrawerScreen(
             hideKeyboardWithClearFocus()
         }
     }
+
+    LaunchedEffect(state.showAppScreenTime) {
+        viewModel.refreshAppScreenTime()
+    }
+
+    val calculatorResult = remember(state.searchText) { Calculator.evaluate(state.searchText) }
 
     LaunchedEffect(allAppsLazyListState) {
         snapshotFlow { allAppsLazyListState.isScrollInProgress }
@@ -340,6 +351,25 @@ fun AppDrawerScreen(
                         end = endContentPadding
                     )
                 ) {
+                    calculatorResult?.let { result ->
+                        item(key = "calculator") {
+                            DrawerActionItem(
+                                modifier = Modifier.animateItem(),
+                                text = "= $result",
+                                textSize = textSize,
+                                textColor = textColor,
+                                textShadow = textShadow,
+                                verticalPadding = verticalPadding,
+                                appsArrangement = appsArrangement,
+                                onClick = {
+                                    context.copyToClipboard(result)
+                                    Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            )
+                        }
+                    }
+
                     items(items = state.filteredAllApps, key = { it.id }) { appInfo ->
                         if (appInfo.packageName == Constants.MINIMO_SETTINGS_PACKAGE) {
                             MinimoSettingsItem(
@@ -404,7 +434,31 @@ fun AppDrawerScreen(
                                 useDarkBottomSheetNavigationBarIcons = useDarkIconsOnSurface,
                                 verticalPadding = verticalPadding,
                                 textColor = textColor,
-                                shadow = textShadow
+                                shadow = textShadow,
+                                secondaryText = if (state.showAppScreenTime && !appInfo.isShortcut) {
+                                    state.appScreenTime[appInfo.packageName]
+                                } else {
+                                    null
+                                }
+                            )
+                        }
+                    }
+
+                    // Lowest priority: always the last row while searching
+                    if (state.searchText.isNotBlank()) {
+                        item(key = "web_search") {
+                            DrawerActionItem(
+                                modifier = Modifier.animateItem(),
+                                text = stringResource(R.string.search_web, state.searchText.trim()),
+                                textSize = textSize,
+                                textColor = textColor.copy(alpha = 0.7f),
+                                textShadow = textShadow,
+                                verticalPadding = verticalPadding,
+                                appsArrangement = appsArrangement,
+                                onClick = {
+                                    hideKeyboardWithClearFocus()
+                                    context.searchWeb(state.searchText.trim())
+                                }
                             )
                         }
                     }
