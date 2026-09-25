@@ -491,6 +491,7 @@ class CustomisationViewModel @Inject constructor(
     fun onAppUsagePermissionNotGrantedOnStarted() {
         viewModelScope.launch {
             preferenceHelper.showScreenTimeWidget(false)
+            preferenceHelper.setShowAppScreenTime(false)
         }
     }
 

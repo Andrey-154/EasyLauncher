@@ -117,6 +117,8 @@ fun CustomisationScreen(
     focusSearch: Boolean = false
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    // While searching, also show settings that normally appear only after their parent is enabled
+    val isSearching = searchQuery.isNotBlank()
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -314,7 +316,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleEnableWallpaperOnDrawer
             )
 
-            if (state.enableWallpaper || state.enableWallpaperOnDrawer) {
+            if (isSearching || (state.enableWallpaper || state.enableWallpaperOnDrawer)) {
                 ToggleItem(
                     title = stringResource(R.string.light_text_on_wallpaper),
                     isChecked = state.lightTextOnWallpaper,
@@ -327,7 +329,7 @@ fun CustomisationScreen(
                     onToggleClick = viewModel::onToggleDimWallpaper
                 )
 
-                if (state.dimWallpaper) {
+                if (isSearching || state.dimWallpaper) {
                     SettingsSpacer(8.dp)
 
                     DimPercentageSlider(
@@ -359,7 +361,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowAppIconInHome
             )
 
-            if (state.showAppIconInHome) {
+            if (isSearching || state.showAppIconInHome) {
                 AppIconAlignmentDropdown(
                     titleRes = R.string.home_icon_alignment,
                     selectedOption = StringUtils.appIconAlignmentText(
@@ -386,7 +388,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowAppIconInDrawer
             )
 
-            if (state.showAppIconInDrawer) {
+            if (isSearching || state.showAppIconInDrawer) {
                 AppIconAlignmentDropdown(
                     titleRes = R.string.drawer_icon_alignment,
                     selectedOption = StringUtils.appIconAlignmentText(
@@ -407,7 +409,7 @@ fun CustomisationScreen(
                 )
             }
 
-            if (state.showAppIconInHome || state.showAppIconInDrawer) {
+            if (isSearching || (state.showAppIconInHome || state.showAppIconInDrawer)) {
                 SettingsSpacer(8.dp)
 
                 AppIconSizeSlider(
@@ -515,7 +517,7 @@ fun CustomisationScreen(
                 isChecked = state.showHomeClock,
                 onToggleClick = viewModel::onToggleShowHomeClock
             )
-            if (state.showHomeClock) {
+            if (isSearching || state.showHomeClock) {
                 SettingsSpacer(4.dp)
 
                 ClockAlignmentDropdown(
@@ -564,7 +566,7 @@ fun CustomisationScreen(
                     onOptionSelected = viewModel::onHomeClockModeChanged
                 )
 
-                if (state.homeClockMode != HomeClockMode.DateOnly) {
+                if (isSearching || state.homeClockMode != HomeClockMode.DateOnly) {
                     ClockStyleDropdown(
                         selectedStyle = state.homeClockStyle,
                         onStyleSelected = viewModel::onHomeClockStyleChanged
@@ -644,7 +646,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleAutoOpenKeyboardAllApps
             )
 
-            if (state.autoOpenKeyboardAllApps) {
+            if (isSearching || state.autoOpenKeyboardAllApps) {
                 SettingsSpacer(4.dp)
 
                 KeyboardDelayItem(
@@ -783,7 +785,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleHideAppDrawerSearch
             )
 
-            if (state.hideAppDrawerSearch) {
+            if (isSearching || state.hideAppDrawerSearch) {
                 MinimoSettingsPositionDropdown(
                     selectedOption = StringUtils.minimoSettingsPositionText(
                         context = context,
@@ -807,7 +809,7 @@ fun CustomisationScreen(
                 )
             }
 
-            if (!state.hideAppDrawerSearch) {
+            if (isSearching || !state.hideAppDrawerSearch) {
                 SettingsSpacer(4.dp)
 
                 ToggleItem(
@@ -826,7 +828,7 @@ fun CustomisationScreen(
                     subtitle = stringResource(R.string.show_screen_time_description),
                     isChecked = state.showScreenTimeWidget,
                     onToggleClick = {
-                        if (state.showScreenTimeWidget) {
+                        if (isSearching || state.showScreenTimeWidget) {
                             viewModel.onToggleShowScreenTimeWidget()
                         } else {
                             if (context.isAppUsagePermissionGranted()) {
@@ -838,7 +840,7 @@ fun CustomisationScreen(
                     }
                 )
 
-                if (state.showScreenTimeWidget) {
+                if (isSearching || state.showScreenTimeWidget) {
                     SettingsSpacer(4.dp)
 
                     AppSelectionItem(
@@ -894,7 +896,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowWeather
             )
 
-            if (state.showWeather) {
+            if (isSearching || state.showWeather) {
                 SettingsSpacer(4.dp)
 
                 WeatherCityItem(
@@ -932,7 +934,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleFastScroller
             )
 
-            if (state.enableFastScroller) {
+            if (isSearching || state.enableFastScroller) {
                 FastScrollerAlignmentDropdown(
                     selectedOption = StringUtils.fastScrollerAlignmentText(
                         context,

@@ -249,4 +249,9 @@
     <string name="backup_import_error">Could not restore the backup.</string>
     <string name="backup_import_confirm">Current settings, favourites, hidden and renamed apps will be replaced with the ones from the file. Continue?</string>
     <string name="backup_import_confirm_button">Replace</string>
+
+    <string name="version_with_build">Version %1$s (build %2$d)</string>
+    <string name="no_browser_found">No browser or search app found</string>
+    <string name="weather_city_missing">Set the city in settings</string>
+    <string name="retry">Retry</string>
 </resources>

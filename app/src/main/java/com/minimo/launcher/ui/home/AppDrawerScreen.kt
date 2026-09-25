@@ -283,13 +283,15 @@ fun AppDrawerScreen(
     val appIconAlignment = state.drawerAppIconAlignment
     val appsArrangement = state.drawerAppsArrangementHorizontal
     val showSettingsIcon = !state.hideSettingsIcon
-    val onKeyboardDone: (() -> Unit)? = if (state.keyboardDoneOpensFirstApp) {
-        {
-            hideKeyboardWithClearFocus()
-            viewModel.onKeyboardDone()
+    val onKeyboardDone: () -> Unit = {
+        hideKeyboardWithClearFocus()
+        val query = state.searchText.trim()
+        when {
+            query.isEmpty() -> Unit
+            // Nothing matched: Done searches the web (the last row of the list)
+            state.filteredAllApps.isEmpty() && calculatorResult == null -> context.searchWeb(query)
+            state.keyboardDoneOpensFirstApp -> viewModel.onKeyboardDone()
         }
-    } else {
-        null
     }
     val onDrawerSettingsClick = onSettingsClickState.value
 

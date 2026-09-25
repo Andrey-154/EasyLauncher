@@ -665,7 +665,11 @@ class HomeViewModel @Inject constructor(
         if (!_state.value.showAppScreenTime) return
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
             !applicationContext.isAppUsagePermissionGranted()
-        ) return
+        ) {
+            // Access was revoked: turn the option off instead of silently showing nothing
+            viewModelScope.launch { preferenceHelper.setShowAppScreenTime(false) }
+            return
+        }
         if (System.currentTimeMillis() - lastAppScreenTimeUpdateTime < 60_000) return
         lastAppScreenTimeUpdateTime = System.currentTimeMillis()
 
@@ -722,6 +726,8 @@ class HomeViewModel @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && applicationContext.isAppUsagePermissionGranted()) {
             // Only continue if 1 minute has been passed since last update
             if (System.currentTimeMillis() - lastScreenTimeUpdateTime < 60_000) return
+            // Set on the main thread before the IO work, so two quick calls do not both query
+            lastScreenTimeUpdateTime = System.currentTimeMillis()
 
             viewModelScope.launch(Dispatchers.IO) {
                 val totalMillis = screenTimeHelper.getTodayScreenTimeMillis()
@@ -729,8 +735,6 @@ class HomeViewModel @Inject constructor(
                 val formattedTime = formatScreenTime(totalMillis)
 
                 _state.update { it.copy(screenTime = formattedTime) }
-
-                lastScreenTimeUpdateTime = System.currentTimeMillis()
             }
         } else {
             viewModelScope.launch {

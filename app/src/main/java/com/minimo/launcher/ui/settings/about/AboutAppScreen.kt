@@ -70,7 +70,11 @@ fun AboutAppScreen(
 
             if (versionName.isNotEmpty()) {
                 Text(
-                    text = "${stringResource(R.string.version)} $versionName",
+                    text = stringResource(
+                        R.string.version_with_build,
+                        versionName,
+                        BuildConfig.VERSION_CODE
+                    ),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.CenterHorizontally)

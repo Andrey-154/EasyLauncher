@@ -8,6 +8,14 @@ plugins {
     id("androidx.room")
 }
 
+// Every commit raises the version code, so each new APK installs as an update
+val gitCommitCount: Int = try {
+    providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }
+        .standardOutput.asText.get().trim().toInt()
+} catch (_: Exception) {
+    1
+}
+
 android {
     namespace = "com.minimo.launcher"
     compileSdk = 37
@@ -16,7 +24,7 @@ android {
         applicationId = "com.easy.launcher"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
+        versionCode = gitCommitCount
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

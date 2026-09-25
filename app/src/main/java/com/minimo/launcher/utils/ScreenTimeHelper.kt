@@ -53,15 +53,21 @@ class ScreenTimeHelper @Inject constructor(
 
             val usageEvents = usageStatsManager.queryEvents(startTimestamp, endTimestamp)
                 ?: return emptyMap()
-            // Activity (package + class) -> resume time
+            // Activity (package + class) -> package and resume time
             val resumedActivities = mutableMapOf<String, Pair<String, Long>>()
-            val totals = mutableMapOf<String, Long>()
+            val intervalsByPackage = mutableMapOf<String, MutableList<Pair<Long, Long>>>()
+            var lastLauncherResumeTime: Long? = null
 
             while (usageEvents.hasNextEvent()) {
                 val event = UsageEvents.Event()
                 if (!usageEvents.getNextEvent(event)) continue
                 val packageName = event.packageName ?: continue
-                if (packageName == context.packageName) continue
+                if (packageName == context.packageName) {
+                    if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
+                        lastLauncherResumeTime = event.timeStamp
+                    }
+                    continue
+                }
                 val activityKey = event.className ?: packageName
 
                 when (event.eventType) {
@@ -71,15 +77,31 @@ class ScreenTimeHelper @Inject constructor(
 
                     UsageEvents.Event.ACTIVITY_PAUSED, UsageEvents.Event.ACTIVITY_STOPPED -> {
                         resumedActivities.remove(activityKey)?.let { (resumedPackage, resumeTime) ->
-                            val duration = event.timeStamp - max(resumeTime, startTimestamp)
-                            if (duration > 0) {
-                                totals[resumedPackage] = (totals[resumedPackage] ?: 0L) + duration
-                            }
+                            intervalsByPackage.getOrPut(resumedPackage) { mutableListOf() }
+                                .add(resumeTime to event.timeStamp)
                         }
                     }
                 }
             }
-            return totals
+
+            // Still-open activities count until now, unless the launcher came to the front later
+            resumedActivities.values.forEach { (resumedPackage, resumeTime) ->
+                val launcherTookOver =
+                    lastLauncherResumeTime != null && lastLauncherResumeTime > resumeTime
+                if (!launcherTookOver) {
+                    intervalsByPackage.getOrPut(resumedPackage) { mutableListOf() }
+                        .add(resumeTime to endTimestamp)
+                }
+            }
+
+            // Merge overlapping intervals so split-screen / several activities are not counted twice
+            return intervalsByPackage.mapValues { (_, intervals) ->
+                mergeOverlappingIntervals(intervals).sumOf { interval ->
+                    val start = max(interval.first, startTimestamp)
+                    val end = min(interval.second, endTimestamp)
+                    max(0L, end - start)
+                }
+            }.filterValues { it > 0 }
         } catch (exception: Exception) {
             Timber.e(exception)
             return emptyMap()

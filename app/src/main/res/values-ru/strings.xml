@@ -250,4 +250,9 @@
     <string name="backup_import_error">Не удалось восстановить копию.</string>
     <string name="backup_import_confirm">Текущие настройки, избранные, скрытые и переименованные приложения будут заменены данными из файла. Продолжить?</string>
     <string name="backup_import_confirm_button">Заменить</string>
+
+    <string name="version_with_build">Версия %1$s (сборка %2$d)</string>
+    <string name="no_browser_found">Не найден браузер или приложение для поиска</string>
+    <string name="weather_city_missing">Укажите город в настройках</string>
+    <string name="retry">Повторить</string>
 </resources>
