@@ -141,7 +141,8 @@ fun HomeBody(
                 )
             ) {
                 val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
-                val flashlightNextToTime = state.showFlashlight && state.showHomeClock &&
+                val showFlashlight = state.showFlashlight && viewModel.flashlightAvailable
+                val flashlightNextToTime = showFlashlight && state.showHomeClock &&
                         state.homeClockMode != HomeClockMode.DateOnly
 
                 if (state.showHomeClock) {
@@ -209,7 +210,7 @@ fun HomeBody(
                     )
                 }
 
-                if (state.showFlashlight && !flashlightNextToTime) {
+                if (showFlashlight && !flashlightNextToTime) {
                     FlashlightRow(
                         horizontalAlignment = state.homeClockAlignment,
                         isOn = flashlightOn,

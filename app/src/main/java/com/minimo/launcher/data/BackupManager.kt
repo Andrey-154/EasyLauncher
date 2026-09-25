@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,23 +54,88 @@ class BackupManager @Inject constructor(
         }.isSuccess
     }
 
-    /** @return number of restored apps, or null when the file is not a valid backup. */
-    suspend fun import(uri: Uri): Int? = withContext(Dispatchers.IO) {
-        runCatching {
+    /**
+     * Reads and validates the whole file first; settings are changed only when it is a complete,
+     * compatible backup, so a broken file never leaves the launcher half-restored.
+     */
+    suspend fun import(uri: Uri): ImportResult = withContext(Dispatchers.IO) {
+        val backup = try {
             val text = context.contentResolver.openInputStream(uri)!!.use {
                 it.readBytes().decodeToString()
             }
             val root = JSONObject(text)
-            require(root.optString("format") == FORMAT)
+            if (root.optString("format") != FORMAT) return@withContext ImportResult.NotABackup
+            val version = root.optInt("version", -1)
+            if (version > VERSION) return@withContext ImportResult.NewerVersion
+            if (version < 1) return@withContext ImportResult.NotABackup
+            parseBackup(root)
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            return@withContext ImportResult.NotABackup
+        }
 
-            importPreferences(root.getJSONObject("preferences"))
-            val restoredApps = importApps(root.getJSONArray("apps"))
+        try {
+            applyPreferences(backup.preferences)
+            val restoredApps = applyApps(backup.apps)
+            launchStats.replaceAll(backup.launchCounts)
+            ImportResult.Success(restoredApps)
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            ImportResult.Failed
+        }
+    }
 
-            root.optJSONObject("launchCounts")?.let { counts ->
-                launchStats.replaceAll(counts.keys().asSequence().associateWith { counts.getInt(it) })
+    private class ParsedBackup(
+        val preferences: List<Preferences.Pair<*>>,
+        val apps: Map<AppKey, JSONObject>,
+        val launchCounts: Map<String, Int>
+    )
+
+    private data class AppKey(val packageName: String, val itemType: String, val targetId: String)
+
+    /** Throws on any malformed part. */
+    private fun parseBackup(root: JSONObject): ParsedBackup {
+        val prefsJson = root.getJSONObject("preferences")
+        val preferences = prefsJson.keys().asSequence().map { name ->
+            val entry = prefsJson.getJSONObject(name)
+            when (val type = entry.getString("type")) {
+                "boolean" -> booleanPreferencesKey(name) to entry.getBoolean("value")
+                "int" -> intPreferencesKey(name) to entry.getInt("value")
+                "long" -> longPreferencesKey(name) to entry.getLong("value")
+                "float" -> floatPreferencesKey(name) to entry.getDouble("value").toFloat()
+                "double" -> doublePreferencesKey(name) to entry.getDouble("value")
+                "string" -> stringPreferencesKey(name) to entry.getString("value")
+                "stringSet" -> {
+                    val array = entry.getJSONArray("value")
+                    stringSetPreferencesKey(name) to
+                            (0 until array.length()).map { array.getString(it) }.toSet()
+                }
+
+                else -> error("Unknown preference type $type")
             }
-            restoredApps
-        }.getOrNull()
+        }.toList()
+
+        val appsJson = root.getJSONArray("apps")
+        val apps = (0 until appsJson.length()).map { appsJson.getJSONObject(it) }
+            .associateBy { app ->
+                AppKey(
+                    app.getString("packageName"),
+                    app.getString("itemType"),
+                    app.getString("targetId")
+                )
+            }
+
+        val countsJson = root.optJSONObject("launchCounts") ?: JSONObject()
+        val launchCounts = countsJson.keys().asSequence().associateWith { countsJson.getInt(it) }
+
+        return ParsedBackup(preferences, apps, launchCounts)
+    }
+
+    private suspend fun applyPreferences(values: List<Preferences.Pair<*>>) {
+        preferences.edit { prefs ->
+            prefs.clear()
+            prefs.putAll(*values.toTypedArray())
+        }
     }
 
     private suspend fun exportPreferences(): JSONObject {
@@ -89,28 +155,6 @@ class BackupManager @Inject constructor(
             json.put(key.name, JSONObject().put("type", type).put("value", jsonValue))
         }
         return json
-    }
-
-    private suspend fun importPreferences(json: JSONObject) {
-        preferences.edit { prefs ->
-            prefs.clear()
-            json.keys().forEach { name ->
-                val entry = json.getJSONObject(name)
-                when (entry.getString("type")) {
-                    "boolean" -> prefs[booleanPreferencesKey(name)] = entry.getBoolean("value")
-                    "int" -> prefs[intPreferencesKey(name)] = entry.getInt("value")
-                    "long" -> prefs[longPreferencesKey(name)] = entry.getLong("value")
-                    "float" -> prefs[floatPreferencesKey(name)] = entry.getDouble("value").toFloat()
-                    "double" -> prefs[doublePreferencesKey(name)] = entry.getDouble("value")
-                    "string" -> prefs[stringPreferencesKey(name)] = entry.getString("value")
-                    "stringSet" -> {
-                        val array = entry.getJSONArray("value")
-                        prefs[stringSetPreferencesKey(name)] =
-                            (0 until array.length()).map { array.getString(it) }.toSet()
-                    }
-                }
-            }
-        }
     }
 
     private suspend fun exportApps(): JSONArray {
@@ -138,12 +182,10 @@ class BackupManager @Inject constructor(
     }
 
     /** Matches by package + type + target, so it also works on a new phone (other user ids). */
-    private suspend fun importApps(array: JSONArray): Int {
-        val saved = (0 until array.length()).map { array.getJSONObject(it) }
-            .associateBy { Triple(it.getString("packageName"), it.getString("itemType"), it.getString("targetId")) }
-
+    private suspend fun applyApps(saved: Map<AppKey, JSONObject>): Int {
+        var restored = 0
         val updated = appInfoDao.getAllApps().map { app ->
-            val backup = saved[Triple(app.packageName, app.itemType.name, app.targetId)]
+            val backup = saved[AppKey(app.packageName, app.itemType.name, app.targetId)]
             if (backup == null) {
                 app.copy(
                     alternateAppName = "",
@@ -153,6 +195,7 @@ class BackupManager @Inject constructor(
                     launchDelaySeconds = 0
                 )
             } else {
+                restored++
                 app.copy(
                     alternateAppName = backup.optString("alternateAppName"),
                     isFavourite = backup.optBoolean("isFavourite"),
@@ -163,8 +206,13 @@ class BackupManager @Inject constructor(
             }
         }
         appInfoDao.addApps(updated)
-        return updated.count { app ->
-            saved.containsKey(Triple(app.packageName, app.itemType.name, app.targetId))
-        }
+        return restored
     }
+}
+
+sealed interface ImportResult {
+    data class Success(val restoredApps: Int) : ImportResult
+    data object NotABackup : ImportResult
+    data object NewerVersion : ImportResult
+    data object Failed : ImportResult
 }

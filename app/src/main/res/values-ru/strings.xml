@@ -238,11 +238,16 @@
     <string name="backup_export_done">Резервная копия сохранена</string>
     <string name="backup_export_failed">Не удалось сохранить резервную копию</string>
     <string name="backup_import_done">Восстановлено. Приложений с сохранёнными изменениями: %1$d</string>
-    <string name="backup_import_failed">Этот файл не является резервной копией EasyLauncher</string>
+    <string name="backup_import_failed">Этот файл не является резервной копией EasyLauncher. Настройки не изменены.</string>
 
     <string name="flashlight">Фонарик</string>
     <string name="flashlight_on">Фонарик включён</string>
     <string name="flashlight_unavailable">Фонарик недоступен (возможно, камера занята)</string>
     <string name="show_flashlight">Фонарик на главном экране</string>
     <string name="show_flashlight_description">Круглая кнопка справа от времени включает и выключает фонарик</string>
+
+    <string name="backup_import_newer">Эта копия сделана более новой версией EasyLauncher. Сначала обновите лаунчер.</string>
+    <string name="backup_import_error">Не удалось восстановить копию.</string>
+    <string name="backup_import_confirm">Текущие настройки, избранные, скрытые и переименованные приложения будут заменены данными из файла. Продолжить?</string>
+    <string name="backup_import_confirm_button">Заменить</string>
 </resources>

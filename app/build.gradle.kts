@@ -30,10 +30,13 @@ android {
         val f = rootProject.file("keystore.properties")
         if (f.exists()) f.inputStream().use { load(it) }
     }
+    // Sign only when every field is present; an incomplete file must not break debug builds
+    val hasReleaseKeystore = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+        .all { !keystoreProps.getProperty(it).isNullOrBlank() }
 
     signingConfigs {
         create("release") {
-            if (keystoreProps.isNotEmpty()) {
+            if (hasReleaseKeystore) {
                 storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
                 storePassword = keystoreProps.getProperty("storePassword")
                 keyAlias = keystoreProps.getProperty("keyAlias")
@@ -57,7 +60,7 @@ android {
         }
 
         release {
-            if (keystoreProps.isNotEmpty()) signingConfig = signingConfigs.getByName("release")
+            if (hasReleaseKeystore) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

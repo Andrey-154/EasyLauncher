@@ -71,6 +71,9 @@ class HomeViewModel @Inject constructor(
     val iconCacheRevision = appIconRepository.cacheRevision
     val flashlightOn: StateFlow<Boolean> = flashlightController.isOn
 
+    /** False on devices without a flash (e.g. the setting came from a backup of another phone). */
+    val flashlightAvailable: Boolean = flashlightController.isAvailable
+
     private var lastScreenTimeUpdateTime = 0L
     private var lastWeatherUpdateTime = 0L
     private var lastAppScreenTimeUpdateTime = 0L

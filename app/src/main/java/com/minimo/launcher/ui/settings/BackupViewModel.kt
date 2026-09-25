@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.R
 import com.minimo.launcher.data.BackupManager
+import com.minimo.launcher.data.ImportResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -27,12 +28,14 @@ class BackupViewModel @Inject constructor(
 
     fun import(uri: Uri) {
         viewModelScope.launch {
-            val restoredApps = backupManager.import(uri)
             toast(
-                if (restoredApps != null) {
-                    context.getString(R.string.backup_import_done, restoredApps)
-                } else {
-                    context.getString(R.string.backup_import_failed)
+                when (val result = backupManager.import(uri)) {
+                    is ImportResult.Success ->
+                        context.getString(R.string.backup_import_done, result.restoredApps)
+
+                    ImportResult.NotABackup -> context.getString(R.string.backup_import_failed)
+                    ImportResult.NewerVersion -> context.getString(R.string.backup_import_newer)
+                    ImportResult.Failed -> context.getString(R.string.backup_import_error)
                 }
             )
         }

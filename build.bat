@@ -3,6 +3,7 @@ REM ============================================================
 REM  EasyLauncher - debug APK build
 REM    build.bat          - build APK into output\
 REM    build.bat install  - build and install to phone (USB debugging)
+REM    build.bat auto     - build only (no pause)
 REM ============================================================
 setlocal
 cd /d "%~dp0"
@@ -10,22 +11,37 @@ cd /d "%~dp0"
 set "JAVA_HOME=C:\Program Files\Android\Android Studio\jbr"
 set "ANDROID_HOME=%LOCALAPPDATA%\Android\Sdk"
 set "ADB=%ANDROID_HOME%\platform-tools\adb.exe"
+set "APK=%~dp0output\EasyLauncher-debug.apk"
 
 echo === Building EasyLauncher (fossDebug) ===
 call "%~dp0gradlew.bat" assembleFossDebug
-if errorlevel 1 (
-    echo.
-    echo *** BUILD FAILED ***
-    exit /b 1
-)
+if errorlevel 1 goto :fail
 
-if not exist output mkdir output
-copy /y "app\build\outputs\apk\foss\debug\app-foss-debug.apk" "output\EasyLauncher-debug.apk" >nul
+if not exist "%~dp0output" mkdir "%~dp0output"
+copy /y "%~dp0app\build\outputs\apk\foss\debug\app-foss-debug.apk" "%APK%" >nul
+if errorlevel 1 goto :fail
 echo.
-echo === OK: %CD%\output\EasyLauncher-debug.apk ===
+echo === OK: %APK% ===
 
 if /i "%~1"=="install" (
     echo === Installing to device ===
-    "%ADB%" install -r -d "output\EasyLauncher-debug.apk"
+    "%ADB%" install -r -d "%APK%"
+    if errorlevel 1 goto :fail
 )
-endlocal
+goto :end
+
+:fail
+echo.
+echo *** BUILD FAILED - see errors above ***
+call :maybe_pause "%~1"
+exit /b 1
+
+:end
+call :maybe_pause "%~1"
+exit /b 0
+
+REM Keep the window open when started by double-click (not in "auto" mode)
+:maybe_pause
+if /i "%~1"=="auto" exit /b 0
+echo %CMDCMDLINE% | find /i "%~f0" >nul && pause
+exit /b 0

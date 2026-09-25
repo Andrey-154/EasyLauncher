@@ -26,6 +26,7 @@ if errorlevel 1 goto :fail
 
 if not exist "%~dp0output" mkdir "%~dp0output"
 copy /y "%~dp0app\build\outputs\apk\foss\release\app-foss-release.apk" "%APK%" >nul
+if errorlevel 1 goto :fail
 echo.
 echo ============================================================
 echo  OK: %APK%
@@ -44,9 +45,15 @@ echo.
 echo ************************************************************
 echo  BUILD FAILED - see errors above
 echo ************************************************************
-set "FAILED=1"
+call :maybe_pause "%~1"
+exit /b 1
 
 :end
-REM Keep the window open when started by double-click
-if /i not "%~1"=="auto" echo %CMDCMDLINE% | find /i "%~0" >nul && pause
-endlocal & if defined FAILED exit /b 1
+call :maybe_pause "%~1"
+exit /b 0
+
+REM Keep the window open when started by double-click (not in "auto" mode)
+:maybe_pause
+if /i "%~1"=="auto" exit /b 0
+echo %CMDCMDLINE% | find /i "%~f0" >nul && pause
+exit /b 0

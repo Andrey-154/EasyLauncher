@@ -237,11 +237,16 @@
     <string name="backup_export_done">Backup saved</string>
     <string name="backup_export_failed">Could not save the backup</string>
     <string name="backup_import_done">Restored. Apps with saved changes: %1$d</string>
-    <string name="backup_import_failed">This file is not an EasyLauncher backup</string>
+    <string name="backup_import_failed">This file is not an EasyLauncher backup. Settings were not changed.</string>
 
     <string name="flashlight">Flashlight</string>
     <string name="flashlight_on">Flashlight on</string>
     <string name="flashlight_unavailable">Flashlight is unavailable (the camera may be in use)</string>
     <string name="show_flashlight">Flashlight on Home</string>
     <string name="show_flashlight_description">A round button next to the time turns the flashlight on or off</string>
+
+    <string name="backup_import_newer">This backup was made by a newer EasyLauncher version. Update the launcher first.</string>
+    <string name="backup_import_error">Could not restore the backup.</string>
+    <string name="backup_import_confirm">Current settings, favourites, hidden and renamed apps will be replaced with the ones from the file. Continue?</string>
+    <string name="backup_import_confirm_button">Replace</string>
 </resources>

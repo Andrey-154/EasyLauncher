@@ -78,9 +78,11 @@ class WeatherRepository @Inject constructor() {
                             "&current=temperature_2m,weather_code&timezone=auto"
                 )
                 val current = json.getJSONObject("current")
+                val temperature = current.optDouble("temperature_2m")
+                if (temperature.isNaN()) return@withContext null
                 CurrentWeather(
-                    temperature = current.getDouble("temperature_2m").roundToInt(),
-                    descriptionRes = weatherCodeToText(current.getInt("weather_code"))
+                    temperature = temperature.roundToInt(),
+                    descriptionRes = weatherCodeToText(current.optInt("weather_code", -1))
                 )
             } catch (exception: Exception) {
                 Timber.e(exception)
@@ -103,10 +105,13 @@ class WeatherRepository @Inject constructor() {
                 val hourTimes = hourlyJson.getJSONArray("time")
                 val hourTemps = hourlyJson.getJSONArray("temperature_2m")
                 val hourCodes = hourlyJson.getJSONArray("weather_code")
-                val hourly = (0 until hourTimes.length()).map { i ->
+                // Open-Meteo may put null into a series: skip such entries instead of failing
+                val hourly = (0 until hourTimes.length()).mapNotNull { i ->
+                    val temperature = hourTemps.optDouble(i)
+                    if (temperature.isNaN() || hourCodes.isNull(i)) return@mapNotNull null
                     HourlyWeather(
                         time = LocalDateTime.parse(hourTimes.getString(i)),
-                        temperature = hourTemps.getDouble(i).roundToInt(),
+                        temperature = temperature.roundToInt(),
                         descriptionRes = weatherCodeToText(hourCodes.getInt(i))
                     )
                 }
@@ -116,11 +121,14 @@ class WeatherRepository @Inject constructor() {
                 val dayMax = dailyJson.getJSONArray("temperature_2m_max")
                 val dayMin = dailyJson.getJSONArray("temperature_2m_min")
                 val dayCodes = dailyJson.getJSONArray("weather_code")
-                val daily = (0 until dayDates.length()).map { i ->
+                val daily = (0 until dayDates.length()).mapNotNull { i ->
+                    val min = dayMin.optDouble(i)
+                    val max = dayMax.optDouble(i)
+                    if (min.isNaN() || max.isNaN() || dayCodes.isNull(i)) return@mapNotNull null
                     DailyWeather(
                         date = LocalDate.parse(dayDates.getString(i)),
-                        minTemperature = dayMin.getDouble(i).roundToInt(),
-                        maxTemperature = dayMax.getDouble(i).roundToInt(),
+                        minTemperature = min.roundToInt(),
+                        maxTemperature = max.roundToInt(),
                         descriptionRes = weatherCodeToText(dayCodes.getInt(i))
                     )
                 }
