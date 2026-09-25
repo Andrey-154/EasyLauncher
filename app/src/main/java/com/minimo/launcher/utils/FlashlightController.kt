@@ -50,6 +50,9 @@ class FlashlightController @Inject constructor(
     /** Only a torch turned on from the launcher is turned off with the screen. */
     private var turnedOnByLauncher = false
 
+    /** User setting "turn off with the screen". */
+    var autoOffWithScreen = true
+
     init {
         if (torchCameraId != null) {
             // Turn our torch off when the screen goes off, so it does not drain the battery in a pocket
@@ -57,7 +60,7 @@ class FlashlightController @Inject constructor(
                 context,
                 object : BroadcastReceiver() {
                     override fun onReceive(context: Context, intent: Intent) {
-                        if (_isOn.value && turnedOnByLauncher) setTorch(false)
+                        if (autoOffWithScreen && _isOn.value && turnedOnByLauncher) setTorch(false)
                     }
                 },
                 IntentFilter(Intent.ACTION_SCREEN_OFF),

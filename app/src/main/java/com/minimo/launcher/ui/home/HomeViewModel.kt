@@ -78,6 +78,11 @@ class HomeViewModel @Inject constructor(
     private var lastWeatherUpdateTime = 0L
     private var lastAppScreenTimeUpdateTime = 0L
 
+    // Forecast cache: reopening the dialog within 30 minutes shows it instantly, without network
+    private var cachedForecast: WeatherForecast? = null
+    private var cachedForecastTime = 0L
+    private var cachedForecastLocation: Pair<Double, Double>? = null
+
     /** Mirrors the preference; read by [getAppsWithSearch] which runs inside state updates. */
     private var sortAppsByUsage = false
 
@@ -245,6 +250,8 @@ class HomeViewModel @Inject constructor(
                                 searchMode = prefs.searchMode
                             )
                         }
+
+                        flashlightController.autoOffWithScreen = prefs.flashlightAutoOff
 
                         if (prefs.sortAppsByUsage != sortAppsByUsage) {
                             sortAppsByUsage = prefs.sortAppsByUsage
@@ -655,9 +662,22 @@ class HomeViewModel @Inject constructor(
         val state = _state.value
         val latitude = state.weatherLatitude ?: return null
         val longitude = state.weatherLongitude ?: return null
-        // Opening the forecast also refreshes the short weather line
-        refreshWeather(force = true)
-        return weatherRepository.loadForecast(latitude, longitude)
+        // Opening the forecast also refreshes the short weather line if it is not fresh
+        if (System.currentTimeMillis() - lastWeatherUpdateTime > 5 * 60_000) {
+            refreshWeather(force = true)
+        }
+        val location = latitude to longitude
+        val now = System.currentTimeMillis()
+        cachedForecast?.let { cached ->
+            if (cachedForecastLocation == location && now - cachedForecastTime < 30 * 60_000) {
+                return cached
+            }
+        }
+        return weatherRepository.loadForecast(latitude, longitude)?.also { forecast ->
+            cachedForecast = forecast
+            cachedForecastTime = now
+            cachedForecastLocation = location
+        }
     }
 
     /** Per-app screen time shown in the app drawer; refreshed at most once a minute. */
@@ -714,7 +734,7 @@ class HomeViewModel @Inject constructor(
             val description = applicationContext.getString(weather.descriptionRes)
             _state.update {
                 if (it.weatherLatitude == latitude && it.weatherLongitude == longitude) {
-                    it.copy(weatherText = "$temperature  $description")
+                    it.copy(weatherText = "$temperature $description")
                 } else {
                     it
                 }

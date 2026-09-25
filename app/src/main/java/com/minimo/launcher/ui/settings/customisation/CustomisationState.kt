@@ -85,5 +85,6 @@ data class CustomisationState(
     val customAccentColor: Int? = null,
     val showHomeNote: Boolean = false,
     val sortAppsByUsage: Boolean = false,
-    val showFlashlight: Boolean = false
+    val showFlashlight: Boolean = false,
+    val flashlightAutoOff: Boolean = true
 )

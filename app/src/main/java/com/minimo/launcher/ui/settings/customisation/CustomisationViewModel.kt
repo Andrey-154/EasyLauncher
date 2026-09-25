@@ -142,7 +142,8 @@ class CustomisationViewModel @Inject constructor(
                             customAccentColor = prefs.customAccentColor,
                             showHomeNote = prefs.showHomeNote,
                             sortAppsByUsage = prefs.sortAppsByUsage,
-                            showFlashlight = prefs.showFlashlight
+                            showFlashlight = prefs.showFlashlight,
+                            flashlightAutoOff = prefs.flashlightAutoOff
                         )
                     }
                 }
@@ -443,6 +444,12 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleShowHomeNote() {
         viewModelScope.launch {
             preferenceHelper.setShowHomeNote(_state.value.showHomeNote.not())
+        }
+    }
+
+    fun onToggleFlashlightAutoOff() {
+        viewModelScope.launch {
+            preferenceHelper.setFlashlightAutoOff(_state.value.flashlightAutoOff.not())
         }
     }
 

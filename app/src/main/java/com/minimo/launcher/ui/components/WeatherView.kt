@@ -10,7 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.minimo.launcher.R
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 
@@ -18,6 +20,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 fun WeatherView(
     horizontalAlignment: Alignment.Horizontal,
     weatherText: String,
+    cityMissing: Boolean = false,
     refreshWeather: () -> Unit,
     onClick: () -> Unit,
     textColor: Color,
@@ -29,7 +32,7 @@ fun WeatherView(
         onPauseOrDispose { }
     }
 
-    if (weatherText.isEmpty()) return
+    if (weatherText.isEmpty() && !cityMissing) return
 
     Column(
         horizontalAlignment = horizontalAlignment,
@@ -37,10 +40,10 @@ fun WeatherView(
     ) {
         Text(
             modifier = Modifier.clickable { onClick() },
-            text = weatherText,
-            fontWeight = FontWeight.Bold,
+            text = if (cityMissing) stringResource(R.string.weather_city_missing) else weatherText,
+            fontWeight = if (cityMissing) null else FontWeight.Bold,
             fontSize = 18.sp,
-            color = textColor,
+            color = if (cityMissing) textColor.copy(alpha = 0.45f) else textColor,
             style = LocalTextStyle.current.copy(shadow = textShadow)
         )
     }

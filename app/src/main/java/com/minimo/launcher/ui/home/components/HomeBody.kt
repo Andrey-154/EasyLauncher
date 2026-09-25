@@ -191,8 +191,11 @@ fun HomeBody(
                     WeatherView(
                         horizontalAlignment = state.homeClockAlignment,
                         weatherText = state.weatherText,
+                        cityMissing = state.weatherLatitude == null,
                         refreshWeather = viewModel::refreshWeather,
-                        onClick = { showWeatherForecast = true },
+                        onClick = {
+                            if (state.weatherLatitude != null) showWeatherForecast = true
+                        },
                         textColor = textColor,
                         textShadow = textShadow
                     )
@@ -220,7 +223,7 @@ fun HomeBody(
                 }
 
                 if (state.showScreenTimeWidget && state.screenTime.isNotEmpty()) {
-                    if (state.showHomeClock || state.weatherText.isNotEmpty()) {
+                    if (state.showHomeClock || state.showWeather || state.showHomeNote || showFlashlight) {
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 

@@ -255,4 +255,7 @@
     <string name="no_browser_found">Не найден браузер или приложение для поиска</string>
     <string name="weather_city_missing">Укажите город в настройках</string>
     <string name="retry">Повторить</string>
+
+    <string name="flashlight_auto_off">Выключать с экраном</string>
+    <string name="flashlight_auto_off_description">Гасить фонарик при выключении экрана (только если он включён кнопкой на главном экране)</string>
 </resources>

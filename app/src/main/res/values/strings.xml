@@ -254,4 +254,7 @@
     <string name="no_browser_found">No browser or search app found</string>
     <string name="weather_city_missing">Set the city in settings</string>
     <string name="retry">Retry</string>
+
+    <string name="flashlight_auto_off">Turn Off With Screen</string>
+    <string name="flashlight_auto_off_description">Turn the flashlight off when the screen turns off (only if it was turned on from the home screen)</string>
 </resources>

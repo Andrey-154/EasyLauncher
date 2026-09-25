@@ -92,7 +92,8 @@ data class HomePreferences(
     val showHomeNote: Boolean = false,
     val homeNote: String = "",
     val sortAppsByUsage: Boolean = false,
-    val showFlashlight: Boolean = false
+    val showFlashlight: Boolean = false,
+    val flashlightAutoOff: Boolean = true
 )
 
 data class CustomisationPreferences(
@@ -162,5 +163,6 @@ data class CustomisationPreferences(
     val customAccentColor: Int? = null,
     val showHomeNote: Boolean = false,
     val sortAppsByUsage: Boolean = false,
-    val showFlashlight: Boolean = false
+    val showFlashlight: Boolean = false,
+    val flashlightAutoOff: Boolean = true
 )

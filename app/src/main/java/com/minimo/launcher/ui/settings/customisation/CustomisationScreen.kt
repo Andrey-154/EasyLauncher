@@ -886,6 +886,17 @@ fun CustomisationScreen(
                     onToggleClick = viewModel::onToggleShowFlashlight
                 )
 
+                if (isSearching || state.showFlashlight) {
+                    SettingsSpacer(4.dp)
+
+                    ToggleItem(
+                        title = stringResource(R.string.flashlight_auto_off),
+                        subtitle = stringResource(R.string.flashlight_auto_off_description),
+                        isChecked = state.flashlightAutoOff,
+                        onToggleClick = viewModel::onToggleFlashlightAutoOff
+                    )
+                }
+
                 SettingsSpacer(4.dp)
             }
 

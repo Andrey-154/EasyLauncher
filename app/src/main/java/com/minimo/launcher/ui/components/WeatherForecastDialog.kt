@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,7 +45,9 @@ fun WeatherForecastDialog(
     loadForecast: suspend () -> WeatherForecast?,
     onDismiss: () -> Unit
 ) {
-    val forecastState by produceState<ForecastState>(ForecastState.Loading) {
+    var attempt by remember { mutableIntStateOf(0) }
+    val forecastState by produceState<ForecastState>(ForecastState.Loading, attempt) {
+        value = ForecastState.Loading
         value = loadForecast()?.let { ForecastState.Loaded(it) } ?: ForecastState.Error
     }
 
@@ -70,6 +74,15 @@ fun WeatherForecastDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.dismiss))
             }
+        },
+        dismissButton = if (forecastState == ForecastState.Error) {
+            {
+                TextButton(onClick = { attempt++ }) {
+                    Text(stringResource(R.string.retry))
+                }
+            }
+        } else {
+            null
         }
     )
 }

@@ -126,6 +126,7 @@ fun Context.searchWeb(query: String) {
             )
         } catch (exception: Exception) {
             Timber.e(exception)
+            Toast.makeText(this, R.string.no_browser_found, Toast.LENGTH_SHORT).show()
         }
     }
 }
