@@ -215,4 +215,13 @@
     <string name="weather_next_24_hours">Ближайшие 24 часа</string>
     <string name="weather_tomorrow">Завтра</string>
     <string name="weather_day_after_tomorrow">Послезавтра</string>
+
+    <string name="search_settings">Поиск по настройкам</string>
+    <string name="custom_colors">Цвета</string>
+    <string name="custom_colors_description">Свои цвета заменяют цвета темы. «Сбросить» возвращает цвет темы.</string>
+    <string name="custom_background_color">Цвет фона</string>
+    <string name="custom_text_color">Цвет текста</string>
+    <string name="custom_accent_color">Цвет акцента</string>
+    <string name="color_hex">HEX, например #1E88E5</string>
+    <string name="reset_color">Сбросить</string>
 </resources>

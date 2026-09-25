@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,8 @@ fun SearchBarBorderSlider(
     searchBarBackground: Boolean,
     onSearchBarBorderPercentChanged: (Int) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.search_bar_border))) return
+
     Row(
         modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING),
         verticalAlignment = Alignment.CenterVertically

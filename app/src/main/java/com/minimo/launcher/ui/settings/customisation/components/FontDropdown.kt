@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,6 +39,8 @@ fun FontDropdown(
     selectedFont: String,
     onFontSelected: (String) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.font))) return
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

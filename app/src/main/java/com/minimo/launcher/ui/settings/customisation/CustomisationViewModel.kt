@@ -136,7 +136,10 @@ class CustomisationViewModel @Inject constructor(
                             showWeather = prefs.showWeather,
                             weatherCity = prefs.weatherCity,
                             homeClockStyle = prefs.homeClockStyle,
-                            showAppScreenTime = prefs.showAppScreenTime
+                            showAppScreenTime = prefs.showAppScreenTime,
+                            customBackgroundColor = prefs.customBackgroundColor,
+                            customTextColor = prefs.customTextColor,
+                            customAccentColor = prefs.customAccentColor
                         )
                     }
                 }
@@ -415,6 +418,22 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleShowScreenTimeWidget() {
         viewModelScope.launch {
             preferenceHelper.showScreenTimeWidget(_state.value.showScreenTimeWidget.not())
+        }
+    }
+
+    fun onCustomBackgroundColorChanged(color: Int?) = updateCustomColors(background = color)
+
+    fun onCustomTextColorChanged(color: Int?) = updateCustomColors(text = color)
+
+    fun onCustomAccentColorChanged(color: Int?) = updateCustomColors(accent = color)
+
+    private fun updateCustomColors(
+        background: Int? = _state.value.customBackgroundColor,
+        text: Int? = _state.value.customTextColor,
+        accent: Int? = _state.value.customAccentColor
+    ) {
+        viewModelScope.launch {
+            preferenceHelper.setCustomColors(background, text, accent)
         }
     }
 

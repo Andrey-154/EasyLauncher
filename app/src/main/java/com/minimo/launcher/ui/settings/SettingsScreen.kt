@@ -32,6 +32,7 @@ fun SettingsScreen(
     onFavouriteAppsClick: () -> Unit,
     onHiddenAppsClick: () -> Unit,
     onCustomisationClick: () -> Unit,
+    onSearchClick: () -> Unit,
     onAboutAppClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -62,6 +63,10 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
+            SettingsItem(
+                name = "🔍  " + stringResource(R.string.search_settings),
+                onClick = onSearchClick
+            )
             SettingsItem(
                 name = stringResource(R.string.favourite_apps),
                 onClick = onFavouriteAppsClick

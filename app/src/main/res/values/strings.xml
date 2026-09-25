@@ -214,4 +214,13 @@
     <string name="weather_next_24_hours">Next 24 hours</string>
     <string name="weather_tomorrow">Tomorrow</string>
     <string name="weather_day_after_tomorrow">Day after tomorrow</string>
+
+    <string name="search_settings">Search settings</string>
+    <string name="custom_colors">Colours</string>
+    <string name="custom_colors_description">Your own colours replace the theme colours. \"Reset\" returns the theme colour.</string>
+    <string name="custom_background_color">Background Colour</string>
+    <string name="custom_text_color">Text Colour</string>
+    <string name="custom_accent_color">Accent Colour</string>
+    <string name="color_hex">HEX, e.g. #1E88E5</string>
+    <string name="reset_color">Reset</string>
 </resources>

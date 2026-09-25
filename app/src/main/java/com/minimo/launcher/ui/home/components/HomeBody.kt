@@ -39,6 +39,7 @@ import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.ui.home.HomeScreenState
 import com.minimo.launcher.ui.home.HomeViewModel
 import com.minimo.launcher.ui.theme.Dimens
+import com.minimo.launcher.ui.theme.LocalCustomTextColor
 import com.minimo.launcher.utils.launchAppInfo
 import com.minimo.launcher.utils.openDefaultCalendarApp
 import com.minimo.launcher.utils.openDefaultClockApp
@@ -71,9 +72,10 @@ fun HomeBody(
 
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
+    val customTextColor = LocalCustomTextColor.current
     val textColor =
-        remember(state.enableWallpaper, state.lightTextOnWallpaper) {
-            if (state.enableWallpaper) {
+        remember(state.enableWallpaper, state.lightTextOnWallpaper, onSurfaceColor, customTextColor) {
+            if (state.enableWallpaper && customTextColor == Color.Unspecified) {
                 if (state.lightTextOnWallpaper) Color.White else Color.Black
             } else {
                 onSurfaceColor

@@ -79,5 +79,8 @@ data class CustomisationState(
     val showWeather: Boolean = false,
     val weatherCity: String = "",
     val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
-    val showAppScreenTime: Boolean = false
+    val showAppScreenTime: Boolean = false,
+    val customBackgroundColor: Int? = null,
+    val customTextColor: Int? = null,
+    val customAccentColor: Int? = null
 )

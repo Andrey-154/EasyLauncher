@@ -134,6 +134,9 @@ class PreferenceHelper @Inject constructor(
         private val KEY_WEATHER_LONGITUDE = doublePreferencesKey("KEY_WEATHER_LONGITUDE")
         private val KEY_HOME_CLOCK_STYLE = stringPreferencesKey("KEY_HOME_CLOCK_STYLE")
         private val KEY_SHOW_APP_SCREEN_TIME = booleanPreferencesKey("KEY_SHOW_APP_SCREEN_TIME")
+        private val KEY_CUSTOM_BACKGROUND_COLOR = intPreferencesKey("KEY_CUSTOM_BACKGROUND_COLOR")
+        private val KEY_CUSTOM_TEXT_COLOR = intPreferencesKey("KEY_CUSTOM_TEXT_COLOR")
+        private val KEY_CUSTOM_ACCENT_COLOR = intPreferencesKey("KEY_CUSTOM_ACCENT_COLOR")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -372,6 +375,18 @@ class PreferenceHelper @Inject constructor(
         }
     }
 
+    /** ARGB colors; null resets to the theme color. */
+    suspend fun setCustomColors(background: Int?, text: Int?, accent: Int?) {
+        preferences.edit {
+            if (background != null) it[KEY_CUSTOM_BACKGROUND_COLOR] = background
+            else it.remove(KEY_CUSTOM_BACKGROUND_COLOR)
+            if (text != null) it[KEY_CUSTOM_TEXT_COLOR] = text
+            else it.remove(KEY_CUSTOM_TEXT_COLOR)
+            if (accent != null) it[KEY_CUSTOM_ACCENT_COLOR] = accent
+            else it.remove(KEY_CUSTOM_ACCENT_COLOR)
+        }
+    }
+
     suspend fun setHomeClockStyle(style: HomeClockStyle) {
         preferences.edit {
             it[KEY_HOME_CLOCK_STYLE] = style.name
@@ -554,7 +569,10 @@ class PreferenceHelper @Inject constructor(
                 dimWallpaper = prefs[KEY_DIM_WALLPAPER] ?: false,
                 dimWallpaperPercentage = prefs[KEY_DIM_WALLPAPER_PERCENTAGE]
                     ?: Constants.DEFAULT_DIM_WALLPAPER_PERCENTAGE,
-                lightTextOnWallpaper = prefs[KEY_LIGHT_TEXT_ON_WALLPAPER] ?: true
+                lightTextOnWallpaper = prefs[KEY_LIGHT_TEXT_ON_WALLPAPER] ?: true,
+                customBackgroundColor = prefs[KEY_CUSTOM_BACKGROUND_COLOR],
+                customTextColor = prefs[KEY_CUSTOM_TEXT_COLOR],
+                customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR]
             )
         }
     }
@@ -704,7 +722,10 @@ class PreferenceHelper @Inject constructor(
                 homeClockStyle = HomeClockStyle.entries.find {
                     it.name == prefs[KEY_HOME_CLOCK_STYLE]
                 } ?: HomeClockStyle.Normal,
-                showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false
+                showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false,
+                customBackgroundColor = prefs[KEY_CUSTOM_BACKGROUND_COLOR],
+                customTextColor = prefs[KEY_CUSTOM_TEXT_COLOR],
+                customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR]
             )
         }
     }

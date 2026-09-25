@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import android.os.Build
 import android.view.WindowManager
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,8 @@ fun OrientationDropdown(
     options: List<Pair<ScreenOrientation, String>>,
     onOptionSelected: (ScreenOrientation) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.orientation))) return
+
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val platformControlsOrientation = remember(context, configuration) {

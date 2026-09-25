@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,8 @@ fun WeatherCityItem(
     currentCity: String,
     onCityEntered: (query: String, onResult: (Boolean) -> Unit) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.weather_city), currentCity)) return
+
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(currentCity.isEmpty()) }
     var isSearching by remember { mutableStateOf(false) }

@@ -34,10 +34,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +68,7 @@ import com.minimo.launcher.ui.settings.customisation.components.AppsAlignmentHor
 import com.minimo.launcher.ui.settings.customisation.components.AppsAlignmentVerticalDropdown
 import com.minimo.launcher.ui.settings.customisation.components.ClockAlignmentDropdown
 import com.minimo.launcher.ui.settings.customisation.components.ClockModeDropdown
+import com.minimo.launcher.ui.settings.customisation.components.ColorPickerItem
 import com.minimo.launcher.ui.settings.customisation.components.ClockStyleDropdown
 import com.minimo.launcher.ui.settings.customisation.components.DimPercentageSlider
 import com.minimo.launcher.ui.settings.customisation.components.EnableAccessibilityDialog
@@ -109,8 +112,10 @@ import kotlinx.coroutines.android.awaitFrame
 @Composable
 fun CustomisationScreen(
     viewModel: CustomisationViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    focusSearch: Boolean = false
 ) {
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -186,12 +191,19 @@ fun CustomisationScreen(
     ) { paddingValues ->
         if (!state.initialLoaded) return@Scaffold
 
+        CompositionLocalProvider(LocalSettingsQuery provides searchQuery) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
+            SettingsSearchField(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it },
+                focusOnStart = focusSearch
+            )
+
             OrientationDropdown(
                 selectedOption = StringUtils.screenOrientationText(
                     context = context,
@@ -249,7 +261,7 @@ fun CustomisationScreen(
             )
 
             if (AndroidUtils.isDynamicThemeSupported()) {
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 ToggleItem(
                     title = stringResource(R.string.dynamic_colours),
@@ -258,6 +270,36 @@ fun CustomisationScreen(
                     onToggleClick = viewModel::onToggleDynamicTheme
                 )
             }
+
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            if (LocalSettingsQuery.current.isBlank()) {
+                Text(
+                    text = stringResource(R.string.custom_colors_description),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)
+                )
+            }
+
+            ColorPickerItem(
+                title = stringResource(R.string.custom_background_color),
+                color = state.customBackgroundColor,
+                onColorSelected = viewModel::onCustomBackgroundColorChanged
+            )
+
+            ColorPickerItem(
+                title = stringResource(R.string.custom_text_color),
+                color = state.customTextColor,
+                onColorSelected = viewModel::onCustomTextColorChanged
+            )
+
+            ColorPickerItem(
+                title = stringResource(R.string.custom_accent_color),
+                color = state.customAccentColor,
+                onColorSelected = viewModel::onCustomAccentColorChanged
+            )
+
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.enable_wallpaper),
@@ -285,7 +327,7 @@ fun CustomisationScreen(
                 )
 
                 if (state.dimWallpaper) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    SettingsSpacer(8.dp)
 
                     DimPercentageSlider(
                         dimPercentage = state.dimWallpaperPercentage,
@@ -306,9 +348,9 @@ fun CustomisationScreen(
                 }
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSpacer(8.dp)
 
             ToggleItem(
                 title = stringResource(R.string.app_icon_in_home),
@@ -365,7 +407,7 @@ fun CustomisationScreen(
             }
 
             if (state.showAppIconInHome || state.showAppIconInDrawer) {
-                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSpacer(8.dp)
 
                 AppIconSizeSlider(
                     appIconSizePercent = state.appIconSizePercent,
@@ -373,7 +415,7 @@ fun CustomisationScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSpacer(8.dp)
 
             AppSizeSlider(
                 homeTextSize = state.homeTextSize,
@@ -385,9 +427,9 @@ fun CustomisationScreen(
                 appIconAlignment = state.homeAppIconAlignment
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSpacer(8.dp)
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.apply_to_all_apps),
@@ -396,7 +438,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleApplyHomeAppSizeToAllApps
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             AppsAlignmentHorizontalDropdown(
                 selectedOption = StringUtils.homeAppsAlignmentHorizontalText(
@@ -465,7 +507,7 @@ fun CustomisationScreen(
                 onOptionSelected = viewModel::onDrawerAppsAlignmentHorizontalChanged
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.show_home_clock),
@@ -473,7 +515,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowHomeClock
             )
             if (state.showHomeClock) {
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 ClockAlignmentDropdown(
                     selectedOption = StringUtils.homeClockAlignmentText(
@@ -497,7 +539,7 @@ fun CustomisationScreen(
                     onOptionSelected = viewModel::onHomeClockAlignmentChanged
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 ClockModeDropdown(
                     selectedOption = StringUtils.homeClockModeText(
@@ -528,7 +570,7 @@ fun CustomisationScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 ToggleItem(
                     title = stringResource(R.string.twenty_four_hour_format),
@@ -539,7 +581,7 @@ fun CustomisationScreen(
                 if (state.homeClockMode == HomeClockMode.DateOnly ||
                     state.homeClockMode == HomeClockMode.Full
                 ) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    SettingsSpacer(4.dp)
 
                     ToggleItem(
                         title = stringResource(R.string.show_battery_level),
@@ -547,7 +589,7 @@ fun CustomisationScreen(
                         onToggleClick = viewModel::onToggleShowBatteryLevel
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    SettingsSpacer(4.dp)
 
                     AppSelectionItem(
                         title = stringResource(R.string.battery_app),
@@ -557,7 +599,7 @@ fun CustomisationScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 AppSelectionItem(
                     title = stringResource(R.string.clock_app),
@@ -566,7 +608,7 @@ fun CustomisationScreen(
                     onChooseClick = { showClockAppPicker = true }
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 AppSelectionItem(
                     title = stringResource(R.string.calendar_app),
@@ -576,7 +618,7 @@ fun CustomisationScreen(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.show_status_bar),
@@ -584,7 +626,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowStatusBar
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            SettingsSpacer(4.dp)
 
             ToggleItem(
                 title = stringResource(R.string.show_navigation_bar),
@@ -592,7 +634,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowNavigationBar
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.show_keyboard),
@@ -602,7 +644,7 @@ fun CustomisationScreen(
             )
 
             if (state.autoOpenKeyboardAllApps) {
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 KeyboardDelayItem(
                     title = stringResource(R.string.keyboard_open_delay),
@@ -614,7 +656,7 @@ fun CustomisationScreen(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.double_tap_to_lock),
@@ -654,7 +696,7 @@ fun CustomisationScreen(
                 }
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.show_hidden_apps),
@@ -663,7 +705,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleShowHiddenAppsInSearch
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.auto_open_app),
@@ -672,7 +714,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleAutoOpenApp
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.notification_dots),
@@ -691,14 +733,14 @@ fun CustomisationScreen(
                 }
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             IgnoreSpecialCharacters(
                 currentCharacters = state.ignoreSpecialCharacters,
                 onUpdateCharacters = viewModel::onUpdateIgnoreSpecialCharacters
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             SearchBarBorderSlider(
                 searchBarBorderPercent = state.searchBarBorderPercent,
@@ -706,7 +748,7 @@ fun CustomisationScreen(
                 onSearchBarBorderPercentChanged = viewModel::onSearchBarBorderPercentChanged
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            SettingsSpacer(12.dp)
 
             ToggleItem(
                 title = stringResource(R.string.search_bar_background),
@@ -722,7 +764,7 @@ fun CustomisationScreen(
                 onOptionSelected = viewModel::onSearchModeChanged
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.hide_app_drawer_search),
@@ -756,7 +798,7 @@ fun CustomisationScreen(
             }
 
             if (!state.hideAppDrawerSearch) {
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 ToggleItem(
                     title = stringResource(R.string.search_bar_at_bottom),
@@ -767,7 +809,7 @@ fun CustomisationScreen(
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+                SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
                 ToggleItem(
                     title = stringResource(R.string.show_screen_time),
@@ -787,7 +829,7 @@ fun CustomisationScreen(
                 )
 
                 if (state.showScreenTimeWidget) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    SettingsSpacer(4.dp)
 
                     AppSelectionItem(
                         title = stringResource(R.string.screen_time_app),
@@ -797,7 +839,7 @@ fun CustomisationScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 ToggleItem(
                     title = stringResource(R.string.show_app_screen_time),
@@ -813,7 +855,7 @@ fun CustomisationScreen(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.show_weather),
@@ -823,7 +865,7 @@ fun CustomisationScreen(
             )
 
             if (state.showWeather) {
-                Spacer(modifier = Modifier.height(4.dp))
+                SettingsSpacer(4.dp)
 
                 WeatherCityItem(
                     currentCity = state.weatherCity,
@@ -831,7 +873,7 @@ fun CustomisationScreen(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             AppSelectionItem(
                 title = stringResource(R.string.home_swipe_left_app),
@@ -841,7 +883,7 @@ fun CustomisationScreen(
                 onChooseClick = { showSwipeLeftAppPicker = true }
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            SettingsSpacer(4.dp)
 
             AppSelectionItem(
                 title = stringResource(R.string.home_swipe_right_app),
@@ -851,7 +893,7 @@ fun CustomisationScreen(
                 onChooseClick = { showSwipeRightAppPicker = true }
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.fast_scroller),
@@ -880,7 +922,7 @@ fun CustomisationScreen(
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.back_opens_drawer),
@@ -889,7 +931,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleBackOpensAppDrawer
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.hide_settings_icon),
@@ -898,7 +940,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleHideSettingsIcon
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.compact_app_touch_area),
@@ -907,7 +949,7 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleCompactAppTouchArea
             )
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
                 title = stringResource(R.string.done_opens_first_app),
@@ -916,7 +958,8 @@ fun CustomisationScreen(
                 onToggleClick = viewModel::onToggleKeyboardDoneOpensFirstApp
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSpacer(8.dp)
+        }
         }
 
         if (showEnableAccessibilityDialog) {
@@ -1059,6 +1102,8 @@ fun AppSelectionItem(
     onDefaultClick: () -> Unit,
     onChooseClick: () -> Unit
 ) {
+    if (!settingVisible(title, selectedAppName)) return
+
     var showMenu by remember { mutableStateOf(false) }
 
     Row(
@@ -1118,6 +1163,8 @@ fun KeyboardDelayItem(
     delayMs: Long,
     onClick: () -> Unit
 ) {
+    if (!settingVisible(title)) return
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

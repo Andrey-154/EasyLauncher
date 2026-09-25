@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,8 @@ fun AppIconSizeSlider(
     appIconSizePercent: Float,
     onAppIconSizePercentChanged: (Int) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.app_icon_size))) return
+
     Row(modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)) {
         Text(
             text = stringResource(R.string.app_icon_size),

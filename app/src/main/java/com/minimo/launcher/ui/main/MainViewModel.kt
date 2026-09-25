@@ -39,7 +39,10 @@ class MainViewModel @Inject constructor(
                             enableWallpaperOnDrawer = prefs.enableWallpaperOnDrawer,
                             dimWallpaper = prefs.dimWallpaper,
                             dimWallpaperPercentage = prefs.dimWallpaperPercentage,
-                            lightTextOnWallpaper = prefs.lightTextOnWallpaper
+                            lightTextOnWallpaper = prefs.lightTextOnWallpaper,
+                            customBackgroundColor = prefs.customBackgroundColor,
+                            customTextColor = prefs.customTextColor,
+                            customAccentColor = prefs.customAccentColor
                         )
                     }
                 }

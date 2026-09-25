@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,8 @@ fun ThemeDropdown(
     options: List<Pair<ThemeMode, String>>,
     onOptionSelected: (ThemeMode) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.theme))) return
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

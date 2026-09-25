@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,8 @@ fun AppSizeSlider(
     appIconSizeScale: Float,
     appIconAlignment: AppIconAlignment,
 ) {
+    if (!settingVisible(stringResource(R.string.home_app_size), stringResource(R.string.home_app_spacing))) return
+
     Row(
         modifier = Modifier.padding(
             horizontal = Dimens.APP_HORIZONTAL_SPACING,

@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,8 @@ fun ClockStyleDropdown(
     selectedStyle: HomeClockStyle,
     onStyleSelected: (HomeClockStyle) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.clock_style))) return
+
     val options = HomeClockStyle.entries.map { style ->
         style to stringResource(
             when (style) {

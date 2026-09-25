@@ -74,6 +74,7 @@ import com.minimo.launcher.ui.home.components.DrawerActionItem
 import com.minimo.launcher.ui.home.components.LaunchDelayDialog
 import com.minimo.launcher.ui.home.components.MinimoSettingsItem
 import com.minimo.launcher.ui.home.components.appIconSizeFor
+import com.minimo.launcher.ui.theme.LocalCustomTextColor
 import com.minimo.launcher.utils.Calculator
 import com.minimo.launcher.utils.Constants
 import com.minimo.launcher.utils.FastScrollerAlignment
@@ -178,12 +179,14 @@ fun AppDrawerScreen(
 
     ApplySystemBarIconColor(useDarkSystemBarIcons)
 
+    val customTextColor = LocalCustomTextColor.current
     val textColor = remember(
         enableWallpaper,
         state.lightTextOnWallpaper,
-        onSurfaceColor
+        onSurfaceColor,
+        customTextColor
     ) {
-        if (enableWallpaper) {
+        if (enableWallpaper && customTextColor == Color.Unspecified) {
             if (state.lightTextOnWallpaper) Color.White else Color.Black
         } else {
             onSurfaceColor

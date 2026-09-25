@@ -100,7 +100,10 @@ class MainActivity : ComponentActivity() {
                 enableWallpaper = enableWallpaperOnCurrentScreen,
                 isHomeScreen = isHomeScreen,
                 lightTextOnWallpaper = state.lightTextOnWallpaper,
-                fontPreference = state.fontPreference
+                fontPreference = state.fontPreference,
+                customBackgroundColor = state.customBackgroundColor,
+                customTextColor = state.customTextColor,
+                customAccentColor = state.customAccentColor
             ) {
                 val backgroundColor = when {
                     !enableWallpaperOnCurrentScreen -> MaterialTheme.colorScheme.surface

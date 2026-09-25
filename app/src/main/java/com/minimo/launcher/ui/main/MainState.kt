@@ -18,4 +18,7 @@ data class MainState(
     val dimWallpaper: Boolean = false,
     val dimWallpaperPercentage: Int = Constants.DEFAULT_DIM_WALLPAPER_PERCENTAGE,
     val lightTextOnWallpaper: Boolean = true,
+    val customBackgroundColor: Int? = null,
+    val customTextColor: Int? = null,
+    val customAccentColor: Int? = null
 )

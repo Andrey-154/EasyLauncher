@@ -32,7 +32,10 @@ data class MainPreferences(
     val enableWallpaperOnDrawer: Boolean = false,
     val dimWallpaper: Boolean = false,
     val dimWallpaperPercentage: Int = Constants.DEFAULT_DIM_WALLPAPER_PERCENTAGE,
-    val lightTextOnWallpaper: Boolean = true
+    val lightTextOnWallpaper: Boolean = true,
+    val customBackgroundColor: Int? = null,
+    val customTextColor: Int? = null,
+    val customAccentColor: Int? = null
 )
 
 data class HomePreferences(
@@ -149,5 +152,8 @@ data class CustomisationPreferences(
     val weatherLatitude: Double? = null,
     val weatherLongitude: Double? = null,
     val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
-    val showAppScreenTime: Boolean = false
+    val showAppScreenTime: Boolean = false,
+    val customBackgroundColor: Int? = null,
+    val customTextColor: Int? = null,
+    val customAccentColor: Int? = null
 )

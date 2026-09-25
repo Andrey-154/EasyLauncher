@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,8 @@ fun IgnoreSpecialCharacters(
     currentCharacters: String,
     onUpdateCharacters: (String) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.ignore_special_characters), stringResource(R.string.these_characters_will_be_ignored_when_searching_for_apps_in_home_screen))) return
+
     var showDialog by remember { mutableStateOf(false) }
 
     Column(

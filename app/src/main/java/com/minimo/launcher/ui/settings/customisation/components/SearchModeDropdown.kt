@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,8 @@ fun SearchModeDropdown(
     options: List<Pair<SearchMode, String>>,
     onOptionSelected: (SearchMode) -> Unit
 ) {
+    if (!settingVisible(stringResource(R.string.search_mode), stringResource(R.string.search_mode_description))) return
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

@@ -12,9 +12,14 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -37,6 +42,62 @@ private val BlackColorScheme = darkColorScheme(
     surface = Color.Black
 )
 
+/** User's own text color, or [Color.Unspecified]. Also used over the wallpaper. */
+val LocalCustomTextColor = staticCompositionLocalOf { Color.Unspecified }
+
+/** Replaces theme colors with the user's own background / text / accent colors. */
+private fun ColorScheme.withCustomColors(
+    background: Color?,
+    text: Color?,
+    accent: Color?
+): ColorScheme {
+    var scheme = this
+    if (background != null) {
+        // Containers (dialogs, menus, sheets) are the background shifted a bit to the text color
+        val towards = if (background.luminance() > 0.5f) Color.Black else Color.White
+        scheme = scheme.copy(
+            surface = background,
+            background = background,
+            surfaceContainerLowest = background,
+            surfaceContainerLow = lerp(background, towards, 0.04f),
+            surfaceContainer = lerp(background, towards, 0.07f),
+            surfaceContainerHigh = lerp(background, towards, 0.10f),
+            surfaceContainerHighest = lerp(background, towards, 0.14f),
+            surfaceVariant = lerp(background, towards, 0.14f),
+            inverseSurface = towards,
+            inverseOnSurface = background
+        )
+    }
+    if (text != null) {
+        scheme = scheme.copy(
+            onSurface = text,
+            onBackground = text,
+            onSurfaceVariant = text.copy(alpha = 0.75f).compositeOver(scheme.surface),
+            outline = text.copy(alpha = 0.5f).compositeOver(scheme.surface),
+            outlineVariant = text.copy(alpha = 0.25f).compositeOver(scheme.surface)
+        )
+    }
+    if (accent != null) {
+        val onAccent = if (accent.luminance() > 0.5f) Color.Black else Color.White
+        val container = accent.copy(alpha = 0.3f).compositeOver(scheme.surface)
+        scheme = scheme.copy(
+            primary = accent,
+            onPrimary = onAccent,
+            primaryContainer = container,
+            onPrimaryContainer = scheme.onSurface,
+            secondary = accent,
+            onSecondary = onAccent,
+            secondaryContainer = container,
+            onSecondaryContainer = scheme.onSurface,
+            tertiary = accent,
+            onTertiary = onAccent,
+            inversePrimary = accent,
+            surfaceTint = accent
+        )
+    }
+    return scheme
+}
+
 @Composable
 fun AppTheme(
     themeMode: ThemeMode,
@@ -49,6 +110,9 @@ fun AppTheme(
     isHomeScreen: Boolean,
     lightTextOnWallpaper: Boolean,
     fontPreference: String = "",
+    customBackgroundColor: Int? = null,
+    customTextColor: Int? = null,
+    customAccentColor: Int? = null,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -82,7 +146,7 @@ fun AppTheme(
         }
     }
 
-    val colorScheme = when (themeMode) {
+    val baseColorScheme = when (themeMode) {
         ThemeMode.System -> if (isSystemInDarkTheme()) {
             getDarkTheme(context)
         } else {
@@ -96,6 +160,16 @@ fun AppTheme(
             isLightTheme = true
             getLightTheme(context)
         }
+    }
+
+    val colorScheme = baseColorScheme.withCustomColors(
+        background = customBackgroundColor?.let { Color(it) },
+        text = customTextColor?.let { Color(it) },
+        accent = customAccentColor?.let { Color(it) }
+    )
+    if (customBackgroundColor != null) {
+        // System bar icons must contrast with the custom background
+        isLightTheme = Color(customBackgroundColor).luminance() > 0.5f
     }
 
     val view = LocalView.current
@@ -154,11 +228,15 @@ fun AppTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = getTypographyForFont(fontPreference),
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalCustomTextColor provides (customTextColor?.let { Color(it) } ?: Color.Unspecified)
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = getTypographyForFont(fontPreference),
+            content = content
+        )
+    }
 }
 
 private fun updateWallpaper(context: Context, color: Color) {

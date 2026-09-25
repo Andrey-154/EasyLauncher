@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation.components
 
+import com.minimo.launcher.ui.settings.customisation.settingVisible
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,8 @@ fun ToggleItem(
     isChecked: Boolean,
     onToggleClick: () -> Unit
 ) {
+    if (!settingVisible(title, subtitle)) return
+
     Row(
         modifier = Modifier
             .clickable(onClick = onToggleClick)
