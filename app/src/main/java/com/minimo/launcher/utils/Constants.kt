@@ -1,0 +1,66 @@
+package com.minimo.launcher.utils
+
+import android.content.pm.ActivityInfo
+
+object Constants {
+    const val INTRO_MINIMUM_FAVOURITE_COUNT = 1
+
+    const val DEFAULT_HOME_TEXT_SIZE = 20
+    val HOME_TEXT_SIZE_RANGE by lazy { 16f..50f }
+
+    const val DEFAULT_APP_ICON_SIZE_PERCENT = 160
+    val APP_ICON_SIZE_PERCENT_RANGE by lazy { 60f..180f }
+
+    const val DEFAULT_HOME_VERTICAL_PADDING = 16
+    val HOME_VERTICAL_PADDING_RANGE by lazy { 4f..20f }
+
+    const val DEFAULT_DIM_WALLPAPER_PERCENTAGE = 20
+    val DIM_WALLPAPER_PERCENTAGE_RANGE by lazy { 20f..80f }
+
+    const val DEFAULT_SEARCH_BAR_BORDER_PERCENT = 7
+    val SEARCH_BAR_BORDER_PERCENT_RANGE by lazy { 0f..50f }
+
+    const val DEFAULT_KEYBOARD_OPEN_DELAY = 150L
+    val KEYBOARD_OPEN_DELAY_RANGE by lazy { 0L..1500L }
+
+    // A dummy package used to show "Minimo Settings" in the app drawer when "Hide App Drawer Search" toggle is on.
+    const val MINIMO_SETTINGS_PACKAGE = "APP::com.minimo.launcher.settings"
+}
+
+enum class HomeAppsAlignmentHorizontal {
+    Start, Center, End
+}
+
+enum class AppIconAlignment {
+    Left, Right
+}
+
+enum class FastScrollerAlignment {
+    Left, Right
+}
+
+enum class HomeAppsAlignmentVertical {
+    Top, Center, Bottom
+}
+
+enum class HomeClockAlignment {
+    Start, Center, End
+}
+
+enum class HomeClockMode {
+    Full, TimeOnly, DateOnly
+}
+
+enum class SearchMode {
+    Contains, StartsWith
+}
+
+enum class MinimoSettingsPosition {
+    Auto, Top, Bottom
+}
+
+enum class ScreenOrientation(val label: String, val orientation: Int) {
+    Portrait("Portrait", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT),
+    Landscape("Landscape", ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE),
+    Auto("Auto", ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+}

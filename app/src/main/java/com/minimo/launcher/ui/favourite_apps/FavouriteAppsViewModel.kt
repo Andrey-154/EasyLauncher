@@ -1,0 +1,142 @@
+package com.minimo.launcher.ui.favourite_apps
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.minimo.launcher.data.AppInfoDao
+import com.minimo.launcher.data.PreferenceHelper
+import com.minimo.launcher.ui.entities.AppInfo
+import com.minimo.launcher.utils.AppUtils
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class FavouriteAppsViewModel @Inject constructor(
+    private val appInfoDao: AppInfoDao,
+    private val appUtils: AppUtils,
+    private val preferenceHelper: PreferenceHelper
+) : ViewModel() {
+    private val _state = MutableStateFlow(FavouriteAppsState())
+    val state: StateFlow<FavouriteAppsState> = _state
+
+    init {
+        viewModelScope.launch {
+            preferenceHelper.getSearchPreferencesFlow()
+                .collect { prefs ->
+                    _state.update {
+                        it.copy(
+                            searchPreferencesLoaded = true,
+                            searchMode = prefs.searchMode,
+                            searchBarBackground = prefs.searchBarBackground,
+                            searchBarBorderPercent = prefs.searchBarBorderPercent,
+                            filteredAllApps = appUtils.getAppsWithSearch(
+                                searchText = it.searchText,
+                                apps = if (it.showFavouritesOnly) it.favouriteApps else it.allApps,
+                                searchMode = prefs.searchMode
+                            )
+                        )
+                    }
+                }
+        }
+
+        viewModelScope.launch {
+            appInfoDao.getAllNonHiddenAppsFlow()
+                .collect { appInfoList ->
+                    val allApps = appUtils.mapToAppInfo(appInfoList)
+                    val favouriteApps = allApps.filter { it.isFavourite }
+                    val showReorderButton = favouriteApps.size > 1
+                    val currentAllApps = if (_state.value.showFavouritesOnly) {
+                        favouriteApps
+                    } else {
+                        allApps
+                    }
+
+                    _state.update {
+                        it.copy(
+                            allApps = allApps,
+                            favouriteApps = favouriteApps,
+                            filteredAllApps = appUtils.getAppsWithSearch(
+                                searchText = it.searchText,
+                                apps = currentAllApps,
+                                searchMode = it.searchMode
+                            ),
+                            showReorderButton = showReorderButton
+                        )
+                    }
+                }
+        }
+    }
+
+    fun onToggleFavouriteAppClick(appInfo: AppInfo) {
+        viewModelScope.launch {
+            if (appInfo.isFavourite) {
+                appInfoDao.removeAppFromFavouriteTransaction(
+                    appInfo.itemType,
+                    appInfo.targetId,
+                    appInfo.packageName,
+                    appInfo.userHandle,
+                    appInfo.orderIndex
+                )
+            } else {
+                val newOrderIndex =
+                    (_state.value.favouriteApps.maxOfOrNull { it.orderIndex } ?: 0) + 1
+                appInfoDao.addAppToFavourite(
+                    appInfo.itemType,
+                    appInfo.targetId,
+                    appInfo.packageName,
+                    appInfo.userHandle,
+                    newOrderIndex
+                )
+            }
+        }
+    }
+
+    fun onSearchTextChange(searchText: String) {
+        val currentAllApps = if (_state.value.showFavouritesOnly) {
+            _state.value.favouriteApps
+        } else {
+            _state.value.allApps
+        }
+
+        _state.update {
+            it.copy(
+                searchText = searchText,
+                filteredAllApps = appUtils.getAppsWithSearch(
+                    searchText = searchText,
+                    apps = currentAllApps,
+                    searchMode = it.searchMode
+                )
+            )
+        }
+    }
+
+    fun onToggleAppBarMorePopup() {
+        _state.update {
+            it.copy(
+                showAppBarMorePopup = !it.showAppBarMorePopup
+            )
+        }
+    }
+
+    fun onToggleShowFavouritesOnly() {
+        val showFavouritesOnly = !_state.value.showFavouritesOnly
+        _state.update {
+            it.copy(
+                showAppBarMorePopup = false,
+                showFavouritesOnly = showFavouritesOnly,
+                filteredAllApps = appUtils.getAppsWithSearch(
+                    searchText = it.searchText,
+                    apps = if (showFavouritesOnly) {
+                        it.favouriteApps
+                    } else {
+                        it.allApps
+                    },
+                    searchMode = it.searchMode
+                )
+            )
+        }
+    }
+}
