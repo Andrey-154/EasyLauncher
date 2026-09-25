@@ -2,6 +2,7 @@ package com.minimo.launcher.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,16 +13,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.minimo.launcher.ui.home.HomeViewModel
 import com.minimo.launcher.ui.navigation.AppNavGraph
+import com.minimo.launcher.ui.navigation.DrawerCloseState
 import com.minimo.launcher.ui.navigation.Routes
 import com.minimo.launcher.ui.theme.AppTheme
 import com.minimo.launcher.utils.AppsManager
@@ -64,6 +69,26 @@ class MainActivity : ComponentActivity() {
                 navController = navController,
                 homePressedNotifier = viewModel.getHomePressedNotifier()
             )
+
+            // An app was opened from the drawer: go back to Home right away (no animation),
+            // so returning to the launcher does not replay the drawer -> home transition.
+            LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+                if (navController.currentDestination?.route == Routes.APP_DRAWER) {
+                    DrawerCloseState.closedInBackground = true
+                    navController.popBackStack(Routes.HOME, inclusive = false)
+                }
+            }
+
+            // Let the system draw the wallpaper behind the launcher only when it is used.
+            // Otherwise Android runs the heavier "wallpaper" transitions when returning home.
+            val wallpaperUsed = state.enableWallpaper || state.enableWallpaperOnDrawer
+            SideEffect {
+                if (wallpaperUsed) {
+                    window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
+                } else {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
+                }
+            }
 
             AppTheme(
                 themeMode = state.themeMode,

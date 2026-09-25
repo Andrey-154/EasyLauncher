@@ -45,6 +45,15 @@ object Routes {
     const val ABOUT_APP = "ABOUT_APP"
 }
 
+/**
+ * Set when the drawer was closed while the launcher was in the background (an app was opened
+ * from the drawer). The next drawer -> home pop then happens without animation, so Home is
+ * ready and responsive immediately when the user returns. Reset when the drawer opens again.
+ */
+object DrawerCloseState {
+    var closedInBackground = false
+}
+
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
@@ -115,6 +124,7 @@ fun AppNavGraph(
                 statusBarVisible = statusBarVisible,
                 navigationBarVisible = navigationBarVisible,
                 onOpenAppDrawer = {
+                    DrawerCloseState.closedInBackground = false
                     navController.navigate(Routes.APP_DRAWER) {
                         launchSingleTop = true
                     }
@@ -214,6 +224,7 @@ fun AppNavGraph(
 }
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.launcherPopEnterTransition(): EnterTransition {
+    if (DrawerCloseState.closedInBackground) return EnterTransition.None
     if (initialState.destination.route != Routes.APP_DRAWER ||
         targetState.destination.route != Routes.HOME
     ) return EnterTransition.None
@@ -231,6 +242,7 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.launcherPopEnterTr
 }
 
 private fun AnimatedContentTransitionScope<NavBackStackEntry>.launcherPopExitTransition(): ExitTransition {
+    if (DrawerCloseState.closedInBackground) return ExitTransition.None
     if (initialState.destination.route != Routes.APP_DRAWER) return ExitTransition.None
 
     return fadeOut(
