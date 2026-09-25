@@ -31,3 +31,7 @@ render.experimental.xml
 
 app/foss
 app/playStoreoutput/
+
+# Release signing (never commit)
+keystore/
+keystore.properties
