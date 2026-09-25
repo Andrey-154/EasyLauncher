@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Minimo"
+rootProject.name = "EasyLauncher"
 include(":app")
  

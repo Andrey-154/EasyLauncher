@@ -11,7 +11,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.minimo.launcher"
+        applicationId = "com.easy.launcher"
         minSdk = 26
         targetSdk = 37
         versionCode = 144

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Minimo Launcher</string>
+    <string name="app_name">EasyLauncher</string>
     <string name="app_tagline">Distraction free home screen</string>
 
     <string name="btn_continue">Continue</string>
@@ -17,7 +17,7 @@
     <string name="send_feedback">Send Feedback</string>
     <string name="rate_application">Rate Application</string>
     <string name="settings">Settings</string>
-    <string name="choose_minimo_as_your_default_launcher">Choose Minimo as your default launcher</string>
+    <string name="choose_minimo_as_your_default_launcher">Choose EasyLauncher as your default launcher</string>
     <string name="skip">Skip</string>
 
     <string name="left">Left</string>
@@ -80,7 +80,7 @@
     <string name="enable_device_admin_first">Enable Device Admin First!</string>
     <string name="you_need_to_enable_admin_access_to_lock_the_screen">You need to enable admin access to lock the screen</string>
     <string name="accessibility_service_description">Accessibility permission is needed for double tap to turn off the screen</string>
-    <string name="enable_accessibility_permission_for_minimo">Enable accessibility permission for Minimo</string>
+    <string name="enable_accessibility_permission_for_minimo">Enable accessibility permission for EasyLauncher</string>
     <string name="admin_enabled">Admin Enabled</string>
     <string name="admin_disabled">Admin Disabled</string>
     <string name="dismiss">Dismiss</string>
@@ -126,9 +126,9 @@
     <string name="get_started">Get Started</string>
     <string name="reorder_favourites">Reorder Favorites</string>
     <string name="hide_app_drawer_search">Hide App Drawer Search</string>
-    <string name="hide_app_drawer_search_description">When the app drawer search is hidden, the Minimo Settings is shown in the app drawer list</string>
-    <string name="minimo_settings">Minimo Settings</string>
-    <string name="minimo_settings_position">Minimo Settings Position</string>
+    <string name="hide_app_drawer_search_description">When the app drawer search is hidden, the EasyLauncher Settings is shown in the app drawer list</string>
+    <string name="minimo_settings">EasyLauncher Settings</string>
+    <string name="minimo_settings_position">EasyLauncher Settings Position</string>
     <string name="auto">Auto</string>
     <string name="show_screen_time">Show Screen Time</string>
     <string name="show_screen_time_description">Show daily screen time widget on the home screen</string>
@@ -171,12 +171,12 @@
     <string name="supporter_description">This app is completely free and open source, and will remain that way. If you like the app and want to support the development, you can choose one of the options below.</string>
     <string name="one_time_support">One-Time Support</string>
     <string name="thank_you">Thank You!</string>
-    <string name="thank_you_support_message">Thank you for supporting Minimo Launcher</string>
+    <string name="thank_you_support_message">Thank you for supporting EasyLauncher</string>
     <string name="loading">Loading…</string>
     <string name="support_via_review">You can also support by leaving a review on the Play Store.</string>
     <string name="open_play_store">Open Play Store</string>
     <string name="about_app">About App</string>
-    <string name="about_app_description">Minimo is a completely free and open-source launcher. Designed for those who want to de-clutter their home screen, it offers a clean, minimalist interface without distractions.</string>
+    <string name="about_app_description">EasyLauncher is a completely free and open-source launcher. Designed for those who want to de-clutter their home screen, it offers a clean, minimalist interface without distractions.</string>
     <string name="version">Version</string>
     <string name="links">Links</string>
 

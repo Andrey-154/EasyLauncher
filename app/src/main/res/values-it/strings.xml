@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Minimo Launcher</string>
+    <string name="app_name">EasyLauncher</string>
     <string name="app_tagline">Schermata home senza distrazioni</string>
 
     <string name="btn_continue">Continua</string>
@@ -17,7 +17,7 @@
     <string name="send_feedback">Invia feedback</string>
     <string name="rate_application">Valuta l\'applicazione</string>
     <string name="settings">Impostazioni</string>
-    <string name="choose_minimo_as_your_default_launcher">Scegli Minimo come launcher predefinito</string>
+    <string name="choose_minimo_as_your_default_launcher">Scegli EasyLauncher come launcher predefinito</string>
     <string name="skip">Salta</string>
 
     <string name="left">Sinistra</string>
@@ -80,7 +80,7 @@
     <string name="enable_device_admin_first">Abilita prima l\'amministratore del dispositivo!</string>
     <string name="you_need_to_enable_admin_access_to_lock_the_screen">Devi abilitare l\'accesso amministratore per bloccare lo schermo</string>
     <string name="accessibility_service_description">Il permesso di accessibilità è necessario per il doppio tocco per spegnere lo schermo</string>
-    <string name="enable_accessibility_permission_for_minimo">Abilita il permesso di accessibilità per Minimo</string>
+    <string name="enable_accessibility_permission_for_minimo">Abilita il permesso di accessibilità per EasyLauncher</string>
     <string name="admin_enabled">Amministratore abilitato</string>
     <string name="admin_disabled">Amministratore disabilitato</string>
     <string name="dismiss">Ignora</string>
@@ -126,9 +126,9 @@
     <string name="get_started">Inizia</string>
     <string name="reorder_favourites">Riordina preferiti</string>
     <string name="hide_app_drawer_search">Nascondi ricerca nel drawer</string>
-    <string name="hide_app_drawer_search_description">Quando la ricerca nel drawer è nascosta, le Impostazioni di Minimo vengono mostrate nell\'elenco del drawer</string>
-    <string name="minimo_settings">Impostazioni Minimo</string>
-    <string name="minimo_settings_position">Posizione Impostazioni Minimo</string>
+    <string name="hide_app_drawer_search_description">Quando la ricerca nel drawer è nascosta, le Impostazioni di EasyLauncher vengono mostrate nell\'elenco del drawer</string>
+    <string name="minimo_settings">Impostazioni EasyLauncher</string>
+    <string name="minimo_settings_position">Posizione Impostazioni EasyLauncher</string>
     <string name="auto">Automatico</string>
     <string name="show_screen_time">Mostra tempo di utilizzo</string>
     <string name="show_screen_time_description">Mostra il widget del tempo di utilizzo giornaliero nella schermata home</string>
@@ -171,12 +171,12 @@
     <string name="supporter_description">Questa app è completamente gratuita e open source, e rimarrà tale. Se ti piace l\'app e vuoi supportare lo sviluppo, puoi scegliere una delle opzioni seguenti.</string>
     <string name="one_time_support">Supporto una tantum</string>
     <string name="thank_you">Grazie!</string>
-    <string name="thank_you_support_message">Grazie per aver supportato Minimo Launcher</string>
+    <string name="thank_you_support_message">Grazie per aver supportato EasyLauncher</string>
     <string name="loading">Caricamento…</string>
     <string name="support_via_review">Puoi anche supportarci lasciando una recensione sul Play Store.</string>
     <string name="open_play_store">Apri il Play Store</string>
     <string name="about_app">Informazioni sull\'app</string>
-    <string name="about_app_description">Minimo è un launcher completamente gratuito e open source. Progettato per coloro che desiderano riordinare la schermata iniziale, offre un\'interfaccia pulita e minimalista senza distrazioni.</string>
+    <string name="about_app_description">EasyLauncher è un launcher completamente gratuito e open source. Progettato per coloro che desiderano riordinare la schermata iniziale, offre un\'interfaccia pulita e minimalista senza distrazioni.</string>
     <string name="version">Versione</string>
     <string name="links">Link</string>
 
