@@ -26,6 +26,6 @@ echo === OK: %CD%\output\EasyLauncher-debug.apk ===
 
 if /i "%~1"=="install" (
     echo === Installing to device ===
-    "%ADB%" install -r "output\EasyLauncher-debug.apk"
+    "%ADB%" install -r -d "output\EasyLauncher-debug.apk"
 )
 endlocal
