@@ -244,5 +244,5 @@
     <string name="flashlight_on">Фонарик включён</string>
     <string name="flashlight_unavailable">Фонарик недоступен (возможно, камера занята)</string>
     <string name="show_flashlight">Фонарик на главном экране</string>
-    <string name="show_flashlight_description">Нажмите «Фонарик» под часами, чтобы включить или выключить</string>
+    <string name="show_flashlight_description">Круглая кнопка справа от времени включает и выключает фонарик</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +43,9 @@ fun TimeAndDateView(
     textShadow: Shadow?,
     onClockClick: () -> Unit,
     onDateClick: () -> Unit,
-    onBatteryClick: () -> Unit
+    onBatteryClick: () -> Unit,
+    /** Shown to the right of the time, e.g. the flashlight button. */
+    timeTrailingContent: (@Composable () -> Unit)? = null
 ) {
     var currentDateTime by remember { mutableStateOf(LocalDateTime.now()) }
 
@@ -83,15 +86,21 @@ fun TimeAndDateView(
         modifier = Modifier.fillMaxWidth()
     ) {
         if (clockMode != HomeClockMode.DateOnly) {
-            Text(
-                modifier = Modifier.clickable(onClick = onClockClick),
-                text = currentDateTime.format(timeFormatter).uppercase(),
-                fontSize = timeFontSize,
-                lineHeight = timeFontSize,
-                fontWeight = timeFontWeight,
-                color = textColor,
-                style = LocalTextStyle.current.copy(shadow = textShadow)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    modifier = Modifier.clickable(onClick = onClockClick),
+                    text = currentDateTime.format(timeFormatter).uppercase(),
+                    fontSize = timeFontSize,
+                    lineHeight = timeFontSize,
+                    fontWeight = timeFontWeight,
+                    color = textColor,
+                    style = LocalTextStyle.current.copy(shadow = textShadow)
+                )
+                if (timeTrailingContent != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    timeTrailingContent()
+                }
+            }
         }
         if (clockMode != HomeClockMode.TimeOnly) {
             Spacer(modifier = Modifier.height(4.dp))

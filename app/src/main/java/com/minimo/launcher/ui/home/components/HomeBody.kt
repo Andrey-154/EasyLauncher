@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
-import com.minimo.launcher.ui.components.FlashlightView
+import com.minimo.launcher.ui.components.FlashlightButton
+import com.minimo.launcher.ui.components.FlashlightRow
 import com.minimo.launcher.ui.components.HomeNoteDialog
 import com.minimo.launcher.ui.components.HomeNoteView
 import com.minimo.launcher.ui.components.TimeAndDateView
@@ -43,6 +44,7 @@ import com.minimo.launcher.ui.home.HomeScreenState
 import com.minimo.launcher.ui.home.HomeViewModel
 import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.ui.theme.LocalCustomTextColor
+import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.launchAppInfo
 import com.minimo.launcher.utils.openDefaultCalendarApp
 import com.minimo.launcher.utils.openDefaultClockApp
@@ -138,6 +140,10 @@ fun HomeBody(
                     vertical = 16.dp
                 )
             ) {
+                val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
+                val flashlightNextToTime = state.showFlashlight && state.showHomeClock &&
+                        state.homeClockMode != HomeClockMode.DateOnly
+
                 if (state.showHomeClock) {
                     TimeAndDateView(
                         horizontalAlignment = state.homeClockAlignment,
@@ -161,6 +167,17 @@ fun HomeBody(
                             launchPreferredApp(state.batteryAppPreference) {
                                 context.openPowerUsageSummary()
                             }
+                        },
+                        timeTrailingContent = if (flashlightNextToTime) {
+                            {
+                                FlashlightButton(
+                                    isOn = flashlightOn,
+                                    onClick = viewModel::onFlashlightClick,
+                                    contentColor = textColor
+                                )
+                            }
+                        } else {
+                            null
                         }
                     )
                 }
@@ -192,16 +209,12 @@ fun HomeBody(
                     )
                 }
 
-                if (state.showFlashlight) {
-                    val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    FlashlightView(
+                if (state.showFlashlight && !flashlightNextToTime) {
+                    FlashlightRow(
                         horizontalAlignment = state.homeClockAlignment,
                         isOn = flashlightOn,
                         onClick = viewModel::onFlashlightClick,
-                        textColor = textColor,
-                        textShadow = textShadow
+                        contentColor = textColor
                     )
                 }
 
