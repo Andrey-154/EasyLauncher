@@ -27,6 +27,7 @@ import com.minimo.launcher.utils.NotificationDotsNotifier
 import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
+import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.LaunchStatsRepository
 import com.minimo.launcher.utils.StringUtils
 import com.minimo.launcher.utils.WeatherForecast
@@ -62,11 +63,13 @@ class HomeViewModel @Inject constructor(
     private val shortcutsUtils: ShortcutsUtils,
     private val appIconRepository: AppIconRepository,
     private val weatherRepository: WeatherRepository,
-    private val launchStats: LaunchStatsRepository
+    private val launchStats: LaunchStatsRepository,
+    private val flashlightController: FlashlightController
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
     val iconCacheRevision = appIconRepository.cacheRevision
+    val flashlightOn: StateFlow<Boolean> = flashlightController.isOn
 
     private var lastScreenTimeUpdateTime = 0L
     private var lastWeatherUpdateTime = 0L
@@ -323,6 +326,7 @@ class HomeViewModel @Inject constructor(
                             showHomeNote = prefs.showHomeNote,
                             homeNote = prefs.homeNote,
                             sortAppsByUsage = prefs.sortAppsByUsage,
+                            showFlashlight = prefs.showFlashlight,
                             showAppScreenTime = prefs.showAppScreenTime,
                             appScreenTime = if (prefs.showAppScreenTime) state.appScreenTime else emptyMap(),
                             allApps = newAllApps,
@@ -625,6 +629,16 @@ class HomeViewModel @Inject constructor(
         if (settingsIndex < 0) return sorted
         return sorted.toMutableList().apply {
             add(settingsIndex.coerceAtMost(size), apps[settingsIndex])
+        }
+    }
+
+    fun onFlashlightClick() {
+        if (!flashlightController.toggle()) {
+            Toast.makeText(
+                applicationContext,
+                R.string.flashlight_unavailable,
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

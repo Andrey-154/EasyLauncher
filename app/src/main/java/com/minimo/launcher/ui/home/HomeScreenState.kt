@@ -82,5 +82,6 @@ data class HomeScreenState(
     val appScreenTime: Map<String, String> = emptyMap(),
     val showHomeNote: Boolean = false,
     val homeNote: String = "",
-    val sortAppsByUsage: Boolean = false
+    val sortAppsByUsage: Boolean = false,
+    val showFlashlight: Boolean = false
 )

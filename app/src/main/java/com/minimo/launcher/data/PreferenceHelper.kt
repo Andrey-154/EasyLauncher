@@ -140,6 +140,7 @@ class PreferenceHelper @Inject constructor(
         private val KEY_SHOW_HOME_NOTE = booleanPreferencesKey("KEY_SHOW_HOME_NOTE")
         private val KEY_HOME_NOTE = stringPreferencesKey("KEY_HOME_NOTE")
         private val KEY_SORT_APPS_BY_USAGE = booleanPreferencesKey("KEY_SORT_APPS_BY_USAGE")
+        private val KEY_SHOW_FLASHLIGHT = booleanPreferencesKey("KEY_SHOW_FLASHLIGHT")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -399,6 +400,12 @@ class PreferenceHelper @Inject constructor(
     suspend fun setHomeNote(note: String) {
         preferences.edit {
             it[KEY_HOME_NOTE] = note
+        }
+    }
+
+    suspend fun setShowFlashlight(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_FLASHLIGHT] = enable
         }
     }
 
@@ -665,7 +672,8 @@ class PreferenceHelper @Inject constructor(
                 showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false,
                 showHomeNote = prefs[KEY_SHOW_HOME_NOTE] ?: false,
                 homeNote = prefs[KEY_HOME_NOTE] ?: "",
-                sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false
+                sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false,
+                showFlashlight = prefs[KEY_SHOW_FLASHLIGHT] ?: false
             )
         }
     }
@@ -751,7 +759,8 @@ class PreferenceHelper @Inject constructor(
                 customTextColor = prefs[KEY_CUSTOM_TEXT_COLOR],
                 customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR],
                 showHomeNote = prefs[KEY_SHOW_HOME_NOTE] ?: false,
-                sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false
+                sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false,
+                showFlashlight = prefs[KEY_SHOW_FLASHLIGHT] ?: false
             )
         }
     }

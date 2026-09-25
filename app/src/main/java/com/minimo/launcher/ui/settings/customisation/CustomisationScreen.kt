@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation
 
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -874,6 +875,17 @@ fun CustomisationScreen(
             )
 
             SettingsSpacer(4.dp)
+
+            if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                ToggleItem(
+                    title = stringResource(R.string.show_flashlight),
+                    subtitle = stringResource(R.string.show_flashlight_description),
+                    isChecked = state.showFlashlight,
+                    onToggleClick = viewModel::onToggleShowFlashlight
+                )
+
+                SettingsSpacer(4.dp)
+            }
 
             ToggleItem(
                 title = stringResource(R.string.show_weather),

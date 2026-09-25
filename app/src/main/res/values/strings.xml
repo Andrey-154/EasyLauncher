@@ -238,4 +238,10 @@
     <string name="backup_export_failed">Could not save the backup</string>
     <string name="backup_import_done">Restored. Apps with saved changes: %1$d</string>
     <string name="backup_import_failed">This file is not an EasyLauncher backup</string>
+
+    <string name="flashlight">Flashlight</string>
+    <string name="flashlight_on">Flashlight on</string>
+    <string name="flashlight_unavailable">Flashlight is unavailable (the camera may be in use)</string>
+    <string name="show_flashlight">Flashlight on Home</string>
+    <string name="show_flashlight_description">Tap \"Flashlight\" under the clock to turn it on or off</string>
 </resources>

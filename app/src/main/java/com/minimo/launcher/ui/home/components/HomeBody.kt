@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
+import com.minimo.launcher.ui.components.FlashlightView
 import com.minimo.launcher.ui.components.HomeNoteDialog
 import com.minimo.launcher.ui.components.HomeNoteView
 import com.minimo.launcher.ui.components.TimeAndDateView
@@ -128,7 +129,9 @@ fun HomeBody(
             .fillMaxSize()
             .consumeWindowInsets(paddingValues)
     ) {
-        if (state.showHomeClock || state.showScreenTimeWidget || state.showWeather || state.showHomeNote) {
+        if (state.showHomeClock || state.showScreenTimeWidget || state.showWeather ||
+            state.showHomeNote || state.showFlashlight
+        ) {
             Column(
                 modifier = Modifier.padding(
                     horizontal = Dimens.APP_HORIZONTAL_SPACING,
@@ -184,6 +187,19 @@ fun HomeBody(
                         horizontalAlignment = state.homeClockAlignment,
                         note = state.homeNote,
                         onClick = { showNoteDialog = true },
+                        textColor = textColor,
+                        textShadow = textShadow
+                    )
+                }
+
+                if (state.showFlashlight) {
+                    val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    FlashlightView(
+                        horizontalAlignment = state.homeClockAlignment,
+                        isOn = flashlightOn,
+                        onClick = viewModel::onFlashlightClick,
                         textColor = textColor,
                         textShadow = textShadow
                     )
