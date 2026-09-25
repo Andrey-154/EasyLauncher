@@ -241,10 +241,7 @@
     <string name="backup_import_failed">Этот файл не является резервной копией EasyLauncher. Настройки не изменены.</string>
 
     <string name="flashlight">Фонарик</string>
-    <string name="flashlight_on">Фонарик включён</string>
     <string name="flashlight_unavailable">Фонарик недоступен (возможно, камера занята)</string>
-    <string name="show_flashlight">Фонарик на главном экране</string>
-    <string name="show_flashlight_description">Круглая кнопка справа от времени включает и выключает фонарик</string>
 
     <string name="backup_import_newer">Эта копия сделана более новой версией EasyLauncher. Сначала обновите лаунчер.</string>
     <string name="backup_import_error">Не удалось восстановить копию.</string>
@@ -257,7 +254,7 @@
     <string name="retry">Повторить</string>
 
     <string name="flashlight_auto_off">Выключать с экраном</string>
-    <string name="flashlight_auto_off_description">Гасить фонарик при выключении экрана (только если он включён кнопкой на главном экране)</string>
+    <string name="flashlight_auto_off_description">Гасить фонарик при выключении экрана (только если он включён кнопкой лаунчера)</string>
 
     <string name="time_limit">Лимит времени</string>
     <string name="time_limit_description">Лимит в день для %1$s. Когда он почти исчерпан или превышен, время рядом с приложением меняет цвет. 0 или пусто — убрать лимит.</string>

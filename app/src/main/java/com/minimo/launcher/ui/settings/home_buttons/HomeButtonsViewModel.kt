@@ -48,6 +48,12 @@ class HomeButtonsViewModel @Inject constructor(
         viewModelScope.launch { preferenceHelper.setHomeButtonSize(size) }
     }
 
+    fun toggleFlashlightAutoOff() {
+        viewModelScope.launch {
+            preferenceHelper.setFlashlightAutoOff(!settings.value.flashlightAutoOff)
+        }
+    }
+
     fun setStyle(style: HomeButtonStyle) {
         viewModelScope.launch { preferenceHelper.setHomeButtonStyle(style) }
     }

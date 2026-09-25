@@ -29,6 +29,7 @@ import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.HomeButton
+import com.minimo.launcher.utils.HomeButtonType
 import com.minimo.launcher.utils.LaunchStatsRepository
 import com.minimo.launcher.utils.StringUtils
 import com.minimo.launcher.utils.TimeLimitRepository
@@ -274,6 +275,9 @@ class HomeViewModel @Inject constructor(
                         }
 
                         flashlightController.autoOffWithScreen = prefs.flashlightAutoOff
+
+                        // The old "flashlight next to the clock" option became a movable button
+                        if (prefs.showFlashlight) migrateFlashlightToButton()
 
                         if (prefs.sortAppsByUsage != sortAppsByUsage) {
                             sortAppsByUsage = prefs.sortAppsByUsage
@@ -666,6 +670,19 @@ class HomeViewModel @Inject constructor(
         if (settingsIndex < 0) return sorted
         return sorted.toMutableList().apply {
             add(settingsIndex.coerceAtMost(size), apps[settingsIndex])
+        }
+    }
+
+    private fun migrateFlashlightToButton() {
+        viewModelScope.launch {
+            preferenceHelper.updateHomeButtons { buttons ->
+                if (buttons.any { it.type == HomeButtonType.FLASHLIGHT }) {
+                    buttons
+                } else {
+                    buttons + HomeButton(type = HomeButtonType.FLASHLIGHT, x = 0.95f, y = 0.03f)
+                }
+            }
+            preferenceHelper.setShowFlashlight(false)
         }
     }
 

@@ -33,8 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
-import com.minimo.launcher.ui.components.FlashlightButton
-import com.minimo.launcher.ui.components.FlashlightRow
 import com.minimo.launcher.ui.components.HomeNoteDialog
 import com.minimo.launcher.ui.components.HomeNoteView
 import com.minimo.launcher.ui.components.TimeAndDateView
@@ -139,7 +137,7 @@ fun HomeBody(
             .consumeWindowInsets(paddingValues)
     ) {
         if (state.showHomeClock || state.showScreenTimeWidget || state.showWeather ||
-            state.showHomeNote || state.showFlashlight
+            state.showHomeNote
         ) {
             Column(
                 modifier = Modifier.padding(
@@ -147,11 +145,6 @@ fun HomeBody(
                     vertical = 16.dp
                 )
             ) {
-                val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
-                val showFlashlight = state.showFlashlight && viewModel.flashlightAvailable
-                val flashlightNextToTime = showFlashlight && state.showHomeClock &&
-                        state.homeClockMode != HomeClockMode.DateOnly
-
                 if (state.showHomeClock) {
                     TimeAndDateView(
                         horizontalAlignment = state.homeClockAlignment,
@@ -175,17 +168,6 @@ fun HomeBody(
                             launchPreferredApp(state.batteryAppPreference) {
                                 context.openPowerUsageSummary()
                             }
-                        },
-                        timeTrailingContent = if (flashlightNextToTime) {
-                            {
-                                FlashlightButton(
-                                    isOn = flashlightOn,
-                                    onClick = viewModel::onFlashlightClick,
-                                    contentColor = textColor
-                                )
-                            }
-                        } else {
-                            null
                         }
                     )
                 }
@@ -220,17 +202,8 @@ fun HomeBody(
                     )
                 }
 
-                if (showFlashlight && !flashlightNextToTime) {
-                    FlashlightRow(
-                        horizontalAlignment = state.homeClockAlignment,
-                        isOn = flashlightOn,
-                        onClick = viewModel::onFlashlightClick,
-                        contentColor = textColor
-                    )
-                }
-
                 if (state.showScreenTimeWidget && state.screenTime.isNotEmpty()) {
-                    if (state.showHomeClock || state.showWeather || state.showHomeNote || showFlashlight) {
+                    if (state.showHomeClock || state.showWeather || state.showHomeNote) {
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 

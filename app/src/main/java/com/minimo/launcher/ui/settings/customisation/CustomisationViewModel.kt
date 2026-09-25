@@ -471,18 +471,6 @@ class CustomisationViewModel @Inject constructor(
         }
     }
 
-    fun onToggleFlashlightAutoOff() {
-        viewModelScope.launch {
-            preferenceHelper.setFlashlightAutoOff(_state.value.flashlightAutoOff.not())
-        }
-    }
-
-    fun onToggleShowFlashlight() {
-        viewModelScope.launch {
-            preferenceHelper.setShowFlashlight(_state.value.showFlashlight.not())
-        }
-    }
-
     fun onToggleSortAppsByUsage() {
         viewModelScope.launch {
             preferenceHelper.setSortAppsByUsage(_state.value.sortAppsByUsage.not())

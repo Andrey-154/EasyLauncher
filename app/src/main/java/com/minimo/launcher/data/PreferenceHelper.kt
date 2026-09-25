@@ -421,7 +421,8 @@ class PreferenceHelper @Inject constructor(
                 size = HomeButtonSize.entries.find { it.name == prefs[KEY_HOME_BUTTON_SIZE] }
                     ?: HomeButtonSize.Medium,
                 style = HomeButtonStyle.entries.find { it.name == prefs[KEY_HOME_BUTTON_STYLE] }
-                    ?: HomeButtonStyle.Outline
+                    ?: HomeButtonStyle.Outline,
+                flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true
             )
         }.distinctUntilChanged()
     }

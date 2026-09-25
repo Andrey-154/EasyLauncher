@@ -19,7 +19,8 @@ import com.minimo.launcher.utils.SearchMode
 data class HomeButtonsSettings(
     val buttons: List<HomeButton> = emptyList(),
     val size: HomeButtonSize = HomeButtonSize.Medium,
-    val style: HomeButtonStyle = HomeButtonStyle.Outline
+    val style: HomeButtonStyle = HomeButtonStyle.Outline,
+    val flashlightAutoOff: Boolean = true
 )
 
 data class SearchPreferences(

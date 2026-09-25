@@ -240,10 +240,7 @@
     <string name="backup_import_failed">This file is not an EasyLauncher backup. Settings were not changed.</string>
 
     <string name="flashlight">Flashlight</string>
-    <string name="flashlight_on">Flashlight on</string>
     <string name="flashlight_unavailable">Flashlight is unavailable (the camera may be in use)</string>
-    <string name="show_flashlight">Flashlight on Home</string>
-    <string name="show_flashlight_description">A round button next to the time turns the flashlight on or off</string>
 
     <string name="backup_import_newer">This backup was made by a newer EasyLauncher version. Update the launcher first.</string>
     <string name="backup_import_error">Could not restore the backup.</string>
@@ -256,7 +253,7 @@
     <string name="retry">Retry</string>
 
     <string name="flashlight_auto_off">Turn Off With Screen</string>
-    <string name="flashlight_auto_off_description">Turn the flashlight off when the screen turns off (only if it was turned on from the home screen)</string>
+    <string name="flashlight_auto_off_description">Turn the flashlight off when the screen turns off (only if it was turned on with a home screen button)</string>
 
     <string name="time_limit">Time Limit</string>
     <string name="time_limit_description">Daily limit for %1$s. When it is almost used up or exceeded, the time next to the app changes colour. 0 or empty removes the limit.</string>

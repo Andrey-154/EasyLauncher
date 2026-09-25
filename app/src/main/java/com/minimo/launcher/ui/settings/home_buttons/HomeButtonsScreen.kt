@@ -41,6 +41,7 @@ import com.minimo.launcher.ui.components.DropdownView
 import com.minimo.launcher.ui.components.icon
 import com.minimo.launcher.ui.components.title
 import com.minimo.launcher.ui.settings.app_picker.AppPickerDialog
+import com.minimo.launcher.ui.settings.customisation.components.ToggleItem
 import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonSize
@@ -97,6 +98,15 @@ fun HomeButtonsScreen(
                 options = HomeButtonStyle.entries.map { it to styleName(it) },
                 onSelected = viewModel::setStyle
             )
+
+            if (settings.buttons.any { it.type == HomeButtonType.FLASHLIGHT }) {
+                ToggleItem(
+                    title = stringResource(R.string.flashlight_auto_off),
+                    subtitle = stringResource(R.string.flashlight_auto_off_description),
+                    isChecked = settings.flashlightAutoOff,
+                    onToggleClick = viewModel::toggleFlashlightAutoOff
+                )
+            }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
