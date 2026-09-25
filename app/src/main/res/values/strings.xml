@@ -223,4 +223,19 @@
     <string name="custom_accent_color">Accent Colour</string>
     <string name="color_hex">HEX, e.g. #1E88E5</string>
     <string name="reset_color">Reset</string>
+
+    <string name="show_home_note">Note on Home</string>
+    <string name="show_home_note_description">A one-line note or to-do under the clock. Tap it on the home screen to edit.</string>
+    <string name="home_note_hint">Tap to add a note</string>
+    <string name="home_note">Note</string>
+    <string name="sort_apps_by_usage">Sort by Usage</string>
+    <string name="sort_apps_by_usage_description">Most opened apps first in the app drawer (counts launches from this launcher). The A-Z scroller is hidden.</string>
+    <string name="backup">Backup</string>
+    <string name="backup_description">Save all settings, favourites, hidden and renamed apps to a file, or restore them from a file.</string>
+    <string name="backup_export">Save to file</string>
+    <string name="backup_import">Restore from file</string>
+    <string name="backup_export_done">Backup saved</string>
+    <string name="backup_export_failed">Could not save the backup</string>
+    <string name="backup_import_done">Restored. Apps with saved changes: %1$d</string>
+    <string name="backup_import_failed">This file is not an EasyLauncher backup</string>
 </resources>

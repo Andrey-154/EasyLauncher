@@ -82,5 +82,7 @@ data class CustomisationState(
     val showAppScreenTime: Boolean = false,
     val customBackgroundColor: Int? = null,
     val customTextColor: Int? = null,
-    val customAccentColor: Int? = null
+    val customAccentColor: Int? = null,
+    val showHomeNote: Boolean = false,
+    val sortAppsByUsage: Boolean = false
 )

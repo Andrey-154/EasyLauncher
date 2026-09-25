@@ -27,6 +27,7 @@ import com.minimo.launcher.utils.NotificationDotsNotifier
 import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
+import com.minimo.launcher.utils.LaunchStatsRepository
 import com.minimo.launcher.utils.StringUtils
 import com.minimo.launcher.utils.WeatherForecast
 import com.minimo.launcher.utils.WeatherRepository
@@ -60,7 +61,8 @@ class HomeViewModel @Inject constructor(
     private val updateAllShortcutsUseCase: UpdateAllShortcutsUseCase,
     private val shortcutsUtils: ShortcutsUtils,
     private val appIconRepository: AppIconRepository,
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val launchStats: LaunchStatsRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -69,6 +71,9 @@ class HomeViewModel @Inject constructor(
     private var lastScreenTimeUpdateTime = 0L
     private var lastWeatherUpdateTime = 0L
     private var lastAppScreenTimeUpdateTime = 0L
+
+    /** Mirrors the preference; read by [getAppsWithSearch] which runs inside state updates. */
+    private var sortAppsByUsage = false
 
     init {
         viewModelScope.launch {
@@ -106,6 +111,23 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            launchStats.counts.collect {
+                if (!sortAppsByUsage) return@collect
+                _state.update { state ->
+                    state.copy(
+                        filteredAllApps = getAppsWithSearch(
+                            searchText = state.searchText,
+                            apps = state.allApps,
+                            includeHiddenApps = state.showHiddenAppsInSearch,
+                            ignoreSpecialCharacters = state.ignoreSpecialCharacters,
+                            searchMode = state.searchMode
+                        )
+                    )
+                }
+            }
         }
 
         viewModelScope.launch {
@@ -218,6 +240,17 @@ class HomeViewModel @Inject constructor(
                             )
                         }
 
+                        if (prefs.sortAppsByUsage != sortAppsByUsage) {
+                            sortAppsByUsage = prefs.sortAppsByUsage
+                            newFilteredApps = getAppsWithSearch(
+                                searchText = clearSearchText,
+                                apps = newAllApps,
+                                includeHiddenApps = prefs.showHiddenAppsInSearch,
+                                ignoreSpecialCharacters = prefs.ignoreSpecialCharacters,
+                                searchMode = prefs.searchMode
+                            )
+                        }
+
                         // Reload weather when it gets enabled or the city changes
                         val weatherLocationChanged =
                             prefs.weatherLatitude != state.weatherLatitude ||
@@ -287,6 +320,9 @@ class HomeViewModel @Inject constructor(
                             weatherLongitude = prefs.weatherLongitude,
                             weatherText = newWeatherText,
                             homeClockStyle = prefs.homeClockStyle,
+                            showHomeNote = prefs.showHomeNote,
+                            homeNote = prefs.homeNote,
+                            sortAppsByUsage = prefs.sortAppsByUsage,
                             showAppScreenTime = prefs.showAppScreenTime,
                             appScreenTime = if (prefs.showAppScreenTime) state.appScreenTime else emptyMap(),
                             allApps = newAllApps,
@@ -481,6 +517,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun launchApp(app: AppInfo) {
+        launchStats.recordLaunch(app.id)
         when (app.itemType) {
             AppItemType.APP -> applicationContext.launchApp(
                 app.packageName,
@@ -563,17 +600,37 @@ class HomeViewModel @Inject constructor(
         ignoreSpecialCharacters: String,
         searchMode: SearchMode
     ): List<AppInfo> {
-        if (searchText.isBlank()) {
-            return apps.filterNot { appInfo ->
+        val result = if (searchText.isBlank()) {
+            apps.filterNot { appInfo ->
                 appInfo.isFavourite || appInfo.isHidden
             }
+        } else {
+            apps.filter { appInfo ->
+                // Filter out the special characters from the app name before searching
+                val cleanedAppName = appInfo.name.filterNot { ignoreSpecialCharacters.contains(it) }
+                (includeHiddenApps || !appInfo.isHidden) &&
+                        StringUtils.matchesAppSearch(cleanedAppName, searchText, searchMode)
+            }
         }
+        return if (sortAppsByUsage) sortByUsage(result) else result
+    }
 
-        return apps.filter { appInfo ->
-            // Filter out the special characters from the app name before searching
-            val cleanedAppName = appInfo.name.filterNot { ignoreSpecialCharacters.contains(it) }
-            (includeHiddenApps || !appInfo.isHidden) &&
-                    StringUtils.matchesAppSearch(cleanedAppName, searchText, searchMode)
+    /** Most opened first; ties keep alphabetical order. The settings item keeps its place. */
+    private fun sortByUsage(apps: List<AppInfo>): List<AppInfo> {
+        val counts = launchStats.counts.value
+        val settingsIndex = apps.indexOfFirst { it.packageName == Constants.MINIMO_SETTINGS_PACKAGE }
+        val sorted = apps
+            .filterNot { it.packageName == Constants.MINIMO_SETTINGS_PACKAGE }
+            .sortedByDescending { counts[it.id] ?: 0 }
+        if (settingsIndex < 0) return sorted
+        return sorted.toMutableList().apply {
+            add(settingsIndex.coerceAtMost(size), apps[settingsIndex])
+        }
+    }
+
+    fun onHomeNoteChanged(note: String) {
+        viewModelScope.launch {
+            preferenceHelper.setHomeNote(note.trim())
         }
     }
 

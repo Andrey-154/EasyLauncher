@@ -137,6 +137,9 @@ class PreferenceHelper @Inject constructor(
         private val KEY_CUSTOM_BACKGROUND_COLOR = intPreferencesKey("KEY_CUSTOM_BACKGROUND_COLOR")
         private val KEY_CUSTOM_TEXT_COLOR = intPreferencesKey("KEY_CUSTOM_TEXT_COLOR")
         private val KEY_CUSTOM_ACCENT_COLOR = intPreferencesKey("KEY_CUSTOM_ACCENT_COLOR")
+        private val KEY_SHOW_HOME_NOTE = booleanPreferencesKey("KEY_SHOW_HOME_NOTE")
+        private val KEY_HOME_NOTE = stringPreferencesKey("KEY_HOME_NOTE")
+        private val KEY_SORT_APPS_BY_USAGE = booleanPreferencesKey("KEY_SORT_APPS_BY_USAGE")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -384,6 +387,24 @@ class PreferenceHelper @Inject constructor(
             else it.remove(KEY_CUSTOM_TEXT_COLOR)
             if (accent != null) it[KEY_CUSTOM_ACCENT_COLOR] = accent
             else it.remove(KEY_CUSTOM_ACCENT_COLOR)
+        }
+    }
+
+    suspend fun setShowHomeNote(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_HOME_NOTE] = enable
+        }
+    }
+
+    suspend fun setHomeNote(note: String) {
+        preferences.edit {
+            it[KEY_HOME_NOTE] = note
+        }
+    }
+
+    suspend fun setSortAppsByUsage(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SORT_APPS_BY_USAGE] = enable
         }
     }
 
@@ -641,7 +662,10 @@ class PreferenceHelper @Inject constructor(
                 homeClockStyle = HomeClockStyle.entries.find {
                     it.name == prefs[KEY_HOME_CLOCK_STYLE]
                 } ?: HomeClockStyle.Normal,
-                showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false
+                showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false,
+                showHomeNote = prefs[KEY_SHOW_HOME_NOTE] ?: false,
+                homeNote = prefs[KEY_HOME_NOTE] ?: "",
+                sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false
             )
         }
     }
@@ -725,7 +749,9 @@ class PreferenceHelper @Inject constructor(
                 showAppScreenTime = prefs[KEY_SHOW_APP_SCREEN_TIME] ?: false,
                 customBackgroundColor = prefs[KEY_CUSTOM_BACKGROUND_COLOR],
                 customTextColor = prefs[KEY_CUSTOM_TEXT_COLOR],
-                customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR]
+                customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR],
+                showHomeNote = prefs[KEY_SHOW_HOME_NOTE] ?: false,
+                sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false
             )
         }
     }

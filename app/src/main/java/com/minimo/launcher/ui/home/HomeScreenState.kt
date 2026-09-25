@@ -79,5 +79,8 @@ data class HomeScreenState(
     val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
     val showAppScreenTime: Boolean = false,
     /** Package name -> formatted screen time today, e.g. "1 ч 20 мин" */
-    val appScreenTime: Map<String, String> = emptyMap()
+    val appScreenTime: Map<String, String> = emptyMap(),
+    val showHomeNote: Boolean = false,
+    val homeNote: String = "",
+    val sortAppsByUsage: Boolean = false
 )

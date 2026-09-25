@@ -88,7 +88,10 @@ data class HomePreferences(
     val weatherLatitude: Double? = null,
     val weatherLongitude: Double? = null,
     val homeClockStyle: HomeClockStyle = HomeClockStyle.Normal,
-    val showAppScreenTime: Boolean = false
+    val showAppScreenTime: Boolean = false,
+    val showHomeNote: Boolean = false,
+    val homeNote: String = "",
+    val sortAppsByUsage: Boolean = false
 )
 
 data class CustomisationPreferences(
@@ -155,5 +158,7 @@ data class CustomisationPreferences(
     val showAppScreenTime: Boolean = false,
     val customBackgroundColor: Int? = null,
     val customTextColor: Int? = null,
-    val customAccentColor: Int? = null
+    val customAccentColor: Int? = null,
+    val showHomeNote: Boolean = false,
+    val sortAppsByUsage: Boolean = false
 )

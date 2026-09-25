@@ -251,7 +251,8 @@ fun AppDrawerScreen(
     }
 
     val showFastScroller =
-        state.enableFastScroller && state.searchText.isBlank() && state.filteredAllApps.isNotEmpty()
+        state.enableFastScroller && !state.sortAppsByUsage &&
+                state.searchText.isBlank() && state.filteredAllApps.isNotEmpty()
     val fastScrollerContentPadding = if (state.enableFastScroller) 40.dp else 0.dp
     val fastScrollerAtStart = state.fastScrollerAlignment == FastScrollerAlignment.Left
     val startContentPadding = if (

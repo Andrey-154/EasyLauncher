@@ -224,4 +224,19 @@
     <string name="custom_accent_color">Цвет акцента</string>
     <string name="color_hex">HEX, например #1E88E5</string>
     <string name="reset_color">Сбросить</string>
+
+    <string name="show_home_note">Заметка на главном экране</string>
+    <string name="show_home_note_description">Заметка или дело одной строкой под часами. Нажмите на неё на главном экране, чтобы изменить.</string>
+    <string name="home_note_hint">Нажмите, чтобы добавить заметку</string>
+    <string name="home_note">Заметка</string>
+    <string name="sort_apps_by_usage">Сортировка по частоте</string>
+    <string name="sort_apps_by_usage_description">Часто открываемые приложения — выше в списке (считаются запуски из лаунчера). Алфавитная прокрутка скрывается.</string>
+    <string name="backup">Резервная копия</string>
+    <string name="backup_description">Сохранить все настройки, избранные, скрытые и переименованные приложения в файл или восстановить их из файла.</string>
+    <string name="backup_export">Сохранить в файл</string>
+    <string name="backup_import">Восстановить из файла</string>
+    <string name="backup_export_done">Резервная копия сохранена</string>
+    <string name="backup_export_failed">Не удалось сохранить резервную копию</string>
+    <string name="backup_import_done">Восстановлено. Приложений с сохранёнными изменениями: %1$d</string>
+    <string name="backup_import_failed">Этот файл не является резервной копией EasyLauncher</string>
 </resources>

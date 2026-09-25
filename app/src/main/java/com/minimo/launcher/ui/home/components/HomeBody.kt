@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
+import com.minimo.launcher.ui.components.HomeNoteDialog
+import com.minimo.launcher.ui.components.HomeNoteView
 import com.minimo.launcher.ui.components.TimeAndDateView
 import com.minimo.launcher.ui.components.WeatherForecastDialog
 import com.minimo.launcher.ui.components.WeatherView
@@ -94,6 +96,18 @@ fun HomeBody(
         }
     }
 
+    var showNoteDialog by remember { mutableStateOf(false) }
+    if (showNoteDialog) {
+        HomeNoteDialog(
+            currentNote = state.homeNote,
+            onSave = { note ->
+                viewModel.onHomeNoteChanged(note)
+                showNoteDialog = false
+            },
+            onDismiss = { showNoteDialog = false }
+        )
+    }
+
     var showWeatherForecast by remember { mutableStateOf(false) }
     if (showWeatherForecast) {
         WeatherForecastDialog(
@@ -114,7 +128,7 @@ fun HomeBody(
             .fillMaxSize()
             .consumeWindowInsets(paddingValues)
     ) {
-        if (state.showHomeClock || state.showScreenTimeWidget || state.showWeather) {
+        if (state.showHomeClock || state.showScreenTimeWidget || state.showWeather || state.showHomeNote) {
             Column(
                 modifier = Modifier.padding(
                     horizontal = Dimens.APP_HORIZONTAL_SPACING,
@@ -158,6 +172,18 @@ fun HomeBody(
                         weatherText = state.weatherText,
                         refreshWeather = viewModel::refreshWeather,
                         onClick = { showWeatherForecast = true },
+                        textColor = textColor,
+                        textShadow = textShadow
+                    )
+                }
+
+                if (state.showHomeNote) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    HomeNoteView(
+                        horizontalAlignment = state.homeClockAlignment,
+                        note = state.homeNote,
+                        onClick = { showNoteDialog = true },
                         textColor = textColor,
                         textShadow = textShadow
                     )

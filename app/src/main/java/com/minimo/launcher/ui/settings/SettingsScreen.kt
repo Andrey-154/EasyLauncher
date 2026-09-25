@@ -14,7 +14,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,6 +43,31 @@ fun SettingsScreen(
     onAboutAppClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val backupViewModel: BackupViewModel = hiltViewModel()
+    var showBackupDialog by remember { mutableStateOf(false) }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri -> uri?.let(backupViewModel::export) }
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> uri?.let(backupViewModel::import) }
+
+    if (showBackupDialog) {
+        BackupDialog(
+            onExport = {
+                showBackupDialog = false
+                exportLauncher.launch(
+                    "EasyLauncher-" + java.time.LocalDate.now() + ".json"
+                )
+            },
+            onImport = {
+                showBackupDialog = false
+                importLauncher.launch(arrayOf("application/json", "application/octet-stream", "text/plain"))
+            },
+            onDismiss = { showBackupDialog = false }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -79,6 +111,10 @@ fun SettingsScreen(
             SettingsItem(
                 name = stringResource(R.string.set_default_launcher),
                 onClick = context::openHomeSettings
+            )
+            SettingsItem(
+                name = stringResource(R.string.backup),
+                onClick = { showBackupDialog = true }
             )
             SettingsItem(
                 name = stringResource(R.string.about_app),

@@ -767,6 +767,15 @@ fun CustomisationScreen(
             SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(
+                title = stringResource(R.string.sort_apps_by_usage),
+                subtitle = stringResource(R.string.sort_apps_by_usage_description),
+                isChecked = state.sortAppsByUsage,
+                onToggleClick = viewModel::onToggleSortAppsByUsage
+            )
+
+            SettingsSpacer(4.dp)
+
+            ToggleItem(
                 title = stringResource(R.string.hide_app_drawer_search),
                 subtitle = stringResource(R.string.hide_app_drawer_search_description),
                 isChecked = state.hideAppDrawerSearch,
@@ -856,6 +865,15 @@ fun CustomisationScreen(
             }
 
             SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.show_home_note),
+                subtitle = stringResource(R.string.show_home_note_description),
+                isChecked = state.showHomeNote,
+                onToggleClick = viewModel::onToggleShowHomeNote
+            )
+
+            SettingsSpacer(4.dp)
 
             ToggleItem(
                 title = stringResource(R.string.show_weather),

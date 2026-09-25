@@ -139,7 +139,9 @@ class CustomisationViewModel @Inject constructor(
                             showAppScreenTime = prefs.showAppScreenTime,
                             customBackgroundColor = prefs.customBackgroundColor,
                             customTextColor = prefs.customTextColor,
-                            customAccentColor = prefs.customAccentColor
+                            customAccentColor = prefs.customAccentColor,
+                            showHomeNote = prefs.showHomeNote,
+                            sortAppsByUsage = prefs.sortAppsByUsage
                         )
                     }
                 }
@@ -434,6 +436,18 @@ class CustomisationViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             preferenceHelper.setCustomColors(background, text, accent)
+        }
+    }
+
+    fun onToggleShowHomeNote() {
+        viewModelScope.launch {
+            preferenceHelper.setShowHomeNote(_state.value.showHomeNote.not())
+        }
+    }
+
+    fun onToggleSortAppsByUsage() {
+        viewModelScope.launch {
+            preferenceHelper.setSortAppsByUsage(_state.value.sortAppsByUsage.not())
         }
     }
 
