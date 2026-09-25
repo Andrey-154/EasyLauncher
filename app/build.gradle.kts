@@ -16,8 +16,8 @@ android {
         applicationId = "com.easy.launcher"
         minSdk = 26
         targetSdk = 37
-        versionCode = 144
-        versionName = "1.35.0"
+        versionCode = 1
+        versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -88,8 +88,6 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
-val playStoreImplementation by configurations
-
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2026.08.00"))
 
@@ -118,7 +116,4 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.2.1")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
-
-    playStoreImplementation("com.android.billingclient:billing-ktx:9.1.0")
-    playStoreImplementation("com.google.android.play:review-ktx:2.0.2")
 }

@@ -16,7 +16,6 @@ data class PendingAppLaunch(
 )
 
 data class HomeScreenState(
-    val whatsNewDescription: String? = null,
     val initialLoaded: Boolean = false,
     val favouriteApps: List<AppInfo> = emptyList(),
     val allApps: List<AppInfo> = emptyList(),
@@ -70,5 +69,9 @@ data class HomeScreenState(
     val fastScrollerAlignment: FastScrollerAlignment = FastScrollerAlignment.Right,
     val backOpensAppDrawer: Boolean = true,
     val compactAppTouchArea: Boolean = false,
-    val keyboardDoneOpensFirstApp: Boolean = false
+    val keyboardDoneOpensFirstApp: Boolean = false,
+    val showWeather: Boolean = false,
+    val weatherLatitude: Double? = null,
+    val weatherLongitude: Double? = null,
+    val weatherText: String = ""
 )

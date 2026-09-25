@@ -74,5 +74,7 @@ data class CustomisationState(
     val fastScrollerAlignment: FastScrollerAlignment = FastScrollerAlignment.Right,
     val backOpensAppDrawer: Boolean = true,
     val compactAppTouchArea: Boolean = false,
-    val keyboardDoneOpensFirstApp: Boolean = false
+    val keyboardDoneOpensFirstApp: Boolean = false,
+    val showWeather: Boolean = false,
+    val weatherCity: String = ""
 )

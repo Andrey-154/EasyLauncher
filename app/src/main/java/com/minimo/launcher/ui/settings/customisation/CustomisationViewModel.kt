@@ -14,6 +14,7 @@ import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
+import com.minimo.launcher.utils.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomisationViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper,
-    private val appInfoDao: AppInfoDao
+    private val appInfoDao: AppInfoDao,
+    private val weatherRepository: WeatherRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(CustomisationState())
     val state: StateFlow<CustomisationState> = _state
@@ -129,7 +131,9 @@ class CustomisationViewModel @Inject constructor(
                             fastScrollerAlignment = prefs.fastScrollerAlignment,
                             backOpensAppDrawer = prefs.backOpensAppDrawer,
                             compactAppTouchArea = prefs.compactAppTouchArea,
-                            keyboardDoneOpensFirstApp = prefs.keyboardDoneOpensFirstApp
+                            keyboardDoneOpensFirstApp = prefs.keyboardDoneOpensFirstApp,
+                            showWeather = prefs.showWeather,
+                            weatherCity = prefs.weatherCity
                         )
                     }
                 }
@@ -408,6 +412,24 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleShowScreenTimeWidget() {
         viewModelScope.launch {
             preferenceHelper.showScreenTimeWidget(_state.value.showScreenTimeWidget.not())
+        }
+    }
+
+    fun onToggleShowWeather() {
+        viewModelScope.launch {
+            preferenceHelper.setShowWeather(_state.value.showWeather.not())
+        }
+    }
+
+    /** Looks the city up online; [onResult] receives false when nothing was found. */
+    fun onWeatherCityEntered(query: String, onResult: (Boolean) -> Unit) {
+        if (query.isBlank()) return
+        viewModelScope.launch {
+            val city = weatherRepository.findCity(query)
+            if (city != null) {
+                preferenceHelper.setWeatherCity(city.name, city.latitude, city.longitude)
+            }
+            onResult(city != null)
         }
     }
 

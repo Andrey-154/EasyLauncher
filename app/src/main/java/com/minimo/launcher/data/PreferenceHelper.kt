@@ -3,6 +3,7 @@ package com.minimo.launcher.data
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -126,6 +127,10 @@ class PreferenceHelper @Inject constructor(
         private val KEY_KEYBOARD_DONE_OPENS_FIRST_APP =
             booleanPreferencesKey("KEY_KEYBOARD_DONE_OPENS_FIRST_APP")
         private val KEY_SCREEN_ORIENTATION = stringPreferencesKey("KEY_SCREEN_ORIENTATION")
+        private val KEY_SHOW_WEATHER = booleanPreferencesKey("KEY_SHOW_WEATHER")
+        private val KEY_WEATHER_CITY = stringPreferencesKey("KEY_WEATHER_CITY")
+        private val KEY_WEATHER_LATITUDE = doublePreferencesKey("KEY_WEATHER_LATITUDE")
+        private val KEY_WEATHER_LONGITUDE = doublePreferencesKey("KEY_WEATHER_LONGITUDE")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -138,19 +143,6 @@ class PreferenceHelper @Inject constructor(
                 )
             }
         }
-    }
-
-    /** Atomically claims this build before showing it, including migration for existing users. */
-    suspend fun claimWhatsNew(buildNumber: Int, description: String): Boolean {
-        var shouldShow = false
-        preferences.edit {
-            val handledBuild = it[KEY_WHATS_NEW_HANDLED_BUILD]
-            if (handledBuild == null || buildNumber > handledBuild) {
-                shouldShow = it[KEY_INTRO_COMPLETED] == true && description.isNotBlank()
-                it[KEY_WHATS_NEW_HANDLED_BUILD] = buildNumber
-            }
-        }
-        return shouldShow
     }
 
     fun getIsIntroCompletedFlow(): Flow<Boolean> {
@@ -377,6 +369,20 @@ class PreferenceHelper @Inject constructor(
         }
     }
 
+    suspend fun setShowWeather(enable: Boolean) {
+        preferences.edit {
+            it[KEY_SHOW_WEATHER] = enable
+        }
+    }
+
+    suspend fun setWeatherCity(name: String, latitude: Double, longitude: Double) {
+        preferences.edit {
+            it[KEY_WEATHER_CITY] = name
+            it[KEY_WEATHER_LATITUDE] = latitude
+            it[KEY_WEATHER_LONGITUDE] = longitude
+        }
+    }
+
     suspend fun showScreenTimeWidget(enable: Boolean) {
         preferences.edit {
             it[KEY_SHOW_SCREEN_TIME_WIDGET] = enable
@@ -594,7 +600,11 @@ class PreferenceHelper @Inject constructor(
                 backOpensAppDrawer = prefs[KEY_BACK_OPENS_APP_DRAWER] ?: true,
                 compactAppTouchArea = prefs[KEY_COMPACT_APP_TOUCH_AREA] ?: false,
                 keyboardDoneOpensFirstApp =
-                    prefs[KEY_KEYBOARD_DONE_OPENS_FIRST_APP] ?: false
+                    prefs[KEY_KEYBOARD_DONE_OPENS_FIRST_APP] ?: false,
+                showWeather = prefs[KEY_SHOW_WEATHER] ?: false,
+                weatherCity = prefs[KEY_WEATHER_CITY] ?: "",
+                weatherLatitude = prefs[KEY_WEATHER_LATITUDE],
+                weatherLongitude = prefs[KEY_WEATHER_LONGITUDE]
             )
         }
     }
@@ -667,7 +677,11 @@ class PreferenceHelper @Inject constructor(
                 backOpensAppDrawer = prefs[KEY_BACK_OPENS_APP_DRAWER] ?: true,
                 compactAppTouchArea = prefs[KEY_COMPACT_APP_TOUCH_AREA] ?: false,
                 keyboardDoneOpensFirstApp =
-                    prefs[KEY_KEYBOARD_DONE_OPENS_FIRST_APP] ?: false
+                    prefs[KEY_KEYBOARD_DONE_OPENS_FIRST_APP] ?: false,
+                showWeather = prefs[KEY_SHOW_WEATHER] ?: false,
+                weatherCity = prefs[KEY_WEATHER_CITY] ?: "",
+                weatherLatitude = prefs[KEY_WEATHER_LATITUDE],
+                weatherLongitude = prefs[KEY_WEATHER_LONGITUDE]
             )
         }
     }

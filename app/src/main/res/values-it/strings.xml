@@ -6,16 +6,12 @@
     <string name="btn_continue">Continua</string>
     <string name="add_at_least_to_continue">Aggiungi almeno %1$s per continuare</string>
 
-    <string name="support_via_other_apps">Un altro modo per supportare il mio lavoro è provare le mie altre app.</string>
-    <string name="visit">Visita</string>
 
     <string name="favourite_apps">App preferite</string>
     <string name="hidden_apps">App nascoste</string>
     <string name="hidden_apps_long_press_hint">Tieni premuta un\'app per avviarla.</string>
     <string name="customisation">Personalizzazione</string>
     <string name="set_default_launcher">Imposta come launcher predefinito</string>
-    <string name="send_feedback">Invia feedback</string>
-    <string name="rate_application">Valuta l\'applicazione</string>
     <string name="settings">Impostazioni</string>
     <string name="choose_minimo_as_your_default_launcher">Scegli EasyLauncher come launcher predefinito</string>
     <string name="skip">Salta</string>
@@ -166,19 +162,9 @@
     <string name="compact_app_touch_area_description">Limita l\'area di tocco di ogni app al contenuto visibile.</string>
     <string name="done_opens_first_app">Fine apre la prima app</string>
     <string name="done_opens_first_app_description">Premi Fine sulla tastiera per aprire il primo risultato di ricerca.</string>
-    <string name="become_a_supporter">Diventa un sostenitore</string>
-    <string name="supporter_title">Sostenitore</string>
-    <string name="supporter_description">Questa app è completamente gratuita e open source, e rimarrà tale. Se ti piace l\'app e vuoi supportare lo sviluppo, puoi scegliere una delle opzioni seguenti.</string>
-    <string name="one_time_support">Supporto una tantum</string>
-    <string name="thank_you">Grazie!</string>
-    <string name="thank_you_support_message">Grazie per aver supportato EasyLauncher</string>
-    <string name="loading">Caricamento…</string>
-    <string name="support_via_review">Puoi anche supportarci lasciando una recensione sul Play Store.</string>
-    <string name="open_play_store">Apri il Play Store</string>
     <string name="about_app">Informazioni sull\'app</string>
     <string name="about_app_description">EasyLauncher è un launcher completamente gratuito e open source. Progettato per coloro che desiderano riordinare la schermata iniziale, offre un\'interfaccia pulita e minimalista senza distrazioni.</string>
     <string name="version">Versione</string>
-    <string name="links">Link</string>
 
     <string name="delete_shortcut_confirmation">Questa operazione eliminerà la scorciatoia. Sei sicuro di volerla eliminare?</string>
     <string name="delete_shortcut">Elimina scorciatoia</string>
@@ -192,8 +178,4 @@
     <string name="rename_shortcut">Rinomina collegamento</string>
     <string name="shortcut_name">Nome collegamento</string>
 
-    <!-- Current release notes. Update for each release, or leave blank to skip the dialog. -->
-    <string name="whats_new_title">Novità</string>
-    <string name="whats_new_description">• Personalizza lo sfondo e il bordo della barra di ricerca.\n• Scegli come cercare le app per nome.\n• Migliorate la sincronizzazione delle app e il caricamento delle impostazioni.\n• Aggiunto il supporto per Android 17.\n• Unisciti alla community di Reddit su /r/MinimoLauncher</string>
-    <string name="review_on_play_store">Recensisci sul Play Store</string>
 </resources>

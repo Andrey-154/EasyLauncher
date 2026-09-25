@@ -6,16 +6,12 @@
     <string name="btn_continue">Weiter</string>
     <string name="add_at_least_to_continue">Mindestens %1$s hinzufügen, um fortzufahren</string>
 
-    <string name="support_via_other_apps">Eine weitere Möglichkeit, meine Arbeit zu unterstützen, ist das Ausprobieren meiner anderen Apps.</string>
-    <string name="visit">Besuchen</string>
 
     <string name="favourite_apps">Lieblings-Apps</string>
     <string name="hidden_apps">Versteckte Apps</string>
     <string name="hidden_apps_long_press_hint">Halte eine App gedrückt, um sie zu starten.</string>
     <string name="customisation">Anpassung</string>
     <string name="set_default_launcher">Als Standard-Launcher festlegen</string>
-    <string name="send_feedback">Feedback senden</string>
-    <string name="rate_application">App bewerten</string>
     <string name="settings">Einstellungen</string>
     <string name="choose_minimo_as_your_default_launcher">EasyLauncher als Standard-Launcher auswählen</string>
     <string name="skip">Überspringen</string>
@@ -166,19 +162,9 @@
     <string name="compact_app_touch_area_description">Begrenzt die Touchfläche jeder App auf den sichtbaren Inhalt.</string>
     <string name="done_opens_first_app">Fertig öffnet erste App</string>
     <string name="done_opens_first_app_description">Drücke auf der Tastatur Fertig, um das erste Suchergebnis zu öffnen.</string>
-    <string name="become_a_supporter">Unterstützer werden</string>
-    <string name="supporter_title">Unterstützer</string>
-    <string name="supporter_description">Diese App ist völlig kostenlos und Open Source und wird es auch bleiben. Wenn Ihnen die App gefällt und Sie die Entwicklung unterstützen möchten, können Sie eine der folgenden Optionen wählen.</string>
-    <string name="one_time_support">Einmalige Unterstützung</string>
-    <string name="thank_you">Danke schön!</string>
-    <string name="thank_you_support_message">Vielen Dank für die Unterstützung von EasyLauncher</string>
-    <string name="loading">Wird geladen…</string>
-    <string name="support_via_review">Sie können auch unterstützen, indem Sie eine Bewertung im Play Store hinterlassen.</string>
-    <string name="open_play_store">Play Store öffnen</string>
     <string name="about_app">Über die App</string>
     <string name="about_app_description">EasyLauncher ist ein komplett kostenloser und Open-Source-Launcher. Entwickelt für diejenigen, die ihren Startbildschirm aufräumen möchten, bietet er eine saubere, minimalistische Benutzeroberfläche ohne Ablenkungen.</string>
     <string name="version">Version</string>
-    <string name="links">Links</string>
 
     <string name="delete_shortcut_confirmation">Dadurch wird die Verknüpfung gelöscht. Bist du sicher, dass du sie löschen möchtest?</string>
     <string name="delete_shortcut">Verknüpfung löschen</string>
@@ -192,8 +178,4 @@
     <string name="rename_shortcut">Verknüpfung umbenennen</string>
     <string name="shortcut_name">Name der Verknüpfung</string>
 
-    <!-- Current release notes. Update for each release, or leave blank to skip the dialog. -->
-    <string name="whats_new_title">Was ist neu?</string>
-    <string name="whats_new_description">• Passe Hintergrund und Rahmen der Suchleiste an.\n• Wähle, wie die App-Suche Namen abgleicht.\n• Verbesserte App-Synchronisierung und schnelleres Laden der Einstellungen.\n• Unterstützung für Android 17 hinzugefügt.\n• Tritt der Reddit-Community unter /r/MinimoLauncher bei</string>
-    <string name="review_on_play_store">Im Play Store bewerten</string>
 </resources>

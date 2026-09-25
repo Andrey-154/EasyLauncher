@@ -78,7 +78,11 @@ data class HomePreferences(
     val fastScrollerAlignment: FastScrollerAlignment = FastScrollerAlignment.Right,
     val backOpensAppDrawer: Boolean = true,
     val compactAppTouchArea: Boolean = false,
-    val keyboardDoneOpensFirstApp: Boolean = false
+    val keyboardDoneOpensFirstApp: Boolean = false,
+    val showWeather: Boolean = false,
+    val weatherCity: String = "",
+    val weatherLatitude: Double? = null,
+    val weatherLongitude: Double? = null
 )
 
 data class CustomisationPreferences(
@@ -136,5 +140,9 @@ data class CustomisationPreferences(
     val fastScrollerAlignment: FastScrollerAlignment = FastScrollerAlignment.Right,
     val backOpensAppDrawer: Boolean = true,
     val compactAppTouchArea: Boolean = false,
-    val keyboardDoneOpensFirstApp: Boolean = false
+    val keyboardDoneOpensFirstApp: Boolean = false,
+    val showWeather: Boolean = false,
+    val weatherCity: String = "",
+    val weatherLatitude: Double? = null,
+    val weatherLongitude: Double? = null
 )

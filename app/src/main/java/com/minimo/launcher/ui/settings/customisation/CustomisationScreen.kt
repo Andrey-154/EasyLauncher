@@ -74,6 +74,7 @@ import com.minimo.launcher.ui.settings.customisation.components.EnableSetWallpap
 import com.minimo.launcher.ui.settings.customisation.components.FastScrollerAlignmentDropdown
 import com.minimo.launcher.ui.settings.customisation.components.FontDropdown
 import com.minimo.launcher.ui.settings.customisation.components.IgnoreSpecialCharacters
+import com.minimo.launcher.ui.settings.customisation.components.WeatherCityItem
 import com.minimo.launcher.ui.settings.customisation.components.MinimoSettingsPositionDropdown
 import com.minimo.launcher.ui.settings.customisation.components.OrientationDropdown
 import com.minimo.launcher.ui.settings.customisation.components.SearchBarBorderSlider
@@ -787,6 +788,24 @@ fun CustomisationScreen(
                         onChooseClick = { showScreenTimeAppPicker = true }
                     )
                 }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            ToggleItem(
+                title = stringResource(R.string.show_weather),
+                subtitle = stringResource(R.string.show_weather_description),
+                isChecked = state.showWeather,
+                onToggleClick = viewModel::onToggleShowWeather
+            )
+
+            if (state.showWeather) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                WeatherCityItem(
+                    currentCity = state.weatherCity,
+                    onCityEntered = viewModel::onWeatherCityEntered
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))

@@ -32,7 +32,6 @@ fun SettingsScreen(
     onFavouriteAppsClick: () -> Unit,
     onHiddenAppsClick: () -> Unit,
     onCustomisationClick: () -> Unit,
-    onSupporterClick: () -> Unit,
     onAboutAppClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -79,10 +78,6 @@ fun SettingsScreen(
             SettingsItem(
                 name = stringResource(R.string.about_app),
                 onClick = onAboutAppClick
-            )
-            SettingsItem(
-                name = stringResource(R.string.become_a_supporter),
-                onClick = onSupporterClick
             )
 
         }

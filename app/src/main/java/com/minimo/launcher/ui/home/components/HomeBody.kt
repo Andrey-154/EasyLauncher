@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
 import com.minimo.launcher.ui.components.TimeAndDateView
+import com.minimo.launcher.ui.components.WeatherView
 import com.minimo.launcher.ui.entities.AppInfo
 import com.minimo.launcher.ui.home.HomeScreenState
 import com.minimo.launcher.ui.home.HomeViewModel
@@ -99,7 +100,7 @@ fun HomeBody(
             .fillMaxSize()
             .consumeWindowInsets(paddingValues)
     ) {
-        if (state.showHomeClock || state.showScreenTimeWidget) {
+        if (state.showHomeClock || state.showScreenTimeWidget || state.showWeather) {
             Column(
                 modifier = Modifier.padding(
                     horizontal = Dimens.APP_HORIZONTAL_SPACING,
@@ -132,8 +133,23 @@ fun HomeBody(
                     )
                 }
 
+                if (state.showWeather) {
+                    if (state.showHomeClock && state.weatherText.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    WeatherView(
+                        horizontalAlignment = state.homeClockAlignment,
+                        weatherText = state.weatherText,
+                        refreshWeather = viewModel::refreshWeather,
+                        onClick = { viewModel.refreshWeather(force = true) },
+                        textColor = textColor,
+                        textShadow = textShadow
+                    )
+                }
+
                 if (state.showScreenTimeWidget && state.screenTime.isNotEmpty()) {
-                    if (state.showHomeClock) {
+                    if (state.showHomeClock || state.weatherText.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))
                     }
 

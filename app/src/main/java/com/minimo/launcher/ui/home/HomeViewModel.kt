@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.minimo.launcher.BuildConfig
 import com.minimo.launcher.R
 import com.minimo.launcher.data.AppInfoDao
 import com.minimo.launcher.data.PreferenceHelper
@@ -29,6 +28,7 @@ import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.StringUtils
+import com.minimo.launcher.utils.WeatherRepository
 import com.minimo.launcher.utils.isAppUsagePermissionGranted
 import com.minimo.launcher.utils.launchApp
 import com.minimo.launcher.utils.startShortcut
@@ -57,22 +57,17 @@ class HomeViewModel @Inject constructor(
     private val screenTimeHelper: ScreenTimeHelper,
     private val updateAllShortcutsUseCase: UpdateAllShortcutsUseCase,
     private val shortcutsUtils: ShortcutsUtils,
-    private val appIconRepository: AppIconRepository
+    private val appIconRepository: AppIconRepository,
+    private val weatherRepository: WeatherRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
     val iconCacheRevision = appIconRepository.cacheRevision
 
     private var lastScreenTimeUpdateTime = 0L
+    private var lastWeatherUpdateTime = 0L
 
     init {
-        viewModelScope.launch {
-            val description = applicationContext.getString(R.string.whats_new_description)
-            if (preferenceHelper.claimWhatsNew(BuildConfig.VERSION_CODE, description)) {
-                _state.update { it.copy(whatsNewDescription = description) }
-            }
-        }
-
         viewModelScope.launch {
             updateAllAppsUseCase.invoke()
         }
@@ -220,6 +215,18 @@ class HomeViewModel @Inject constructor(
                             )
                         }
 
+                        // Reload weather when it gets enabled or the city changes
+                        val weatherLocationChanged =
+                            prefs.weatherLatitude != state.weatherLatitude ||
+                                    prefs.weatherLongitude != state.weatherLongitude
+                        val newWeatherText = when {
+                            !prefs.showWeather || weatherLocationChanged -> ""
+                            else -> state.weatherText
+                        }
+                        if (prefs.showWeather && (!state.showWeather || weatherLocationChanged)) {
+                            loadWeather(prefs.weatherLatitude, prefs.weatherLongitude)
+                        }
+
                         // Refresh screen time when the preference flag is enabled
                         if (prefs.showScreenTimeWidget && !state.showScreenTimeWidget) {
                             refreshScreenTime()
@@ -271,6 +278,10 @@ class HomeViewModel @Inject constructor(
                             backOpensAppDrawer = prefs.backOpensAppDrawer,
                             compactAppTouchArea = prefs.compactAppTouchArea,
                             keyboardDoneOpensFirstApp = prefs.keyboardDoneOpensFirstApp,
+                            showWeather = prefs.showWeather,
+                            weatherLatitude = prefs.weatherLatitude,
+                            weatherLongitude = prefs.weatherLongitude,
+                            weatherText = newWeatherText,
                             allApps = newAllApps,
                             filteredAllApps = newFilteredApps,
                             searchText = clearSearchText
@@ -559,6 +570,41 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun refreshWeather(force: Boolean = false) {
+        val state = _state.value
+        if (!state.showWeather) return
+        // Weather changes slowly: update at most every 30 minutes unless forced
+        if (!force && System.currentTimeMillis() - lastWeatherUpdateTime < 30 * 60_000) return
+        loadWeather(state.weatherLatitude, state.weatherLongitude)
+    }
+
+    private fun loadWeather(latitude: Double?, longitude: Double?) {
+        if (latitude == null || longitude == null) return
+        lastWeatherUpdateTime = System.currentTimeMillis()
+
+        viewModelScope.launch {
+            val weather = weatherRepository.loadWeather(latitude, longitude)
+            if (weather == null) {
+                // Allow a retry on next resume
+                lastWeatherUpdateTime = 0L
+                return@launch
+            }
+            val temperature = if (weather.temperature > 0) {
+                "+${weather.temperature}°"
+            } else {
+                "${weather.temperature}°"
+            }
+            val description = applicationContext.getString(weather.descriptionRes)
+            _state.update {
+                if (it.weatherLatitude == latitude && it.weatherLongitude == longitude) {
+                    it.copy(weatherText = "$temperature  $description")
+                } else {
+                    it
+                }
+            }
+        }
+    }
+
     fun refreshScreenTime() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && applicationContext.isAppUsagePermissionGranted()) {
             // Only continue if 1 minute has been passed since last update
@@ -569,7 +615,11 @@ class HomeViewModel @Inject constructor(
 
                 val hours = TimeUnit.MILLISECONDS.toHours(totalMillis)
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(totalMillis) % 60
-                val formattedTime = if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+                val formattedTime = if (hours > 0) {
+                    applicationContext.getString(R.string.screen_time_hours_minutes, hours, minutes)
+                } else {
+                    applicationContext.getString(R.string.screen_time_minutes, minutes)
+                }
 
                 _state.update { it.copy(screenTime = formattedTime) }
 
@@ -580,9 +630,5 @@ class HomeViewModel @Inject constructor(
                 preferenceHelper.showScreenTimeWidget(false)
             }
         }
-    }
-
-    fun onDismissWhatsNew() {
-        _state.update { it.copy(whatsNewDescription = null) }
     }
 }
