@@ -172,7 +172,7 @@ fun AppLaunchConfirmationDialog(
 }
 
 @Composable
-private fun AppDialog(
+internal fun AppDialog(
     onDismiss: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {

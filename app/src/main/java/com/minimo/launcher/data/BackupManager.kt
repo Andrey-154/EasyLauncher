@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.minimo.launcher.utils.LaunchStatsRepository
+import com.minimo.launcher.utils.TimeLimitRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -32,7 +33,8 @@ class BackupManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: DataStore<Preferences>,
     private val appInfoDao: AppInfoDao,
-    private val launchStats: LaunchStatsRepository
+    private val launchStats: LaunchStatsRepository,
+    private val timeLimits: TimeLimitRepository
 ) {
     companion object {
         private const val FORMAT = "easylauncher-backup"
@@ -47,6 +49,7 @@ class BackupManager @Inject constructor(
                 .put("preferences", exportPreferences())
                 .put("apps", exportApps())
                 .put("launchCounts", JSONObject(launchStats.counts.value as Map<*, *>))
+                .put("timeLimits", JSONObject(timeLimits.limits.value as Map<*, *>))
 
             context.contentResolver.openOutputStream(uri, "wt")!!.use {
                 it.write(root.toString(2).toByteArray())
@@ -78,6 +81,7 @@ class BackupManager @Inject constructor(
             applyPreferences(backup.preferences)
             val restoredApps = applyApps(backup.apps)
             launchStats.replaceAll(backup.launchCounts)
+            timeLimits.replaceAll(backup.timeLimits)
             ImportResult.Success(restoredApps)
         } catch (exception: Exception) {
             Timber.e(exception)
@@ -88,7 +92,8 @@ class BackupManager @Inject constructor(
     private class ParsedBackup(
         val preferences: List<Preferences.Pair<*>>,
         val apps: Map<AppKey, JSONObject>,
-        val launchCounts: Map<String, Int>
+        val launchCounts: Map<String, Int>,
+        val timeLimits: Map<String, Int>
     )
 
     private data class AppKey(val packageName: String, val itemType: String, val targetId: String)
@@ -128,7 +133,10 @@ class BackupManager @Inject constructor(
         val countsJson = root.optJSONObject("launchCounts") ?: JSONObject()
         val launchCounts = countsJson.keys().asSequence().associateWith { countsJson.getInt(it) }
 
-        return ParsedBackup(preferences, apps, launchCounts)
+        val limitsJson = root.optJSONObject("timeLimits") ?: JSONObject()
+        val timeLimits = limitsJson.keys().asSequence().associateWith { limitsJson.getInt(it) }
+
+        return ParsedBackup(preferences, apps, launchCounts, timeLimits)
     }
 
     private suspend fun applyPreferences(values: List<Preferences.Pair<*>>) {

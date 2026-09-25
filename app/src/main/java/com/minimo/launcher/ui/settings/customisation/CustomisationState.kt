@@ -86,5 +86,8 @@ data class CustomisationState(
     val showHomeNote: Boolean = false,
     val sortAppsByUsage: Boolean = false,
     val showFlashlight: Boolean = false,
-    val flashlightAutoOff: Boolean = true
+    val flashlightAutoOff: Boolean = true,
+    val limitColorTimeOnly: Boolean = true,
+    val limitWarningColor: Int? = null,
+    val limitExceededColor: Int? = null
 )

@@ -19,7 +19,9 @@ import kotlin.math.roundToInt
 data class WeatherCity(
     val name: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val country: String? = null,
+    val region: String? = null
 )
 
 data class CurrentWeather(
@@ -49,20 +51,26 @@ data class WeatherForecast(
 @Singleton
 class WeatherRepository @Inject constructor() {
 
-    suspend fun findCity(query: String): WeatherCity? = withContext(Dispatchers.IO) {
+    /** Up to 8 matching places with country and region; null on network error. */
+    suspend fun searchCities(query: String): List<WeatherCity>? = withContext(Dispatchers.IO) {
         try {
             val name = URLEncoder.encode(query.trim(), "UTF-8")
             val language = Locale.getDefault().language
             val json = request(
                 "https://geocoding-api.open-meteo.com/v1/search" +
-                        "?name=$name&count=1&language=$language&format=json"
+                        "?name=$name&count=8&language=$language&format=json"
             )
-            val result = json.optJSONArray("results")?.optJSONObject(0) ?: return@withContext null
-            WeatherCity(
-                name = result.getString("name"),
-                latitude = result.getDouble("latitude"),
-                longitude = result.getDouble("longitude")
-            )
+            val results = json.optJSONArray("results") ?: return@withContext emptyList()
+            (0 until results.length()).mapNotNull { i ->
+                val result = results.optJSONObject(i) ?: return@mapNotNull null
+                WeatherCity(
+                    name = result.getString("name"),
+                    latitude = result.getDouble("latitude"),
+                    longitude = result.getDouble("longitude"),
+                    country = result.optString("country").ifBlank { null },
+                    region = result.optString("admin1").ifBlank { null }
+                )
+            }
         } catch (exception: Exception) {
             Timber.e(exception)
             null

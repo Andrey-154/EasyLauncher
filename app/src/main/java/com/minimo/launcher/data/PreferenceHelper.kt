@@ -142,6 +142,9 @@ class PreferenceHelper @Inject constructor(
         private val KEY_SORT_APPS_BY_USAGE = booleanPreferencesKey("KEY_SORT_APPS_BY_USAGE")
         private val KEY_SHOW_FLASHLIGHT = booleanPreferencesKey("KEY_SHOW_FLASHLIGHT")
         private val KEY_FLASHLIGHT_AUTO_OFF = booleanPreferencesKey("KEY_FLASHLIGHT_AUTO_OFF")
+        private val KEY_LIMIT_COLOR_TIME_ONLY = booleanPreferencesKey("KEY_LIMIT_COLOR_TIME_ONLY")
+        private val KEY_LIMIT_WARNING_COLOR = intPreferencesKey("KEY_LIMIT_WARNING_COLOR")
+        private val KEY_LIMIT_EXCEEDED_COLOR = intPreferencesKey("KEY_LIMIT_EXCEEDED_COLOR")
     }
 
     suspend fun setIsIntroCompleted(isCompleted: Boolean) {
@@ -401,6 +404,22 @@ class PreferenceHelper @Inject constructor(
     suspend fun setHomeNote(note: String) {
         preferences.edit {
             it[KEY_HOME_NOTE] = note
+        }
+    }
+
+    suspend fun setLimitColorTimeOnly(enable: Boolean) {
+        preferences.edit {
+            it[KEY_LIMIT_COLOR_TIME_ONLY] = enable
+        }
+    }
+
+    /** null resets to the default colour. */
+    suspend fun setLimitColors(warning: Int?, exceeded: Int?) {
+        preferences.edit {
+            if (warning != null) it[KEY_LIMIT_WARNING_COLOR] = warning
+            else it.remove(KEY_LIMIT_WARNING_COLOR)
+            if (exceeded != null) it[KEY_LIMIT_EXCEEDED_COLOR] = exceeded
+            else it.remove(KEY_LIMIT_EXCEEDED_COLOR)
         }
     }
 
@@ -681,7 +700,10 @@ class PreferenceHelper @Inject constructor(
                 homeNote = prefs[KEY_HOME_NOTE] ?: "",
                 sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false,
                 showFlashlight = prefs[KEY_SHOW_FLASHLIGHT] ?: false,
-                flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true
+                flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true,
+                limitColorTimeOnly = prefs[KEY_LIMIT_COLOR_TIME_ONLY] ?: true,
+                limitWarningColor = prefs[KEY_LIMIT_WARNING_COLOR],
+                limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR]
             )
         }
     }
@@ -769,7 +791,10 @@ class PreferenceHelper @Inject constructor(
                 showHomeNote = prefs[KEY_SHOW_HOME_NOTE] ?: false,
                 sortAppsByUsage = prefs[KEY_SORT_APPS_BY_USAGE] ?: false,
                 showFlashlight = prefs[KEY_SHOW_FLASHLIGHT] ?: false,
-                flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true
+                flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true,
+                limitColorTimeOnly = prefs[KEY_LIMIT_COLOR_TIME_ONLY] ?: true,
+                limitWarningColor = prefs[KEY_LIMIT_WARNING_COLOR],
+                limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR]
             )
         }
     }

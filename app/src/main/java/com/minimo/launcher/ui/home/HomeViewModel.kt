@@ -30,6 +30,7 @@ import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.LaunchStatsRepository
 import com.minimo.launcher.utils.StringUtils
+import com.minimo.launcher.utils.TimeLimitRepository
 import com.minimo.launcher.utils.WeatherForecast
 import com.minimo.launcher.utils.WeatherRepository
 import com.minimo.launcher.utils.formatTemperature
@@ -64,7 +65,8 @@ class HomeViewModel @Inject constructor(
     private val appIconRepository: AppIconRepository,
     private val weatherRepository: WeatherRepository,
     private val launchStats: LaunchStatsRepository,
-    private val flashlightController: FlashlightController
+    private val flashlightController: FlashlightController,
+    private val timeLimitRepository: TimeLimitRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -122,6 +124,13 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            timeLimitRepository.limits.collect { limits ->
+                _state.update { it.copy(timeLimits = limits) }
+                refreshAppScreenTime(force = true)
+            }
         }
 
         viewModelScope.launch {
@@ -337,6 +346,11 @@ class HomeViewModel @Inject constructor(
                             homeNote = prefs.homeNote,
                             sortAppsByUsage = prefs.sortAppsByUsage,
                             showFlashlight = prefs.showFlashlight,
+                            limitColorTimeOnly = prefs.limitColorTimeOnly,
+                            limitWarningColor = prefs.limitWarningColor
+                                ?: TimeLimitRepository.DEFAULT_WARNING_COLOR,
+                            limitExceededColor = prefs.limitExceededColor
+                                ?: TimeLimitRepository.DEFAULT_EXCEEDED_COLOR,
                             showAppScreenTime = prefs.showAppScreenTime,
                             appScreenTime = if (prefs.showAppScreenTime) state.appScreenTime else emptyMap(),
                             allApps = newAllApps,
@@ -642,6 +656,20 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun onTimeLimitClick(app: AppInfo) {
+        _state.update { it.copy(timeLimitDialog = app) }
+    }
+
+    fun onUpdateTimeLimit(minutes: Int) {
+        val app = _state.value.timeLimitDialog ?: return
+        onDismissTimeLimitDialog()
+        timeLimitRepository.setLimit(app.packageName, minutes)
+    }
+
+    fun onDismissTimeLimitDialog() {
+        _state.update { it.copy(timeLimitDialog = null) }
+    }
+
     fun onFlashlightClick() {
         if (!flashlightController.toggle()) {
             Toast.makeText(
@@ -680,24 +708,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /** Per-app screen time shown in the app drawer; refreshed at most once a minute. */
-    fun refreshAppScreenTime() {
-        if (!_state.value.showAppScreenTime) return
+    /**
+     * Per-app screen time for the drawer and for time limits; refreshed at most once a minute
+     * unless [force] (e.g. a limit was just changed).
+     */
+    fun refreshAppScreenTime(force: Boolean = false) {
+        val state = _state.value
+        if (!state.showAppScreenTime && state.timeLimits.isEmpty()) return
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
             !applicationContext.isAppUsagePermissionGranted()
         ) {
             // Access was revoked: turn the option off instead of silently showing nothing
-            viewModelScope.launch { preferenceHelper.setShowAppScreenTime(false) }
+            if (state.showAppScreenTime) {
+                viewModelScope.launch { preferenceHelper.setShowAppScreenTime(false) }
+            }
             return
         }
-        if (System.currentTimeMillis() - lastAppScreenTimeUpdateTime < 60_000) return
+        if (!force && System.currentTimeMillis() - lastAppScreenTimeUpdateTime < 60_000) return
         lastAppScreenTimeUpdateTime = System.currentTimeMillis()
 
         viewModelScope.launch(Dispatchers.IO) {
-            val formatted = screenTimeHelper.getTodayScreenTimePerApp()
+            val usage = screenTimeHelper.getTodayScreenTimePerApp()
+            val formatted = usage
                 .filterValues { it >= 60_000 }
                 .mapValues { (_, millis) -> formatScreenTime(millis) }
-            _state.update { it.copy(appScreenTime = formatted) }
+            _state.update { it.copy(appScreenTime = formatted, appUsageMillis = usage) }
         }
     }
 

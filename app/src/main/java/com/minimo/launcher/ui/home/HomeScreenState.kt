@@ -10,6 +10,7 @@ import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.SearchMode
+import com.minimo.launcher.utils.TimeLimitRepository
 
 data class PendingAppLaunch(
     val app: AppInfo,
@@ -83,5 +84,13 @@ data class HomeScreenState(
     val showHomeNote: Boolean = false,
     val homeNote: String = "",
     val sortAppsByUsage: Boolean = false,
-    val showFlashlight: Boolean = false
+    val showFlashlight: Boolean = false,
+    val timeLimitDialog: AppInfo? = null,
+    /** Package name -> daily limit in minutes */
+    val timeLimits: Map<String, Int> = emptyMap(),
+    /** Package name -> foreground time today */
+    val appUsageMillis: Map<String, Long> = emptyMap(),
+    val limitColorTimeOnly: Boolean = true,
+    val limitWarningColor: Int = TimeLimitRepository.DEFAULT_WARNING_COLOR,
+    val limitExceededColor: Int = TimeLimitRepository.DEFAULT_EXCEEDED_COLOR
 )

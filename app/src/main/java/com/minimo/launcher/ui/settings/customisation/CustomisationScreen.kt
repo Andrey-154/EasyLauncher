@@ -101,6 +101,7 @@ import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.StringUtils
+import com.minimo.launcher.utils.TimeLimitRepository
 import com.minimo.launcher.utils.hasLockScreenPermission
 import com.minimo.launcher.utils.isAppUsagePermissionGranted
 import com.minimo.launcher.utils.isNotificationPermissionGranted
@@ -865,6 +866,37 @@ fun CustomisationScreen(
                         }
                     }
                 )
+
+                SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+                if (LocalSettingsQuery.current.isBlank()) {
+                    Text(
+                        text = stringResource(R.string.time_limits_hint),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)
+                    )
+                }
+
+                ToggleItem(
+                    title = stringResource(R.string.limit_color_time_only),
+                    subtitle = stringResource(R.string.limit_color_time_only_description),
+                    isChecked = state.limitColorTimeOnly,
+                    onToggleClick = viewModel::onToggleLimitColorTimeOnly
+                )
+
+                ColorPickerItem(
+                    title = stringResource(R.string.limit_warning_color),
+                    color = state.limitWarningColor
+                        ?: TimeLimitRepository.DEFAULT_WARNING_COLOR,
+                    onColorSelected = viewModel::onLimitWarningColorChanged
+                )
+
+                ColorPickerItem(
+                    title = stringResource(R.string.limit_exceeded_color),
+                    color = state.limitExceededColor
+                        ?: TimeLimitRepository.DEFAULT_EXCEEDED_COLOR,
+                    onColorSelected = viewModel::onLimitExceededColorChanged
+                )
             }
 
             SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
@@ -912,7 +944,9 @@ fun CustomisationScreen(
 
                 WeatherCityItem(
                     currentCity = state.weatherCity,
-                    onCityEntered = viewModel::onWeatherCityEntered
+                    onSearch = viewModel::onWeatherCitySearch,
+                    onCitySelected = viewModel::onWeatherCitySelected,
+                    onDetectLocation = viewModel::onDetectWeatherLocation
                 )
             }
 

@@ -257,4 +257,17 @@
 
     <string name="flashlight_auto_off">Turn Off With Screen</string>
     <string name="flashlight_auto_off_description">Turn the flashlight off when the screen turns off (only if it was turned on from the home screen)</string>
+
+    <string name="time_limit">Time Limit</string>
+    <string name="time_limit_description">Daily limit for %1$s. When it is almost used up or exceeded, the time next to the app changes colour. 0 or empty removes the limit.</string>
+    <string name="minutes_per_day">Minutes per day</string>
+    <string name="time_limit_needs_usage_access">Allow usage access so the launcher can count time for limits</string>
+    <string name="time_limits_hint">Time limits: long-press an app → \"Time Limit\". Apps with a limit show \"used / limit\".</string>
+    <string name="limit_color_time_only">Colour Only the Time</string>
+    <string name="limit_color_time_only_description">When off, the whole app name is coloured when the limit is near or exceeded</string>
+    <string name="limit_warning_color">Colour at 80% of the limit</string>
+    <string name="limit_exceeded_color">Colour when the limit is exceeded</string>
+    <string name="weather_detect_location">📍 Detect by location</string>
+    <string name="weather_location_failed">Could not get the location. Turn on location and try again.</string>
+    <string name="weather_location_denied">Location permission was not granted. You can type the city instead.</string>
 </resources>

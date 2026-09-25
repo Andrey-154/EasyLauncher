@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.minimo.launcher.ui.components.ScreenTimeView
 import com.minimo.launcher.ui.components.FlashlightButton
@@ -97,6 +98,12 @@ fun HomeBody(
         } else {
             null
         }
+    }
+
+    // Keep limit colours on Home up to date (refresh is throttled to once a minute)
+    LifecycleResumeEffect(Unit) {
+        viewModel.refreshAppScreenTime()
+        onPauseOrDispose { }
     }
 
     var showNoteDialog by remember { mutableStateOf(false) }
@@ -268,6 +275,14 @@ fun HomeBody(
                     }
                 }
 
+                // On Home only apps with a limit show their time
+                val decoration = usageDecoration(
+                    packageName = appInfo.packageName,
+                    isShortcut = appInfo.isShortcut,
+                    state = state,
+                    showUsageWithoutLimit = false
+                )
+
                 AppNameItem(
                     modifier = Modifier.animateItem(),
                     appName = appInfo.name,
@@ -301,7 +316,11 @@ fun HomeBody(
                     useDarkBottomSheetStatusBarIcons = useDarkBottomSheetStatusBarIcons,
                     useDarkBottomSheetNavigationBarIcons = useDarkBottomSheetNavigationBarIcons,
                     textColor = textColor,
-                    shadow = textShadow
+                    shadow = textShadow,
+                    secondaryText = decoration.text,
+                    usageColor = decoration.color,
+                    colorName = decoration.colorName,
+                    onTimeLimitClick = { viewModel.onTimeLimitClick(appInfo) }
                 )
             }
 

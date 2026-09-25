@@ -1,5 +1,8 @@
 package com.minimo.launcher.ui.home
 
+import android.os.Build
+import com.minimo.launcher.utils.isAppUsagePermissionGranted
+import com.minimo.launcher.utils.openUsageAccessSettings
 import android.widget.Toast
 import android.app.Activity
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -72,6 +75,8 @@ import com.minimo.launcher.ui.home.components.AppLaunchConfirmationDialog
 import com.minimo.launcher.ui.home.components.AppNameItem
 import com.minimo.launcher.ui.home.components.DrawerActionItem
 import com.minimo.launcher.ui.home.components.LaunchDelayDialog
+import com.minimo.launcher.ui.home.components.TimeLimitDialog
+import com.minimo.launcher.ui.home.components.usageDecoration
 import com.minimo.launcher.ui.home.components.MinimoSettingsItem
 import com.minimo.launcher.ui.home.components.appIconSizeFor
 import com.minimo.launcher.ui.theme.LocalCustomTextColor
@@ -403,6 +408,13 @@ fun AppDrawerScreen(
                                 }
                             }
 
+                            val decoration = usageDecoration(
+                                packageName = appInfo.packageName,
+                                isShortcut = appInfo.isShortcut,
+                                state = state,
+                                showUsageWithoutLimit = state.showAppScreenTime
+                            )
+
                             AppNameItem(
                                 modifier = Modifier.animateItem(),
                                 appName = appInfo.name,
@@ -441,11 +453,10 @@ fun AppDrawerScreen(
                                 verticalPadding = verticalPadding,
                                 textColor = textColor,
                                 shadow = textShadow,
-                                secondaryText = if (state.showAppScreenTime && !appInfo.isShortcut) {
-                                    state.appScreenTime[appInfo.packageName]
-                                } else {
-                                    null
-                                }
+                                secondaryText = decoration.text,
+                                usageColor = decoration.color,
+                                colorName = decoration.colorName,
+                                onTimeLimitClick = { viewModel.onTimeLimitClick(appInfo) }
                             )
                         }
                     }
@@ -540,6 +551,24 @@ fun AppDrawerScreen(
             app = app,
             onSave = viewModel::onUpdateLaunchDelay,
             onDismiss = viewModel::onDismissLaunchDelayDialog
+        )
+    }
+
+    state.timeLimitDialog?.let { app ->
+        TimeLimitDialog(
+            appName = app.name,
+            currentMinutes = state.timeLimits[app.packageName],
+            onSave = { minutes ->
+                viewModel.onUpdateTimeLimit(minutes)
+                val hasUsageAccess = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                        context.isAppUsagePermissionGranted()
+                if (minutes > 0 && !hasUsageAccess) {
+                    Toast.makeText(context, R.string.time_limit_needs_usage_access, Toast.LENGTH_LONG)
+                        .show()
+                    context.openUsageAccessSettings()
+                }
+            },
+            onDismiss = viewModel::onDismissTimeLimitDialog
         )
     }
 

@@ -258,4 +258,17 @@
 
     <string name="flashlight_auto_off">Выключать с экраном</string>
     <string name="flashlight_auto_off_description">Гасить фонарик при выключении экрана (только если он включён кнопкой на главном экране)</string>
+
+    <string name="time_limit">Лимит времени</string>
+    <string name="time_limit_description">Лимит в день для %1$s. Когда он почти исчерпан или превышен, время рядом с приложением меняет цвет. 0 или пусто — убрать лимит.</string>
+    <string name="minutes_per_day">Минут в день</string>
+    <string name="time_limit_needs_usage_access">Разрешите доступ к статистике использования, чтобы лаунчер мог считать время для лимитов</string>
+    <string name="time_limits_hint">Лимиты времени: долгое нажатие на приложение → «Лимит времени». У приложений с лимитом видно «использовано / лимит».</string>
+    <string name="limit_color_time_only">Красить только время</string>
+    <string name="limit_color_time_only_description">Если выключить, при приближении к лимиту или его превышении красится всё название приложения</string>
+    <string name="limit_warning_color">Цвет при 80% лимита</string>
+    <string name="limit_exceeded_color">Цвет при превышении лимита</string>
+    <string name="weather_detect_location">📍 Определить по геолокации</string>
+    <string name="weather_location_failed">Не удалось определить местоположение. Включите геолокацию и попробуйте снова.</string>
+    <string name="weather_location_denied">Доступ к местоположению не выдан. Можно ввести город вручную.</string>
 </resources>

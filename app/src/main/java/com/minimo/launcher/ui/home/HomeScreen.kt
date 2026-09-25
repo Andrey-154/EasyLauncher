@@ -1,5 +1,10 @@
 package com.minimo.launcher.ui.home
 
+import android.os.Build
+import android.widget.Toast
+import com.minimo.launcher.utils.isAppUsagePermissionGranted
+import com.minimo.launcher.utils.openUsageAccessSettings
+import com.minimo.launcher.ui.home.components.TimeLimitDialog
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -228,6 +233,24 @@ fun HomeScreen(
             app = app,
             onSave = viewModel::onUpdateLaunchDelay,
             onDismiss = viewModel::onDismissLaunchDelayDialog
+        )
+    }
+
+    state.timeLimitDialog?.let { app ->
+        TimeLimitDialog(
+            appName = app.name,
+            currentMinutes = state.timeLimits[app.packageName],
+            onSave = { minutes ->
+                viewModel.onUpdateTimeLimit(minutes)
+                val hasUsageAccess = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                        context.isAppUsagePermissionGranted()
+                if (minutes > 0 && !hasUsageAccess) {
+                    Toast.makeText(context, R.string.time_limit_needs_usage_access, Toast.LENGTH_LONG)
+                        .show()
+                    context.openUsageAccessSettings()
+                }
+            },
+            onDismiss = viewModel::onDismissTimeLimitDialog
         )
     }
 

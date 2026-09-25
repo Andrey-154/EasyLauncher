@@ -73,7 +73,11 @@ fun AppNameItem(
     useDarkBottomSheetNavigationBarIcons: Boolean? = null,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     shadow: Shadow? = null,
-    secondaryText: String? = null
+    secondaryText: String? = null,
+    /** Limit colour for the usage text; also for the name when [colorName]. */
+    usageColor: Color? = null,
+    colorName: Boolean = false,
+    onTimeLimitClick: (() -> Unit)? = null
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     val lineHeight by remember { derivedStateOf { textSize * 1.2 } }
@@ -160,7 +164,7 @@ fun AppNameItem(
                 } else {
                     Modifier
                 },
-                color = textColor,
+                color = if (colorName && usageColor != null) usageColor else textColor,
                 fontSize = textSize,
                 lineHeight = lineHeight,
                 maxLines = 1,
@@ -171,7 +175,7 @@ fun AppNameItem(
             if (secondaryText != null) {
                 Text(
                     text = "  ·  $secondaryText",
-                    color = textColor.copy(alpha = 0.55f),
+                    color = usageColor ?: textColor.copy(alpha = 0.55f),
                     fontSize = textSize * 0.65f,
                     maxLines = 1,
                     style = LocalTextStyle.current.copy(shadow = shadow)
@@ -256,6 +260,12 @@ fun AppNameItem(
             onLaunchDelayClick = {
                 appBottomSheetVisible = false
                 onLaunchDelayClick()
+            },
+            onTimeLimitClick = onTimeLimitClick?.let { click ->
+                {
+                    appBottomSheetVisible = false
+                    click()
+                }
             }
         )
     }

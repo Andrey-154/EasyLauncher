@@ -15,6 +15,8 @@ import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
+import com.minimo.launcher.utils.LocationHelper
+import com.minimo.launcher.utils.WeatherCity
 import com.minimo.launcher.utils.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,8 @@ import javax.inject.Inject
 class CustomisationViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper,
     private val appInfoDao: AppInfoDao,
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val locationHelper: LocationHelper
 ) : ViewModel() {
     private val _state = MutableStateFlow(CustomisationState())
     val state: StateFlow<CustomisationState> = _state
@@ -143,7 +146,10 @@ class CustomisationViewModel @Inject constructor(
                             showHomeNote = prefs.showHomeNote,
                             sortAppsByUsage = prefs.sortAppsByUsage,
                             showFlashlight = prefs.showFlashlight,
-                            flashlightAutoOff = prefs.flashlightAutoOff
+                            flashlightAutoOff = prefs.flashlightAutoOff,
+                            limitColorTimeOnly = prefs.limitColorTimeOnly,
+                            limitWarningColor = prefs.limitWarningColor,
+                            limitExceededColor = prefs.limitExceededColor
                         )
                     }
                 }
@@ -447,6 +453,24 @@ class CustomisationViewModel @Inject constructor(
         }
     }
 
+    fun onToggleLimitColorTimeOnly() {
+        viewModelScope.launch {
+            preferenceHelper.setLimitColorTimeOnly(_state.value.limitColorTimeOnly.not())
+        }
+    }
+
+    fun onLimitWarningColorChanged(color: Int?) {
+        viewModelScope.launch {
+            preferenceHelper.setLimitColors(color, _state.value.limitExceededColor)
+        }
+    }
+
+    fun onLimitExceededColorChanged(color: Int?) {
+        viewModelScope.launch {
+            preferenceHelper.setLimitColors(_state.value.limitWarningColor, color)
+        }
+    }
+
     fun onToggleFlashlightAutoOff() {
         viewModelScope.launch {
             preferenceHelper.setFlashlightAutoOff(_state.value.flashlightAutoOff.not())
@@ -483,15 +507,32 @@ class CustomisationViewModel @Inject constructor(
         }
     }
 
-    /** Looks the city up online; [onResult] receives false when nothing was found. */
-    fun onWeatherCityEntered(query: String, onResult: (Boolean) -> Unit) {
+    /** [onResult] gets the matching places, or null on a network error. */
+    fun onWeatherCitySearch(query: String, onResult: (List<WeatherCity>?) -> Unit) {
         if (query.isBlank()) return
         viewModelScope.launch {
-            val city = weatherRepository.findCity(query)
-            if (city != null) {
-                preferenceHelper.setWeatherCity(city.name, city.latitude, city.longitude)
+            onResult(weatherRepository.searchCities(query))
+        }
+    }
+
+    fun onWeatherCitySelected(city: WeatherCity) {
+        viewModelScope.launch {
+            preferenceHelper.setWeatherCity(city.name, city.latitude, city.longitude)
+        }
+    }
+
+    /** Uses the approximate location; the name comes from the system geocoder if available. */
+    fun onDetectWeatherLocation(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val location = locationHelper.getLocation()
+            if (location == null) {
+                onResult(false)
+                return@launch
             }
-            onResult(city != null)
+            val name = locationHelper.cityName(location.latitude, location.longitude)
+                ?: "%.2f, %.2f".format(location.latitude, location.longitude)
+            preferenceHelper.setWeatherCity(name, location.latitude, location.longitude)
+            onResult(true)
         }
     }
 

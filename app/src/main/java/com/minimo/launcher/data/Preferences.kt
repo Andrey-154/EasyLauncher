@@ -93,7 +93,10 @@ data class HomePreferences(
     val homeNote: String = "",
     val sortAppsByUsage: Boolean = false,
     val showFlashlight: Boolean = false,
-    val flashlightAutoOff: Boolean = true
+    val flashlightAutoOff: Boolean = true,
+    val limitColorTimeOnly: Boolean = true,
+    val limitWarningColor: Int? = null,
+    val limitExceededColor: Int? = null
 )
 
 data class CustomisationPreferences(
@@ -164,5 +167,8 @@ data class CustomisationPreferences(
     val showHomeNote: Boolean = false,
     val sortAppsByUsage: Boolean = false,
     val showFlashlight: Boolean = false,
-    val flashlightAutoOff: Boolean = true
+    val flashlightAutoOff: Boolean = true,
+    val limitColorTimeOnly: Boolean = true,
+    val limitWarningColor: Int? = null,
+    val limitExceededColor: Int? = null
 )

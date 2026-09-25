@@ -24,6 +24,7 @@ fun AppListBottomSheetDialog(
     onUninstallClick: () -> Unit,
     onDeleteShortcutClick: () -> Unit,
     onLaunchDelayClick: () -> Unit,
+    onTimeLimitClick: (() -> Unit)? = null,
 ) {
     AppBottomSheetDialog(
         appName = appName,
@@ -53,6 +54,12 @@ fun AppListBottomSheetDialog(
             text = stringResource(R.string.launch_delay),
             onClick = onLaunchDelayClick
         )
+        if (onTimeLimitClick != null && !isShortcut) {
+            AppBottomSheetText(
+                text = stringResource(R.string.time_limit),
+                onClick = onTimeLimitClick
+            )
+        }
         if (isShortcut) {
             AppBottomSheetText(
                 text = stringResource(R.string.delete_shortcut),
