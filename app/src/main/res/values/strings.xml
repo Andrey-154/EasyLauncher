@@ -270,4 +270,36 @@
     <string name="weather_detect_location">📍 Detect by location</string>
     <string name="weather_location_failed">Could not get the location. Turn on location and try again.</string>
     <string name="weather_location_denied">Location permission was not granted. You can type the city instead.</string>
+
+    <string name="home_buttons">Home Screen Buttons</string>
+    <string name="home_buttons_description">Round quick buttons you can place anywhere on the home screen. Long-press a button on the home screen to move or remove buttons.</string>
+    <string name="home_buttons_add">Add Button</string>
+    <string name="home_buttons_none">No buttons yet</string>
+    <string name="home_buttons_size">Size</string>
+    <string name="home_buttons_size_small">Small</string>
+    <string name="home_buttons_size_medium">Medium</string>
+    <string name="home_buttons_size_large">Large</string>
+    <string name="home_buttons_style">Style</string>
+    <string name="home_buttons_style_outline">Outline</string>
+    <string name="home_buttons_style_filled">Filled</string>
+    <string name="home_buttons_edit_hint">Drag buttons · ✕ removes</string>
+    <string name="home_buttons_edit_empty">No buttons. Add them in settings.</string>
+    <string name="done">Done</string>
+    <string name="home_button_camera">Camera</string>
+    <string name="home_button_phone">Phone</string>
+    <string name="home_button_messages">Messages</string>
+    <string name="home_button_browser">Browser</string>
+    <string name="home_button_calculator">Calculator</string>
+    <string name="home_button_alarm">Clock / Alarm</string>
+    <string name="home_button_wifi">Wi-Fi</string>
+    <string name="home_button_bluetooth">Bluetooth</string>
+    <string name="home_button_volume">Volume</string>
+    <string name="home_button_play_pause">Music: Play / Pause</string>
+    <string name="home_button_next_track">Music: Next Track</string>
+    <string name="home_button_lock">Lock Screen</string>
+    <string name="home_button_notifications">Notifications</string>
+    <string name="home_button_search">Search Apps</string>
+    <string name="home_button_app">App…</string>
+    <string name="home_button_failed">Could not open it on this phone</string>
+    <string name="home_button_app_missing">This app is not installed any more</string>
 </resources>

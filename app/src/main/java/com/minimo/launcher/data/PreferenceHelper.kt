@@ -19,6 +19,10 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeButton
+import com.minimo.launcher.utils.HomeButtonSize
+import com.minimo.launcher.utils.HomeButtonStyle
+import com.minimo.launcher.utils.HomeButtonsJson
 import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.ScreenOrientation
@@ -143,6 +147,9 @@ class PreferenceHelper @Inject constructor(
         private val KEY_SHOW_FLASHLIGHT = booleanPreferencesKey("KEY_SHOW_FLASHLIGHT")
         private val KEY_FLASHLIGHT_AUTO_OFF = booleanPreferencesKey("KEY_FLASHLIGHT_AUTO_OFF")
         private val KEY_LIMIT_COLOR_TIME_ONLY = booleanPreferencesKey("KEY_LIMIT_COLOR_TIME_ONLY")
+        private val KEY_HOME_BUTTONS = stringPreferencesKey("KEY_HOME_BUTTONS")
+        private val KEY_HOME_BUTTON_SIZE = stringPreferencesKey("KEY_HOME_BUTTON_SIZE")
+        private val KEY_HOME_BUTTON_STYLE = stringPreferencesKey("KEY_HOME_BUTTON_STYLE")
         private val KEY_LIMIT_WARNING_COLOR = intPreferencesKey("KEY_LIMIT_WARNING_COLOR")
         private val KEY_LIMIT_EXCEEDED_COLOR = intPreferencesKey("KEY_LIMIT_EXCEEDED_COLOR")
     }
@@ -405,6 +412,34 @@ class PreferenceHelper @Inject constructor(
         preferences.edit {
             it[KEY_HOME_NOTE] = note
         }
+    }
+
+    fun getHomeButtonsSettingsFlow(): Flow<HomeButtonsSettings> {
+        return preferences.data.map { prefs ->
+            HomeButtonsSettings(
+                buttons = HomeButtonsJson.fromJson(prefs[KEY_HOME_BUTTONS]),
+                size = HomeButtonSize.entries.find { it.name == prefs[KEY_HOME_BUTTON_SIZE] }
+                    ?: HomeButtonSize.Medium,
+                style = HomeButtonStyle.entries.find { it.name == prefs[KEY_HOME_BUTTON_STYLE] }
+                    ?: HomeButtonStyle.Outline
+            )
+        }.distinctUntilChanged()
+    }
+
+    /** Atomically changes the list of home screen buttons. */
+    suspend fun updateHomeButtons(transform: (List<HomeButton>) -> List<HomeButton>) {
+        preferences.edit {
+            val current = HomeButtonsJson.fromJson(it[KEY_HOME_BUTTONS])
+            it[KEY_HOME_BUTTONS] = HomeButtonsJson.toJson(transform(current))
+        }
+    }
+
+    suspend fun setHomeButtonSize(size: HomeButtonSize) {
+        preferences.edit { it[KEY_HOME_BUTTON_SIZE] = size.name }
+    }
+
+    suspend fun setHomeButtonStyle(style: HomeButtonStyle) {
+        preferences.edit { it[KEY_HOME_BUTTON_STYLE] = style.name }
     }
 
     suspend fun setLimitColorTimeOnly(enable: Boolean) {

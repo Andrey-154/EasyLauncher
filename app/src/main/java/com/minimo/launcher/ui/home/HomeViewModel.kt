@@ -28,6 +28,7 @@ import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.FlashlightController
+import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.LaunchStatsRepository
 import com.minimo.launcher.utils.StringUtils
 import com.minimo.launcher.utils.TimeLimitRepository
@@ -124,6 +125,18 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+
+        viewModelScope.launch {
+            preferenceHelper.getHomeButtonsSettingsFlow().collect { settings ->
+                _state.update {
+                    it.copy(
+                        homeButtons = settings.buttons,
+                        homeButtonSize = settings.size,
+                        homeButtonStyle = settings.style
+                    )
+                }
+            }
         }
 
         viewModelScope.launch {
@@ -653,6 +666,39 @@ class HomeViewModel @Inject constructor(
         if (settingsIndex < 0) return sorted
         return sorted.toMutableList().apply {
             add(settingsIndex.coerceAtMost(size), apps[settingsIndex])
+        }
+    }
+
+    fun findAppByPreference(preference: String): AppInfo? {
+        val target = preference.toAppPreferenceTarget() ?: return null
+        return _state.value.allApps.find(target::matches)
+    }
+
+    fun onEnterHomeButtonsEditMode() {
+        _state.update { it.copy(homeButtonsEditMode = true) }
+    }
+
+    fun onExitHomeButtonsEditMode() {
+        _state.update { it.copy(homeButtonsEditMode = false) }
+    }
+
+    fun onHomeButtonMoved(button: HomeButton, x: Float, y: Float) {
+        viewModelScope.launch {
+            preferenceHelper.updateHomeButtons { buttons ->
+                buttons.map {
+                    if (it.id == button.id) {
+                        it.copy(x = x.coerceIn(0f, 1f), y = y.coerceIn(0f, 1f))
+                    } else {
+                        it
+                    }
+                }
+            }
+        }
+    }
+
+    fun onRemoveHomeButton(button: HomeButton) {
+        viewModelScope.launch {
+            preferenceHelper.updateHomeButtons { buttons -> buttons.filterNot { it.id == button.id } }
         }
     }
 

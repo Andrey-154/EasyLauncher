@@ -28,6 +28,7 @@ import com.minimo.launcher.ui.intro.IntroScreen
 import com.minimo.launcher.ui.launch.LaunchScreen
 import com.minimo.launcher.ui.settings.SettingsScreen
 import com.minimo.launcher.ui.settings.about.AboutAppScreen
+import com.minimo.launcher.ui.settings.home_buttons.HomeButtonsScreen
 import com.minimo.launcher.ui.settings.customisation.CustomisationScreen
 
 private const val DRAWER_TRANSITION_DURATION_MILLIS = 300
@@ -46,6 +47,7 @@ object Routes {
     const val FAVOURITE_APPS = "FAVOURITE_APPS"
     const val SETTINGS_REORDER_APPS = "SETTINGS_REORDER_APPS"
     const val ABOUT_APP = "ABOUT_APP"
+    const val HOME_BUTTONS = "HOME_BUTTONS"
 }
 
 /**
@@ -193,7 +195,16 @@ fun AppNavGraph(
                 },
                 onAboutAppClick = {
                     navController.navigate(Routes.ABOUT_APP)
+                },
+                onHomeButtonsClick = {
+                    navController.navigate(Routes.HOME_BUTTONS)
                 }
+            )
+        }
+        composable(route = Routes.HOME_BUTTONS) {
+            HomeButtonsScreen(
+                viewModel = hiltViewModel(it),
+                onBackClick = onBackPressed
             )
         }
         composable(route = Routes.ABOUT_APP) {

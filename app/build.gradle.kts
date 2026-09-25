@@ -103,6 +103,8 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2026.08.00"))
 
     implementation("androidx.compose.material3:material3")
+    // Icons for home screen quick buttons (unused icons are removed by R8)
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.compose.ui:ui-graphics")
 
     implementation("androidx.appcompat:appcompat:1.8.0")

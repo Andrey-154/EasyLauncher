@@ -43,7 +43,8 @@ fun SettingsScreen(
     onHiddenAppsClick: () -> Unit,
     onCustomisationClick: () -> Unit,
     onSearchClick: () -> Unit,
-    onAboutAppClick: () -> Unit
+    onAboutAppClick: () -> Unit,
+    onHomeButtonsClick: () -> Unit
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = hiltViewModel()
@@ -132,6 +133,10 @@ fun SettingsScreen(
             SettingsItem(
                 name = stringResource(R.string.customisation),
                 onClick = onCustomisationClick
+            )
+            SettingsItem(
+                name = stringResource(R.string.home_buttons),
+                onClick = onHomeButtonsClick
             )
             SettingsItem(
                 name = stringResource(R.string.set_default_launcher),

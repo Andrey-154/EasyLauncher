@@ -8,10 +8,19 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeButton
+import com.minimo.launcher.utils.HomeButtonSize
+import com.minimo.launcher.utils.HomeButtonStyle
 import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.ScreenOrientation
 import com.minimo.launcher.utils.SearchMode
+
+data class HomeButtonsSettings(
+    val buttons: List<HomeButton> = emptyList(),
+    val size: HomeButtonSize = HomeButtonSize.Medium,
+    val style: HomeButtonStyle = HomeButtonStyle.Outline
+)
 
 data class SearchPreferences(
     val searchMode: SearchMode = SearchMode.Contains,

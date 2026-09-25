@@ -11,6 +11,9 @@ import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.TimeLimitRepository
+import com.minimo.launcher.utils.HomeButton
+import com.minimo.launcher.utils.HomeButtonSize
+import com.minimo.launcher.utils.HomeButtonStyle
 
 data class PendingAppLaunch(
     val app: AppInfo,
@@ -92,5 +95,9 @@ data class HomeScreenState(
     val appUsageMillis: Map<String, Long> = emptyMap(),
     val limitColorTimeOnly: Boolean = true,
     val limitWarningColor: Int = TimeLimitRepository.DEFAULT_WARNING_COLOR,
-    val limitExceededColor: Int = TimeLimitRepository.DEFAULT_EXCEEDED_COLOR
+    val limitExceededColor: Int = TimeLimitRepository.DEFAULT_EXCEEDED_COLOR,
+    val homeButtons: List<HomeButton> = emptyList(),
+    val homeButtonSize: HomeButtonSize = HomeButtonSize.Medium,
+    val homeButtonStyle: HomeButtonStyle = HomeButtonStyle.Outline,
+    val homeButtonsEditMode: Boolean = false
 )

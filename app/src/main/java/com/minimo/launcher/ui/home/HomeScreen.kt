@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.home
 
+import com.minimo.launcher.ui.home.components.HomeButtonsLayer
+import com.minimo.launcher.ui.theme.LocalCustomTextColor
 import android.os.Build
 import android.widget.Toast
 import com.minimo.launcher.utils.isAppUsagePermissionGranted
@@ -80,7 +82,9 @@ fun HomeScreen(
     val swipeRightThreshold = swipeHorizontalThresholdPx
 
     BackHandler {
-        if (state.backOpensAppDrawer) {
+        if (state.homeButtonsEditMode) {
+            viewModel.onExitHomeButtonsEditMode()
+        } else if (state.backOpensAppDrawer) {
             onOpenAppDrawer()
         }
     }
@@ -210,6 +214,33 @@ fun HomeScreen(
                 )
             }
         }
+
+        val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
+        val customTextColor = LocalCustomTextColor.current
+        val buttonsColor = if (enableWallpaper && customTextColor == Color.Unspecified) {
+            if (state.lightTextOnWallpaper) Color.White else Color.Black
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+
+        HomeButtonsLayer(
+            buttons = state.homeButtons,
+            buttonSize = state.homeButtonSize,
+            buttonStyle = state.homeButtonStyle,
+            editMode = state.homeButtonsEditMode,
+            contentColor = buttonsColor,
+            flashlightOn = flashlightOn,
+            findApp = viewModel::findAppByPreference,
+            loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
+            onClick = { button ->
+                context.performHomeButtonAction(button, viewModel, onOpenAppDrawer, onSettingsClick)
+            },
+            onEnterEditMode = viewModel::onEnterHomeButtonsEditMode,
+            onMoved = viewModel::onHomeButtonMoved,
+            onRemove = viewModel::onRemoveHomeButton,
+            onDone = viewModel::onExitHomeButtonsEditMode,
+            modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)
+        )
     }
 
     if (state.renameAppDialog != null) {

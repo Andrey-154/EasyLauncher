@@ -1,0 +1,65 @@
+package com.minimo.launcher.ui.settings.home_buttons
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.minimo.launcher.data.AppInfoDao
+import com.minimo.launcher.data.HomeButtonsSettings
+import com.minimo.launcher.data.PreferenceHelper
+import com.minimo.launcher.ui.entities.toAppPreferenceTarget
+import com.minimo.launcher.utils.HomeButton
+import com.minimo.launcher.utils.HomeButtonSize
+import com.minimo.launcher.utils.HomeButtonStyle
+import com.minimo.launcher.utils.HomeButtonType
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class HomeButtonsViewModel @Inject constructor(
+    private val preferenceHelper: PreferenceHelper,
+    private val appInfoDao: AppInfoDao
+) : ViewModel() {
+
+    val settings: StateFlow<HomeButtonsSettings> = preferenceHelper.getHomeButtonsSettingsFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeButtonsSettings())
+
+    fun addButton(type: HomeButtonType, app: String = "") {
+        viewModelScope.launch {
+            preferenceHelper.updateHomeButtons { buttons ->
+                // New buttons line up along the bottom; the user drags them where needed
+                val index = buttons.size
+                val x = 0.1f + (index % 5) * 0.2f
+                val y = (0.92f - (index / 5) * 0.1f).coerceAtLeast(0.1f)
+                buttons + HomeButton(type = type, app = app, x = x, y = y)
+            }
+        }
+    }
+
+    fun removeButton(button: HomeButton) {
+        viewModelScope.launch {
+            preferenceHelper.updateHomeButtons { buttons -> buttons.filterNot { it.id == button.id } }
+        }
+    }
+
+    fun setSize(size: HomeButtonSize) {
+        viewModelScope.launch { preferenceHelper.setHomeButtonSize(size) }
+    }
+
+    fun setStyle(style: HomeButtonStyle) {
+        viewModelScope.launch { preferenceHelper.setHomeButtonStyle(style) }
+    }
+
+    /** Display name of the app behind an app button (empty if it is not installed any more). */
+    suspend fun appName(preference: String): String {
+        val target = preference.toAppPreferenceTarget() ?: return ""
+        return appInfoDao.getAllApps()
+            .firstOrNull { entity ->
+                entity.packageName == target.packageName && entity.targetId == target.targetId
+            }
+            ?.let { it.alternateAppName.ifEmpty { it.appName } }
+            .orEmpty()
+    }
+}
