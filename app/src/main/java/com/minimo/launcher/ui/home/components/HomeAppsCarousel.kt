@@ -1,5 +1,14 @@
 package com.minimo.launcher.ui.home.components
 
+import android.os.SystemClock
+import android.view.HapticFeedbackConstants
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.platform.LocalView
+import com.minimo.launcher.utils.CarouselHaptic
+import kotlinx.coroutines.flow.drop
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.gestures.snapping.SnapPosition
@@ -17,6 +26,8 @@ import kotlin.math.abs
 
 /** How many times the list is repeated in each direction; far more than anyone scrolls. */
 private const val LOOPS = 2_000
+
+private const val MIN_TICK_INTERVAL_MS = 35L
 
 /** Size of the outermost rows (at the very edge) when more than 4 apps are shown. */
 private const val EDGE_SCALE = 0.8f
@@ -40,12 +51,36 @@ fun <T> HomeAppsCarousel(
     modifier: Modifier = Modifier,
     /** Width of the scrollable strip ("compact touch area"); null = full width. */
     width: Dp? = null,
+    haptic: CarouselHaptic = CarouselHaptic.Off,
+    /** Called for every row that passes while scrolling (e.g. to play a tick sound). */
+    onRowPassed: () -> Unit = {},
     itemContent: @Composable (T, Modifier) -> Unit
 ) {
     val size = apps.size
     // Start in the middle, on the first app, so both directions have room
     val listState = remember(size) { LazyListState(firstVisibleItemIndex = size * (LOOPS / 2)) }
     val scaleEdges = visibleCount > 4
+
+    // A "wheel" tick for each row that crosses the top edge; limited in rate for fast flings
+    val view = LocalView.current
+    val currentHaptic by rememberUpdatedState(haptic)
+    val currentOnRowPassed by rememberUpdatedState(onRowPassed)
+    LaunchedEffect(listState) {
+        var lastTick = 0L
+        snapshotFlow { listState.firstVisibleItemIndex }
+            .drop(1)
+            .collect {
+                val now = SystemClock.uptimeMillis()
+                if (now - lastTick < MIN_TICK_INTERVAL_MS) return@collect
+                lastTick = now
+                when (currentHaptic) {
+                    CarouselHaptic.Off -> Unit
+                    CarouselHaptic.Light -> view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                    CarouselHaptic.Strong -> view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+                }
+                currentOnRowPassed()
+            }
+    }
 
     LazyColumn(
         state = listState,

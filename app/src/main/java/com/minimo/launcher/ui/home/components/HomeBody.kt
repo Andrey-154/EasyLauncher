@@ -418,6 +418,8 @@ fun HomeBody(
                     visibleCount = carouselRows,
                     rowHeight = carouselRowHeight,
                     width = compactCarouselWidth,
+                    haptic = state.carouselHaptic,
+                    onRowPassed = viewModel::onCarouselRowPassed,
                     transformOriginX = when (state.appsArrangementHorizontal) {
                         Arrangement.Center -> 0.5f
                         Arrangement.End -> 1f

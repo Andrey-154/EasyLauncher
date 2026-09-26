@@ -8,6 +8,8 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.CarouselHaptic
+import com.minimo.launcher.utils.CarouselSound
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonSize
 import com.minimo.launcher.utils.HomeButtonStyle
@@ -109,7 +111,10 @@ data class HomePreferences(
     val limitExceededColor: Int? = null,
     val limitHomeApps: Boolean = false,
     val maxHomeApps: Int = 5,
-    val protectHiddenApps: Boolean = false
+    val protectHiddenApps: Boolean = false,
+    val carouselHaptic: CarouselHaptic = CarouselHaptic.Light,
+    val carouselSound: CarouselSound = CarouselSound.Off,
+    val carouselSoundVolume: Int = 50
 )
 
 data class CustomisationPreferences(
@@ -186,5 +191,8 @@ data class CustomisationPreferences(
     val limitExceededColor: Int? = null,
     val limitHomeApps: Boolean = false,
     val maxHomeApps: Int = 5,
-    val protectHiddenApps: Boolean = false
+    val protectHiddenApps: Boolean = false,
+    val carouselHaptic: CarouselHaptic = CarouselHaptic.Light,
+    val carouselSound: CarouselSound = CarouselSound.Off,
+    val carouselSoundVolume: Int = 50
 )

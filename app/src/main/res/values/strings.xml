@@ -329,4 +329,13 @@
     <string name="folder_open_grid">Grid</string>
     <string name="folder_open_list">List</string>
     <string name="folder_show_names">Show app names</string>
+
+    <string name="off">Off</string>
+    <string name="carousel_haptic">Carousel Vibration</string>
+    <string name="carousel_haptic_light">Light</string>
+    <string name="carousel_haptic_strong">Strong</string>
+    <string name="carousel_sound">Carousel Sound</string>
+    <string name="carousel_sound_tick">Tick</string>
+    <string name="carousel_sound_click">Click</string>
+    <string name="carousel_sound_volume">Sound Volume:</string>
 </resources>

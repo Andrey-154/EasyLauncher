@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.settings.customisation
 
+import com.minimo.launcher.utils.CarouselHaptic
+import com.minimo.launcher.utils.CarouselSound
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.AppInfoDao
@@ -151,7 +153,10 @@ class CustomisationViewModel @Inject constructor(
                             limitWarningColor = prefs.limitWarningColor,
                             limitExceededColor = prefs.limitExceededColor,
                             limitHomeApps = prefs.limitHomeApps,
-                            maxHomeApps = prefs.maxHomeApps
+                            maxHomeApps = prefs.maxHomeApps,
+                            carouselHaptic = prefs.carouselHaptic,
+                            carouselSound = prefs.carouselSound,
+                            carouselSoundVolume = prefs.carouselSoundVolume
                         )
                     }
                 }
@@ -453,6 +458,19 @@ class CustomisationViewModel @Inject constructor(
         viewModelScope.launch {
             preferenceHelper.setShowHomeNote(_state.value.showHomeNote.not())
         }
+    }
+
+    fun onCarouselHapticChanged(haptic: CarouselHaptic) {
+        viewModelScope.launch { preferenceHelper.setCarouselHaptic(haptic) }
+    }
+
+    fun onCarouselSoundChanged(sound: CarouselSound) {
+        viewModelScope.launch { preferenceHelper.setCarouselSound(sound) }
+    }
+
+    fun onCarouselSoundVolumeChanged(volume: Int) {
+        if (volume == _state.value.carouselSoundVolume) return
+        viewModelScope.launch { preferenceHelper.setCarouselSoundVolume(volume) }
     }
 
     fun onToggleLimitHomeApps() {

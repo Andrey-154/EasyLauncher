@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.settings.customisation
 
+import com.minimo.launcher.utils.CarouselHaptic
+import com.minimo.launcher.utils.CarouselSound
 import com.minimo.launcher.ui.theme.ThemeMode
 import com.minimo.launcher.utils.AppIconAlignment
 import com.minimo.launcher.utils.Constants
@@ -91,5 +93,8 @@ data class CustomisationState(
     val limitWarningColor: Int? = null,
     val limitExceededColor: Int? = null,
     val limitHomeApps: Boolean = false,
-    val maxHomeApps: Int = 5
+    val maxHomeApps: Int = 5,
+    val carouselHaptic: CarouselHaptic = CarouselHaptic.Light,
+    val carouselSound: CarouselSound = CarouselSound.Off,
+    val carouselSoundVolume: Int = 50
 )

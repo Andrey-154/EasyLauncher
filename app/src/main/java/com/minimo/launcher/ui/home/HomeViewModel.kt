@@ -28,6 +28,8 @@ import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.AppLock
+import com.minimo.launcher.utils.CarouselSound
+import com.minimo.launcher.utils.CarouselSoundPlayer
 import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonType
@@ -70,7 +72,8 @@ class HomeViewModel @Inject constructor(
     private val launchStats: LaunchStatsRepository,
     private val flashlightController: FlashlightController,
     private val timeLimitRepository: TimeLimitRepository,
-    private val appLock: AppLock
+    private val appLock: AppLock,
+    private val carouselSoundPlayer: CarouselSoundPlayer
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -277,6 +280,7 @@ class HomeViewModel @Inject constructor(
                         }
 
                         flashlightController.autoOffWithScreen = prefs.flashlightAutoOff
+                        if (prefs.carouselSound != CarouselSound.Off) carouselSoundPlayer.prepare()
 
                         // The old "flashlight next to the clock" option became a movable button
                         if (prefs.showFlashlight) migrateFlashlightToButton()
@@ -369,6 +373,9 @@ class HomeViewModel @Inject constructor(
                             limitHomeApps = prefs.limitHomeApps,
                             maxHomeApps = prefs.maxHomeApps,
                             protectHiddenApps = prefs.protectHiddenApps,
+                            carouselHaptic = prefs.carouselHaptic,
+                            carouselSound = prefs.carouselSound,
+                            carouselSoundVolume = prefs.carouselSoundVolume,
                             limitWarningColor = prefs.limitWarningColor
                                 ?: TimeLimitRepository.DEFAULT_WARNING_COLOR,
                             limitExceededColor = prefs.limitExceededColor
@@ -751,6 +758,12 @@ class HomeViewModel @Inject constructor(
 
     fun onDismissTimeLimitDialog() {
         _state.update { it.copy(timeLimitDialog = null) }
+    }
+
+    /** The carousel moved by one row. */
+    fun onCarouselRowPassed() {
+        val state = _state.value
+        carouselSoundPlayer.play(state.carouselSound, state.carouselSoundVolume / 100f)
     }
 
     fun onFlashlightClick() {

@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation
 
+import com.minimo.launcher.ui.settings.customisation.components.CarouselFeedbackSettings
 import androidx.compose.foundation.layout.PaddingValues
 import android.os.Build
 import androidx.compose.foundation.background
@@ -464,6 +465,15 @@ fun CustomisationScreen(
                 MaxHomeAppsSlider(
                     maxHomeApps = state.maxHomeApps,
                     onMaxHomeAppsChanged = viewModel::onMaxHomeAppsChanged
+                )
+
+                CarouselFeedbackSettings(
+                    haptic = state.carouselHaptic,
+                    sound = state.carouselSound,
+                    soundVolume = state.carouselSoundVolume,
+                    onHapticChanged = viewModel::onCarouselHapticChanged,
+                    onSoundChanged = viewModel::onCarouselSoundChanged,
+                    onSoundVolumeChanged = viewModel::onCarouselSoundVolumeChanged
                 )
             }
 
