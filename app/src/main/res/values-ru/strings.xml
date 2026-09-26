@@ -311,4 +311,10 @@
     <string name="folder_name">Название папки</string>
     <string name="folder_selected_count">Выбрано: %1$d</string>
     <string name="folder_row">📁 %1$s (%2$d)</string>
+
+    <string name="protect_hidden_apps">Защитить скрытые приложения</string>
+    <string name="protect_hidden_apps_description">Чтобы открыть этот список или запустить скрытое приложение, нужен отпечаток или блокировка экрана телефона (PIN, графический ключ)</string>
+    <string name="protect_needs_screen_lock">Сначала установите блокировку экрана (PIN, графический ключ или отпечаток) в настройках телефона</string>
+    <string name="unlock_hidden_apps">Разблокировать скрытые приложения</string>
+    <string name="unlock_hidden_apps_subtitle">Приложите палец или введите PIN-код телефона</string>
 </resources>

@@ -27,6 +27,7 @@ import com.minimo.launcher.utils.NotificationDotsNotifier
 import com.minimo.launcher.utils.ScreenTimeHelper
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
+import com.minimo.launcher.utils.AppLock
 import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonType
@@ -68,7 +69,8 @@ class HomeViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val launchStats: LaunchStatsRepository,
     private val flashlightController: FlashlightController,
-    private val timeLimitRepository: TimeLimitRepository
+    private val timeLimitRepository: TimeLimitRepository,
+    private val appLock: AppLock
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -366,6 +368,7 @@ class HomeViewModel @Inject constructor(
                             limitColorTimeOnly = prefs.limitColorTimeOnly,
                             limitHomeApps = prefs.limitHomeApps,
                             maxHomeApps = prefs.maxHomeApps,
+                            protectHiddenApps = prefs.protectHiddenApps,
                             limitWarningColor = prefs.limitWarningColor
                                 ?: TimeLimitRepository.DEFAULT_WARNING_COLOR,
                             limitExceededColor = prefs.limitExceededColor
@@ -528,6 +531,21 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onAppLaunchRequest(app: AppInfo) {
+        // Hidden apps need the phone lock check first (MainActivity shows the system prompt)
+        if (app.isHidden && _state.value.protectHiddenApps && !appLock.unlocked.value) {
+            _state.update { it.copy(pendingProtectedApp = app) }
+            return
+        }
+        launchWithDelayCheck(app)
+    }
+
+    fun onProtectedAppAuthResult(success: Boolean) {
+        val app = _state.value.pendingProtectedApp ?: return
+        _state.update { it.copy(pendingProtectedApp = null) }
+        if (success) launchWithDelayCheck(app)
+    }
+
+    private fun launchWithDelayCheck(app: AppInfo) {
         if (app.launchDelaySeconds > 0) {
             _state.update {
                 it.copy(

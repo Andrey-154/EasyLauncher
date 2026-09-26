@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.hidden_apps
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,8 +47,10 @@ import com.minimo.launcher.utils.startShortcut
 @Composable
 fun HiddenAppsScreen(
     viewModel: HiddenAppsViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    lockViewModel: AppLockViewModel = hiltViewModel()
 ) {
+    val protectHiddenApps by lockViewModel.protectHiddenApps.collectAsStateWithLifecycle()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showInfoDialog by remember { mutableStateOf(false) }
@@ -120,6 +123,32 @@ fun HiddenAppsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        lockViewModel.toggleProtection(context, protectHiddenApps == true)
+                    }
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = stringResource(R.string.protect_hidden_apps), fontSize = 18.sp)
+                    Text(
+                        text = stringResource(R.string.protect_hidden_apps_description),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Switch(
+                    checked = protectHiddenApps == true,
+                    onCheckedChange = {
+                        lockViewModel.toggleProtection(context, protectHiddenApps == true)
+                    }
+                )
+            }
+
             if (state.searchPreferencesLoaded) {
                 SearchItem(
                     modifier = Modifier.fillMaxWidth(),

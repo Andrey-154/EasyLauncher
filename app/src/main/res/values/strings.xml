@@ -310,4 +310,10 @@
     <string name="folder_name">Folder name</string>
     <string name="folder_selected_count">Selected: %1$d</string>
     <string name="folder_row">📁 %1$s (%2$d)</string>
+
+    <string name="protect_hidden_apps">Protect Hidden Apps</string>
+    <string name="protect_hidden_apps_description">Fingerprint or the phone\'s screen lock (PIN, pattern) is needed to see this list and to open hidden apps</string>
+    <string name="protect_needs_screen_lock">Set up a screen lock (PIN, pattern or fingerprint) in the phone settings first</string>
+    <string name="unlock_hidden_apps">Unlock hidden apps</string>
+    <string name="unlock_hidden_apps_subtitle">Use your fingerprint or screen lock</string>
 </resources>

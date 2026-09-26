@@ -1,9 +1,11 @@
 package com.minimo.launcher.ui.main
 
+import com.minimo.launcher.R
+import com.minimo.launcher.utils.AppLock
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -38,9 +40,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     @Inject
     lateinit var appsManager: AppsManager
+
+    @Inject
+    lateinit var appLock: AppLock
 
     private val viewModel: MainViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
@@ -50,6 +55,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setupOrientationChangeListener()
+        setupProtectedAppPrompt()
         appsManager.registerCallback()
 
         setContent {
@@ -143,6 +149,29 @@ class MainActivity : ComponentActivity() {
                     requestedOrientation = orientation
                 }
         }
+    }
+
+    /** Shows the fingerprint / PIN prompt when a protected hidden app is about to open. */
+    private fun setupProtectedAppPrompt() {
+        lifecycleScope.launch {
+            homeViewModel.state
+                .map { it.pendingProtectedApp }
+                .distinctUntilChanged()
+                .collect { app ->
+                    if (app == null) return@collect
+                    appLock.authenticate(
+                        this@MainActivity,
+                        title = getString(R.string.unlock_hidden_apps),
+                        subtitle = app.name
+                    ) { success -> homeViewModel.onProtectedAppAuthResult(success) }
+                }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Leaving the launcher locks hidden apps again
+        appLock.lock()
     }
 
     override fun onNewIntent(intent: Intent) {

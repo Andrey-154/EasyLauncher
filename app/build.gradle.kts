@@ -108,6 +108,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
 
     implementation("androidx.appcompat:appcompat:1.8.0")
+    // Fingerprint / screen lock check for hidden apps
+    implementation("androidx.biometric:biometric:1.1.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     implementation("androidx.navigation:navigation-compose:2.10.0")

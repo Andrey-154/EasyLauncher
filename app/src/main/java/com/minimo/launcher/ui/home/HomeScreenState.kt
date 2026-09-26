@@ -101,5 +101,8 @@ data class HomeScreenState(
     val homeButtonStyle: HomeButtonStyle = HomeButtonStyle.Outline,
     val homeButtonsEditMode: Boolean = false,
     val limitHomeApps: Boolean = false,
-    val maxHomeApps: Int = 5
+    val maxHomeApps: Int = 5,
+    val protectHiddenApps: Boolean = false,
+    /** A hidden app waiting for the fingerprint / PIN check before it opens. */
+    val pendingProtectedApp: AppInfo? = null
 )

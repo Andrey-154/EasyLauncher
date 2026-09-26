@@ -108,7 +108,8 @@ data class HomePreferences(
     val limitWarningColor: Int? = null,
     val limitExceededColor: Int? = null,
     val limitHomeApps: Boolean = false,
-    val maxHomeApps: Int = 5
+    val maxHomeApps: Int = 5,
+    val protectHiddenApps: Boolean = false
 )
 
 data class CustomisationPreferences(
@@ -184,5 +185,6 @@ data class CustomisationPreferences(
     val limitWarningColor: Int? = null,
     val limitExceededColor: Int? = null,
     val limitHomeApps: Boolean = false,
-    val maxHomeApps: Int = 5
+    val maxHomeApps: Int = 5,
+    val protectHiddenApps: Boolean = false
 )

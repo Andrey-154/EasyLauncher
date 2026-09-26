@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.minimo.launcher.ui.favourite_apps.FavouriteAppsScreen
 import com.minimo.launcher.ui.favourite_apps.reorder_apps.ReorderAppsScreen
+import com.minimo.launcher.ui.hidden_apps.HiddenAppsGate
 import com.minimo.launcher.ui.hidden_apps.HiddenAppsScreen
 import com.minimo.launcher.ui.home.AppDrawerScreen
 import com.minimo.launcher.ui.home.HomeScreen
@@ -213,10 +214,12 @@ fun AppNavGraph(
             )
         }
         composable(route = Routes.HIDDEN_APPS) {
-            HiddenAppsScreen(
-                viewModel = hiltViewModel(it),
-                onBackClick = onBackPressed
-            )
+            HiddenAppsGate(onCancel = onBackPressed) {
+                HiddenAppsScreen(
+                    viewModel = hiltViewModel(it),
+                    onBackClick = onBackPressed
+                )
+            }
         }
         composable(
             route = "${Routes.SETTINGS_CUSTOMISATION}?${Routes.SETTINGS_SEARCH_ARG}={${Routes.SETTINGS_SEARCH_ARG}}",

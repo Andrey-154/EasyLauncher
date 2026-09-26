@@ -149,6 +149,7 @@ class PreferenceHelper @Inject constructor(
         private val KEY_LIMIT_COLOR_TIME_ONLY = booleanPreferencesKey("KEY_LIMIT_COLOR_TIME_ONLY")
         private val KEY_HOME_BUTTONS = stringPreferencesKey("KEY_HOME_BUTTONS")
         private val KEY_LIMIT_HOME_APPS = booleanPreferencesKey("KEY_LIMIT_HOME_APPS")
+        private val KEY_PROTECT_HIDDEN_APPS = booleanPreferencesKey("KEY_PROTECT_HIDDEN_APPS")
         private val KEY_MAX_HOME_APPS = intPreferencesKey("KEY_MAX_HOME_APPS")
         private val KEY_HOME_BUTTON_SIZE = stringPreferencesKey("KEY_HOME_BUTTON_SIZE")
         private val KEY_HOME_BUTTON_STYLE = stringPreferencesKey("KEY_HOME_BUTTON_STYLE")
@@ -435,6 +436,10 @@ class PreferenceHelper @Inject constructor(
             val current = HomeButtonsJson.fromJson(it[KEY_HOME_BUTTONS])
             it[KEY_HOME_BUTTONS] = HomeButtonsJson.toJson(transform(current))
         }
+    }
+
+    suspend fun setProtectHiddenApps(enable: Boolean) {
+        preferences.edit { it[KEY_PROTECT_HIDDEN_APPS] = enable }
     }
 
     suspend fun setLimitHomeApps(enable: Boolean) {
@@ -751,7 +756,8 @@ class PreferenceHelper @Inject constructor(
                 limitWarningColor = prefs[KEY_LIMIT_WARNING_COLOR],
                 limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR],
                 limitHomeApps = prefs[KEY_LIMIT_HOME_APPS] ?: false,
-                maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5
+                maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5,
+                protectHiddenApps = prefs[KEY_PROTECT_HIDDEN_APPS] ?: false
             )
         }
     }
@@ -844,7 +850,8 @@ class PreferenceHelper @Inject constructor(
                 limitWarningColor = prefs[KEY_LIMIT_WARNING_COLOR],
                 limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR],
                 limitHomeApps = prefs[KEY_LIMIT_HOME_APPS] ?: false,
-                maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5
+                maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5,
+                protectHiddenApps = prefs[KEY_PROTECT_HIDDEN_APPS] ?: false
             )
         }
     }
