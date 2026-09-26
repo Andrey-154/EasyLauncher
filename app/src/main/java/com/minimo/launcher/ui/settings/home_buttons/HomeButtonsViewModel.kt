@@ -1,5 +1,9 @@
 package com.minimo.launcher.ui.settings.home_buttons
 
+import android.content.Context
+import com.minimo.launcher.R
+import com.minimo.launcher.utils.UndoController
+import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.minimo.launcher.data.AppInfoDao
@@ -22,7 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeButtonsViewModel @Inject constructor(
     private val preferenceHelper: PreferenceHelper,
-    private val appInfoDao: AppInfoDao
+    private val appInfoDao: AppInfoDao,
+    @ApplicationContext private val context: Context,
+    private val undoController: UndoController
 ) : ViewModel() {
 
     val settings: StateFlow<HomeButtonsSettings> = preferenceHelper.getHomeButtonsSettingsFlow()
@@ -93,7 +99,19 @@ class HomeButtonsViewModel @Inject constructor(
 
     fun removeButton(button: HomeButton) {
         viewModelScope.launch {
+            val index = settings.value.buttons.indexOfFirst { it.id == button.id }
             preferenceHelper.updateHomeButtons { buttons -> buttons.filterNot { it.id == button.id } }
+            val message = if (button.type == HomeButtonType.FOLDER) {
+                context.getString(R.string.undo_folder_removed, button.name)
+            } else {
+                context.getString(R.string.undo_button_removed)
+            }
+            undoController.offer(message) {
+                preferenceHelper.updateHomeButtons { buttons ->
+                    if (buttons.any { it.id == button.id }) buttons
+                    else buttons.toMutableList().apply { add(index.coerceIn(0, size), button) }
+                }
+            }
         }
     }
 

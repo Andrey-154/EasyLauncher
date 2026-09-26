@@ -47,7 +47,8 @@ fun SettingsScreen(
     onHiddenAppsClick: () -> Unit,
     onCustomisationClick: () -> Unit,
     onAboutAppClick: () -> Unit,
-    onHomeButtonsClick: () -> Unit
+    onHomeButtonsClick: () -> Unit,
+    onThemesClick: () -> Unit
 ) {
     val context = LocalContext.current
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -122,6 +123,7 @@ fun SettingsScreen(
         val menuItems = listOf(
             stringResource(R.string.favourite_apps) to onFavouriteAppsClick,
             stringResource(R.string.hidden_apps) to onHiddenAppsClick,
+            stringResource(R.string.themes) to onThemesClick,
             stringResource(R.string.customisation) to onCustomisationClick,
             stringResource(R.string.home_buttons) to onHomeButtonsClick,
             stringResource(R.string.set_default_launcher) to context::openHomeSettings,

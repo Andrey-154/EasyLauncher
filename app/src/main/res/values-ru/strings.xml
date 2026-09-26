@@ -349,4 +349,25 @@
     <string name="quick_note_edit">Изменить</string>
     <string name="quick_note_clear">Очистить</string>
     <string name="quick_note_hide">Убрать заметку с главного</string>
+
+    <string name="undo">Отменить</string>
+    <string name="undo_favourite_removed">«%1$s» убрано из избранного</string>
+    <string name="undo_button_removed">Кнопка удалена</string>
+    <string name="undo_folder_removed">Папка «%1$s» удалена</string>
+    <string name="themes">Темы</string>
+    <string name="themes_description">Нажмите на тему, чтобы применить её. Меняется только внешний вид: приложения, кнопки, город погоды и заметки остаются.</string>
+    <string name="themes_mine">Мои темы (удержание — удалить)</string>
+    <string name="themes_built_in">Темы</string>
+    <string name="theme_save_current">Сохранить текущий вид как тему</string>
+    <string name="theme_name">Название темы</string>
+    <string name="theme_applied">Тема «%1$s» применена</string>
+    <string name="theme_deleted">Тема «%1$s» удалена</string>
+    <string name="theme_delete_question">Удалить эту тему?</string>
+    <string name="theme_sepia">Сепия</string>
+    <string name="theme_sunset">Закат</string>
+    <string name="theme_mint">Мята</string>
+    <string name="theme_ocean">Океан</string>
+    <string name="theme_coffee">Кофе</string>
+    <string name="theme_paper">Бумага</string>
+    <string name="theme_sakura">Сакура</string>
 </resources>

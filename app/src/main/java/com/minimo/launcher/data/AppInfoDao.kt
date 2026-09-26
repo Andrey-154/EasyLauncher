@@ -59,6 +59,23 @@ interface AppInfoDao {
         orderIndex: Int
     )
 
+    /** Undo of removing a favourite: make room at [orderIndex] and put it back there. */
+    @Transaction
+    suspend fun restoreFavouriteTransaction(
+        itemType: AppItemType,
+        targetId: String,
+        packageName: String,
+        userHandle: Int,
+        orderIndex: Int
+    ) {
+        increaseOrderIndexFrom(orderIndex)
+        addAppToFavourite(itemType, targetId, packageName, userHandle, orderIndex)
+    }
+
+    // Not called from outside this file
+    @Query("UPDATE appInfoEntity SET order_index = order_index + 1 WHERE is_favourite = 1 AND order_index >= :orderIndex")
+    suspend fun increaseOrderIndexFrom(orderIndex: Int)
+
     @Transaction
     suspend fun removeAppFromFavouriteTransaction(
         itemType: AppItemType,

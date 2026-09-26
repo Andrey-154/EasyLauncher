@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.navigation
 
+import com.minimo.launcher.ui.settings.themes.ThemesScreen
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -46,6 +47,7 @@ object Routes {
     const val SETTINGS_REORDER_APPS = "SETTINGS_REORDER_APPS"
     const val ABOUT_APP = "ABOUT_APP"
     const val HOME_BUTTONS = "HOME_BUTTONS"
+    const val THEMES = "THEMES"
 }
 
 /**
@@ -191,7 +193,16 @@ fun AppNavGraph(
                 },
                 onHomeButtonsClick = {
                     navController.navigate(Routes.HOME_BUTTONS)
+                },
+                onThemesClick = {
+                    navController.navigate(Routes.THEMES)
                 }
+            )
+        }
+        composable(route = Routes.THEMES) {
+            ThemesScreen(
+                viewModel = hiltViewModel(it),
+                onBackClick = onBackPressed
             )
         }
         composable(route = Routes.HOME_BUTTONS) {

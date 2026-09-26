@@ -1,5 +1,8 @@
 package com.minimo.launcher.ui.main
 
+import com.minimo.launcher.ui.components.UndoHost
+import com.minimo.launcher.utils.UndoController
+import androidx.compose.ui.Alignment
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.CompositionLocalProvider
@@ -54,6 +57,9 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var appLock: AppLock
+
+    @Inject
+    lateinit var undoController: UndoController
 
     private val viewModel: MainViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
@@ -136,6 +142,7 @@ class MainActivity : FragmentActivity() {
                 )
 
                 CompositionLocalProvider(LocalBlurController provides blurController) {
+                Box(modifier = Modifier.fillMaxSize()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -153,6 +160,11 @@ class MainActivity : FragmentActivity() {
                             onBackPressedDispatcher.onBackPressed()
                         }
                     )
+                }
+                UndoHost(
+                    controller = undoController,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
                 }
                 }
             }

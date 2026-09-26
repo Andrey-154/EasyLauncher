@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.home
 
+import com.minimo.launcher.utils.FuzzySearch
+import com.minimo.launcher.utils.UndoController
 import com.minimo.launcher.utils.HomeClockMode
 import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.LocationHelper
@@ -83,7 +85,8 @@ class HomeViewModel @Inject constructor(
     private val carouselSoundPlayer: CarouselSoundPlayer,
     private val carouselHapticPlayer: CarouselHapticPlayer,
     homePressedNotifier: HomePressedNotifier,
-    private val locationHelper: LocationHelper
+    private val locationHelper: LocationHelper,
+    private val undoController: UndoController
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -459,6 +462,13 @@ class HomeViewModel @Inject constructor(
                     app.userHandle,
                     app.orderIndex
                 )
+                undoController.offer(
+                    applicationContext.getString(R.string.undo_favourite_removed, app.name)
+                ) {
+                    appInfoDao.restoreFavouriteTransaction(
+                        app.itemType, app.targetId, app.packageName, app.userHandle, app.orderIndex
+                    )
+                }
             } else {
                 val newOrderIndex =
                     (_state.value.favouriteApps.maxOfOrNull { it.orderIndex } ?: 0) + 1
@@ -698,7 +708,20 @@ class HomeViewModel @Inject constructor(
                         StringUtils.matchesAppSearch(cleanedAppName, searchText, searchMode)
             }
         }
-        return if (sortAppsByUsage) sortByUsage(result) else result
+        val sorted = if (sortAppsByUsage) sortByUsage(result) else result
+        if (searchText.isBlank()) return sorted
+
+        // Typos and the other alphabet ("телеграмм" → Telegram), below the exact matches
+        val exactIds = result.mapTo(HashSet()) { it.id }
+        val typos = apps
+            .asSequence()
+            .filter { it.id !in exactIds && (includeHiddenApps || !it.isHidden) }
+            .filter { it.packageName != Constants.MINIMO_SETTINGS_PACKAGE }
+            .mapNotNull { app -> FuzzySearch.distance(app.name, searchText)?.let { app to it } }
+            .sortedBy { it.second }
+            .map { it.first }
+            .toList()
+        return sorted + typos
     }
 
     /** Most opened first; ties keep alphabetical order. The settings item keeps its place. */
@@ -756,7 +779,23 @@ class HomeViewModel @Inject constructor(
 
     fun onRemoveHomeButton(button: HomeButton) {
         viewModelScope.launch {
+            val index = _state.value.homeButtons.indexOfFirst { it.id == button.id }
             preferenceHelper.updateHomeButtons { buttons -> buttons.filterNot { it.id == button.id } }
+            offerButtonUndo(button, index)
+        }
+    }
+
+    private fun offerButtonUndo(button: HomeButton, index: Int) {
+        val message = if (button.type == HomeButtonType.FOLDER) {
+            applicationContext.getString(R.string.undo_folder_removed, button.name)
+        } else {
+            applicationContext.getString(R.string.undo_button_removed)
+        }
+        undoController.offer(message) {
+            preferenceHelper.updateHomeButtons { buttons ->
+                if (buttons.any { it.id == button.id }) buttons
+                else buttons.toMutableList().apply { add(index.coerceIn(0, size), button) }
+            }
         }
     }
 

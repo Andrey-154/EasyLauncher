@@ -348,4 +348,25 @@
     <string name="quick_note_edit">Edit</string>
     <string name="quick_note_clear">Clear</string>
     <string name="quick_note_hide">Hide the note from Home</string>
+
+    <string name="undo">Undo</string>
+    <string name="undo_favourite_removed">“%1$s” removed from favourites</string>
+    <string name="undo_button_removed">Button removed</string>
+    <string name="undo_folder_removed">Folder “%1$s” removed</string>
+    <string name="themes">Themes</string>
+    <string name="themes_description">Tap a theme to apply it. Only the look changes: your apps, buttons, weather city and notes stay.</string>
+    <string name="themes_mine">My themes (long-press to delete)</string>
+    <string name="themes_built_in">Themes</string>
+    <string name="theme_save_current">Save current look as a theme</string>
+    <string name="theme_name">Theme name</string>
+    <string name="theme_applied">Theme “%1$s” applied</string>
+    <string name="theme_deleted">Theme “%1$s” deleted</string>
+    <string name="theme_delete_question">Delete this theme?</string>
+    <string name="theme_sepia">Sepia</string>
+    <string name="theme_sunset">Sunset</string>
+    <string name="theme_mint">Mint</string>
+    <string name="theme_ocean">Ocean</string>
+    <string name="theme_coffee">Coffee</string>
+    <string name="theme_paper">Paper</string>
+    <string name="theme_sakura">Sakura</string>
 </resources>
