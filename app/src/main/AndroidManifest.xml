@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Short pulses while scrolling the favourites carousel (granted automatically) -->
+    <uses-permission android:name="android.permission.VIBRATE" />
     <!-- City-level location for the weather widget, asked only when the user taps "Detect" -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />

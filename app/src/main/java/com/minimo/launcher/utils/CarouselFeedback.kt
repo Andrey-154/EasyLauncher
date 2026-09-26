@@ -4,6 +4,10 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.io.File
@@ -21,6 +25,44 @@ enum class CarouselHaptic { Off, Light, Strong }
 
 /** Sound while the favourites carousel passes a row. */
 enum class CarouselSound { Off, Tick, Click }
+
+private const val MAX_SOUND_VOLUME = 0.2f
+
+/**
+ * A short pulse of the vibration motor per carousel row. The system "touch haptics" (e.g. the
+ * clock tick) are silently ignored on some phones (Samsung), a direct pulse works everywhere.
+ */
+@Singleton
+class CarouselHapticPlayer @Inject constructor(
+    @ApplicationContext context: Context
+) {
+    private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager)?.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+    }
+
+    fun play(haptic: CarouselHaptic) {
+        val vibrator = vibrator ?: return
+        if (haptic == CarouselHaptic.Off || !vibrator.hasVibrator()) return
+        val (durationMs, amplitude) = when (haptic) {
+            CarouselHaptic.Light -> 10L to 90
+            CarouselHaptic.Strong -> 18L to 220
+            CarouselHaptic.Off -> return
+        }
+        try {
+            vibrator.vibrate(
+                VibrationEffect.createOneShot(
+                    durationMs,
+                    if (vibrator.hasAmplitudeControl()) amplitude else VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
+        } catch (exception: Exception) {
+            Timber.e(exception)
+        }
+    }
+}
 
 /**
  * Short "wheel" sounds for the carousel. They are generated once into small WAV files
@@ -67,13 +109,16 @@ class CarouselSoundPlayer @Inject constructor(
         soundIds
     }
 
-    /** @param volume 0..1 */
+    /**
+     * @param volume 0..1 from the setting. The ticks are meant to be barely there, so the whole
+     *  scale is 5× quieter: 50% plays at 0.1, 100% at 0.2.
+     */
     fun play(sound: CarouselSound, volume: Float) {
         if (sound == CarouselSound.Off) return
         // Respect the phone's silent / vibrate mode
         if (audioManager.ringerMode != AudioManager.RINGER_MODE_NORMAL) return
         val id = soundIds[sound] ?: return
-        val v = volume.coerceIn(0f, 1f)
+        val v = volume.coerceIn(0f, 1f) * MAX_SOUND_VOLUME
         soundPool.play(id, v, v, 1, 0, 1f)
     }
 

@@ -29,6 +29,7 @@ import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.AppLock
 import com.minimo.launcher.utils.CarouselSound
+import com.minimo.launcher.utils.CarouselHapticPlayer
 import com.minimo.launcher.utils.CarouselSoundPlayer
 import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.HomeButton
@@ -73,7 +74,8 @@ class HomeViewModel @Inject constructor(
     private val flashlightController: FlashlightController,
     private val timeLimitRepository: TimeLimitRepository,
     private val appLock: AppLock,
-    private val carouselSoundPlayer: CarouselSoundPlayer
+    private val carouselSoundPlayer: CarouselSoundPlayer,
+    private val carouselHapticPlayer: CarouselHapticPlayer
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -763,6 +765,7 @@ class HomeViewModel @Inject constructor(
     /** The carousel moved by one row. */
     fun onCarouselRowPassed() {
         val state = _state.value
+        carouselHapticPlayer.play(state.carouselHaptic)
         carouselSoundPlayer.play(state.carouselSound, state.carouselSoundVolume / 100f)
     }
 
