@@ -332,9 +332,7 @@
     <string name="folder_show_names">Показывать названия</string>
 
     <string name="off">Выкл</string>
-    <string name="carousel_haptic">Вибрация карусели</string>
-    <string name="carousel_haptic_light">Лёгкая</string>
-    <string name="carousel_haptic_strong">Сильная</string>
+    <string name="carousel_haptic">Вибрация карусели:</string>
     <string name="carousel_sound">Звук карусели</string>
     <string name="carousel_sound_tick">Тик</string>
     <string name="carousel_sound_click">Щелчок</string>

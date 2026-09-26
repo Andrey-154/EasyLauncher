@@ -375,7 +375,7 @@ class HomeViewModel @Inject constructor(
                             limitHomeApps = prefs.limitHomeApps,
                             maxHomeApps = prefs.maxHomeApps,
                             protectHiddenApps = prefs.protectHiddenApps,
-                            carouselHaptic = prefs.carouselHaptic,
+                            carouselVibration = prefs.carouselVibration,
                             carouselSound = prefs.carouselSound,
                             carouselSoundVolume = prefs.carouselSoundVolume,
                             limitWarningColor = prefs.limitWarningColor
@@ -765,7 +765,7 @@ class HomeViewModel @Inject constructor(
     /** The carousel moved by one row. */
     fun onCarouselRowPassed() {
         val state = _state.value
-        carouselHapticPlayer.play(state.carouselHaptic)
+        carouselHapticPlayer.play(state.carouselVibration)
         carouselSoundPlayer.play(state.carouselSound, state.carouselSoundVolume / 100f)
     }
 

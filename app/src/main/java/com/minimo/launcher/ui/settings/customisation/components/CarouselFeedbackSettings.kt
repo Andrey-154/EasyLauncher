@@ -18,30 +18,39 @@ import com.minimo.launcher.R
 import com.minimo.launcher.ui.components.DropdownView
 import com.minimo.launcher.ui.settings.customisation.settingVisible
 import com.minimo.launcher.ui.theme.Dimens
-import com.minimo.launcher.utils.CarouselHaptic
 import com.minimo.launcher.utils.CarouselSound
 import kotlin.math.roundToInt
 
 /** Vibration and sound while scrolling the favourites carousel. */
 @Composable
 fun CarouselFeedbackSettings(
-    haptic: CarouselHaptic,
+    /** 0..100 %, 0 = off */
+    vibration: Int,
     sound: CarouselSound,
     soundVolume: Int,
-    onHapticChanged: (CarouselHaptic) -> Unit,
+    onVibrationChanged: (Int) -> Unit,
     onSoundChanged: (CarouselSound) -> Unit,
     onSoundVolumeChanged: (Int) -> Unit
 ) {
-    OptionRow(
-        title = stringResource(R.string.carousel_haptic),
-        selected = haptic,
-        options = listOf(
-            CarouselHaptic.Off to stringResource(R.string.off),
-            CarouselHaptic.Light to stringResource(R.string.carousel_haptic_light),
-            CarouselHaptic.Strong to stringResource(R.string.carousel_haptic_strong)
-        ),
-        onSelected = onHapticChanged
-    )
+    if (settingVisible(stringResource(R.string.carousel_haptic))) {
+        Row(modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)) {
+            Text(text = stringResource(R.string.carousel_haptic), fontSize = 20.sp)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = if (vibration == 0) stringResource(R.string.off) else "$vibration%",
+                fontSize = 20.sp
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Slider(
+            modifier = Modifier.padding(horizontal = Dimens.APP_HORIZONTAL_SPACING),
+            value = vibration.toFloat(),
+            onValueChange = { onVibrationChanged(it.roundToInt()) },
+            valueRange = 0f..100f,
+            steps = 19
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+    }
 
     OptionRow(
         title = stringResource(R.string.carousel_sound),

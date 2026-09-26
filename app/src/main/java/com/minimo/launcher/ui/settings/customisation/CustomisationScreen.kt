@@ -468,10 +468,10 @@ fun CustomisationScreen(
                 )
 
                 CarouselFeedbackSettings(
-                    haptic = state.carouselHaptic,
+                    vibration = state.carouselVibration,
                     sound = state.carouselSound,
                     soundVolume = state.carouselSoundVolume,
-                    onHapticChanged = viewModel::onCarouselHapticChanged,
+                    onVibrationChanged = viewModel::onCarouselVibrationChanged,
                     onSoundChanged = viewModel::onCarouselSoundChanged,
                     onSoundVolumeChanged = viewModel::onCarouselSoundVolumeChanged
                 )

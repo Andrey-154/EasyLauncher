@@ -19,7 +19,6 @@ import com.minimo.launcher.utils.HomeAppsAlignmentHorizontal
 import com.minimo.launcher.utils.HomeAppsAlignmentVertical
 import com.minimo.launcher.utils.HomeClockAlignment
 import com.minimo.launcher.utils.HomeClockMode
-import com.minimo.launcher.utils.CarouselHaptic
 import com.minimo.launcher.utils.CarouselSound
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonSize
@@ -152,7 +151,8 @@ class PreferenceHelper @Inject constructor(
         private val KEY_HOME_BUTTONS = stringPreferencesKey("KEY_HOME_BUTTONS")
         private val KEY_LIMIT_HOME_APPS = booleanPreferencesKey("KEY_LIMIT_HOME_APPS")
         private val KEY_PROTECT_HIDDEN_APPS = booleanPreferencesKey("KEY_PROTECT_HIDDEN_APPS")
-        private val KEY_CAROUSEL_HAPTIC = stringPreferencesKey("KEY_CAROUSEL_HAPTIC")
+        private val KEY_CAROUSEL_HAPTIC = stringPreferencesKey("KEY_CAROUSEL_HAPTIC") // old
+        private val KEY_CAROUSEL_VIBRATION = intPreferencesKey("KEY_CAROUSEL_VIBRATION")
         private val KEY_CAROUSEL_SOUND = stringPreferencesKey("KEY_CAROUSEL_SOUND")
         private val KEY_CAROUSEL_SOUND_VOLUME = intPreferencesKey("KEY_CAROUSEL_SOUND_VOLUME")
         private val KEY_MAX_HOME_APPS = intPreferencesKey("KEY_MAX_HOME_APPS")
@@ -443,8 +443,15 @@ class PreferenceHelper @Inject constructor(
         }
     }
 
-    suspend fun setCarouselHaptic(haptic: CarouselHaptic) {
-        preferences.edit { it[KEY_CAROUSEL_HAPTIC] = haptic.name }
+    suspend fun setCarouselVibration(percent: Int) {
+        preferences.edit { it[KEY_CAROUSEL_VIBRATION] = percent.coerceIn(0, 100) }
+    }
+
+    /** Value of the old Off/Light/Strong choice, used until a percentage is saved. */
+    private fun legacyCarouselVibration(old: String?): Int = when (old) {
+        "Off" -> 0
+        "Strong" -> 85
+        else -> 35
     }
 
     suspend fun setCarouselSound(sound: CarouselSound) {
@@ -775,8 +782,8 @@ class PreferenceHelper @Inject constructor(
                 limitHomeApps = prefs[KEY_LIMIT_HOME_APPS] ?: false,
                 maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5,
                 protectHiddenApps = prefs[KEY_PROTECT_HIDDEN_APPS] ?: false,
-                carouselHaptic = CarouselHaptic.entries.find { it.name == prefs[KEY_CAROUSEL_HAPTIC] }
-                    ?: CarouselHaptic.Light,
+                carouselVibration = prefs[KEY_CAROUSEL_VIBRATION]
+                    ?: legacyCarouselVibration(prefs[KEY_CAROUSEL_HAPTIC]),
                 carouselSound = CarouselSound.entries.find { it.name == prefs[KEY_CAROUSEL_SOUND] }
                     ?: CarouselSound.Off,
                 carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50
@@ -874,8 +881,8 @@ class PreferenceHelper @Inject constructor(
                 limitHomeApps = prefs[KEY_LIMIT_HOME_APPS] ?: false,
                 maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5,
                 protectHiddenApps = prefs[KEY_PROTECT_HIDDEN_APPS] ?: false,
-                carouselHaptic = CarouselHaptic.entries.find { it.name == prefs[KEY_CAROUSEL_HAPTIC] }
-                    ?: CarouselHaptic.Light,
+                carouselVibration = prefs[KEY_CAROUSEL_VIBRATION]
+                    ?: legacyCarouselVibration(prefs[KEY_CAROUSEL_HAPTIC]),
                 carouselSound = CarouselSound.entries.find { it.name == prefs[KEY_CAROUSEL_SOUND] }
                     ?: CarouselSound.Off,
                 carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50

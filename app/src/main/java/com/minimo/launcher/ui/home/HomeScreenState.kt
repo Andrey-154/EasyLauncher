@@ -11,7 +11,6 @@ import com.minimo.launcher.utils.HomeClockStyle
 import com.minimo.launcher.utils.MinimoSettingsPosition
 import com.minimo.launcher.utils.SearchMode
 import com.minimo.launcher.utils.TimeLimitRepository
-import com.minimo.launcher.utils.CarouselHaptic
 import com.minimo.launcher.utils.CarouselSound
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonSize
@@ -107,7 +106,8 @@ data class HomeScreenState(
     val protectHiddenApps: Boolean = false,
     /** A hidden app waiting for the fingerprint / PIN check before it opens. */
     val pendingProtectedApp: AppInfo? = null,
-    val carouselHaptic: CarouselHaptic = CarouselHaptic.Light,
+    /** 0..100 %, 0 = no vibration */
+    val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
     val carouselSoundVolume: Int = 50
 )

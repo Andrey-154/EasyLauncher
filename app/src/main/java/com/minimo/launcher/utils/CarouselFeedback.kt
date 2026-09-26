@@ -20,9 +20,6 @@ import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.sin
 
-/** Vibration while the favourites carousel passes a row. */
-enum class CarouselHaptic { Off, Light, Strong }
-
 /** Sound while the favourites carousel passes a row. */
 enum class CarouselSound { Off, Tick, Click }
 
@@ -43,21 +40,28 @@ class CarouselHapticPlayer @Inject constructor(
         context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
 
-    fun play(haptic: CarouselHaptic) {
+    /**
+     * @param strength 0..100 %, 0 = off. Both the force and the length of the pulse grow with it:
+     *  a soft short tick at the bottom of the scale, a firm knock at the top. Motors without
+     *  force control only get the length.
+     */
+    fun play(strength: Int) {
         val vibrator = vibrator ?: return
-        if (haptic == CarouselHaptic.Off || !vibrator.hasVibrator()) return
-        val (durationMs, amplitude) = when (haptic) {
-            CarouselHaptic.Light -> 10L to 90
-            CarouselHaptic.Strong -> 18L to 220
-            CarouselHaptic.Off -> return
-        }
+        if (strength <= 0 || !vibrator.hasVibrator()) return
+        val fraction = strength.coerceIn(1, 100) / 100f
         try {
-            vibrator.vibrate(
+            val effect = if (vibrator.hasAmplitudeControl()) {
                 VibrationEffect.createOneShot(
-                    durationMs,
-                    if (vibrator.hasAmplitudeControl()) amplitude else VibrationEffect.DEFAULT_AMPLITUDE
+                    (6 + 14 * fraction).toLong(),
+                    (1 + 254 * fraction).toInt().coerceIn(1, 255)
                 )
-            )
+            } else {
+                VibrationEffect.createOneShot(
+                    (4 + 18 * fraction).toLong(),
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            }
+            vibrator.vibrate(effect)
         } catch (exception: Exception) {
             Timber.e(exception)
         }

@@ -1,6 +1,5 @@
 package com.minimo.launcher.ui.settings.customisation
 
-import com.minimo.launcher.utils.CarouselHaptic
 import com.minimo.launcher.utils.CarouselSound
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -154,7 +153,7 @@ class CustomisationViewModel @Inject constructor(
                             limitExceededColor = prefs.limitExceededColor,
                             limitHomeApps = prefs.limitHomeApps,
                             maxHomeApps = prefs.maxHomeApps,
-                            carouselHaptic = prefs.carouselHaptic,
+                            carouselVibration = prefs.carouselVibration,
                             carouselSound = prefs.carouselSound,
                             carouselSoundVolume = prefs.carouselSoundVolume
                         )
@@ -460,8 +459,9 @@ class CustomisationViewModel @Inject constructor(
         }
     }
 
-    fun onCarouselHapticChanged(haptic: CarouselHaptic) {
-        viewModelScope.launch { preferenceHelper.setCarouselHaptic(haptic) }
+    fun onCarouselVibrationChanged(percent: Int) {
+        if (percent == _state.value.carouselVibration) return
+        viewModelScope.launch { preferenceHelper.setCarouselVibration(percent) }
     }
 
     fun onCarouselSoundChanged(sound: CarouselSound) {
