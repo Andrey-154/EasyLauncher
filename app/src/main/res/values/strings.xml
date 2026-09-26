@@ -299,7 +299,7 @@
     <string name="home_button_app_missing">This app is not installed any more</string>
 
     <string name="limit_home_apps">Limit Apps on Home</string>
-    <string name="limit_home_apps_description">Show only a few favourites at once; scroll the list to reach the rest. You can still add any number of favourites.</string>
+    <string name="limit_home_apps_description">Show exactly this many favourites; scroll to reach the rest in an endless loop. You can still add any number of favourites.</string>
     <string name="max_home_apps">Apps on Home:</string>
 
     <string name="folder">Folder</string>

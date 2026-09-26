@@ -231,50 +231,8 @@ fun HomeBody(
             }
         }
 
-        // "Max apps on Home": the list is only as tall as N apps, the rest are reached by scrolling
-        val maxVisibleApps = state.maxHomeApps.takeIf {
-            state.limitHomeApps && state.favouriteApps.size > it
-        }
-        val itemHeightPx = homeLazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.size
-        val limitedListHeight = if (maxVisibleApps != null && itemHeightPx != null) {
-            with(LocalDensity.current) { (itemHeightPx * maxVisibleApps).toDp() } +
-                    lazyColumnPadding.calculateBottomPadding()
-        } else {
-            null
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(nestedScrollConnection)
-                // Swipes on empty space around a short list still open the drawer / notifications
-                .scrollable(
-                    state = rememberScrollableState { 0f },
-                    orientation = Orientation.Vertical,
-                    enabled = maxVisibleApps != null
-                ),
-            contentAlignment = when (state.appsArrangementVertical) {
-                Arrangement.Top -> Alignment.TopStart
-                Arrangement.Bottom -> Alignment.BottomStart
-                else -> Alignment.CenterStart
-            }
-        ) {
-        LazyColumn(
-            state = homeLazyListState,
-            modifier = if (maxVisibleApps != null) {
-                Modifier
-                    .fillMaxWidth()
-                    .then(
-                        if (limitedListHeight != null) Modifier.heightIn(max = limitedListHeight)
-                        else Modifier
-                    )
-            } else {
-                Modifier.fillMaxSize()
-            },
-            contentPadding = lazyColumnPadding,
-            verticalArrangement = state.appsArrangementVertical
-        ) {
-            items(items = state.favouriteApps, key = { it.id }) { appInfo ->
+        // One row of the home list; shared by the normal list and the carousel
+        val homeAppItem: @Composable (AppInfo, Modifier) -> Unit = { appInfo, itemModifier ->
                 val textSize = state.homeTextSize.sp
                 val appIconSizeScale = state.appIconSizePercent / 100f
                 val iconSizePx = with(LocalDensity.current) {
@@ -300,7 +258,7 @@ fun HomeBody(
                 )
 
                 AppNameItem(
-                    modifier = Modifier.animateItem(),
+                    modifier = itemModifier,
                     appName = appInfo.name,
                     isFavourite = appInfo.isFavourite,
                     isHidden = appInfo.isHidden,
@@ -340,7 +298,57 @@ fun HomeBody(
                 )
             }
 
+        // "Max apps on Home": an endless carousel showing exactly N whole rows
+        val carouselRows = state.maxHomeApps.takeIf {
+            state.limitHomeApps && state.favouriteApps.size > it
         }
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = when (state.appsArrangementVertical) {
+                Arrangement.Top -> Alignment.TopStart
+                Arrangement.Bottom -> Alignment.BottomStart
+                else -> Alignment.CenterStart
+            }
+        ) {
+            if (carouselRows != null) {
+                // Empty space around the carousel keeps the swipes for the drawer / notifications.
+                // The carousel is not inside this nested scroll, so spinning it never opens them.
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .nestedScroll(nestedScrollConnection)
+                        .scrollable(
+                            state = rememberScrollableState { 0f },
+                            orientation = Orientation.Vertical
+                        )
+                )
+
+                HomeAppsCarousel(
+                    apps = state.favouriteApps,
+                    visibleCount = carouselRows,
+                    transformOriginX = when (state.appsArrangementHorizontal) {
+                        Arrangement.Center -> 0.5f
+                        Arrangement.End -> 1f
+                        else -> 0f
+                    },
+                    modifier = Modifier.padding(bottom = lazyColumnPadding.calculateBottomPadding()),
+                    itemContent = homeAppItem
+                )
+            } else {
+                LazyColumn(
+                    state = homeLazyListState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(nestedScrollConnection),
+                    contentPadding = lazyColumnPadding,
+                    verticalArrangement = state.appsArrangementVertical
+                ) {
+                    items(items = state.favouriteApps, key = { it.id }) { appInfo ->
+                        homeAppItem(appInfo, Modifier.animateItem())
+                    }
+                }
+            }
         }
     }
 }

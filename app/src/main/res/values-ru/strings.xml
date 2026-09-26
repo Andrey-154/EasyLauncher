@@ -300,7 +300,7 @@
     <string name="home_button_app_missing">Это приложение больше не установлено</string>
 
     <string name="limit_home_apps">Ограничить приложения на главном</string>
-    <string name="limit_home_apps_description">Показывать только несколько избранных сразу, остальные — прокруткой списка. Добавлять в избранное можно сколько угодно.</string>
+    <string name="limit_home_apps_description">Показывать ровно столько избранных, сколько выбрано; остальные — прокруткой по кругу (карусель). Добавлять в избранное можно сколько угодно.</string>
     <string name="max_home_apps">Приложений на главном:</string>
 
     <string name="folder">Папка</string>
