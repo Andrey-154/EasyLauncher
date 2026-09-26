@@ -38,6 +38,7 @@ fun AppBottomSheetDialog(
     useDarkNavigationBarIcons: Boolean? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    BlurBehind()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )

@@ -155,6 +155,7 @@ class PreferenceHelper @Inject constructor(
         private val KEY_CAROUSEL_VIBRATION = intPreferencesKey("KEY_CAROUSEL_VIBRATION")
         private val KEY_CAROUSEL_SOUND = stringPreferencesKey("KEY_CAROUSEL_SOUND")
         private val KEY_CAROUSEL_RESET = booleanPreferencesKey("KEY_CAROUSEL_RESET")
+        private val KEY_BLUR_BEHIND = booleanPreferencesKey("KEY_BLUR_BEHIND")
         private val KEY_CAROUSEL_SOUND_VOLUME = intPreferencesKey("KEY_CAROUSEL_SOUND_VOLUME")
         private val KEY_MAX_HOME_APPS = intPreferencesKey("KEY_MAX_HOME_APPS")
         private val KEY_HOME_BUTTON_SIZE = stringPreferencesKey("KEY_HOME_BUTTON_SIZE")
@@ -455,6 +456,10 @@ class PreferenceHelper @Inject constructor(
         else -> 35
     }
 
+    suspend fun setBlurBehind(enable: Boolean) {
+        preferences.edit { it[KEY_BLUR_BEHIND] = enable }
+    }
+
     suspend fun setCarouselReset(enable: Boolean) {
         preferences.edit { it[KEY_CAROUSEL_RESET] = enable }
     }
@@ -706,7 +711,8 @@ class PreferenceHelper @Inject constructor(
                 lightTextOnWallpaper = prefs[KEY_LIGHT_TEXT_ON_WALLPAPER] ?: true,
                 customBackgroundColor = prefs[KEY_CUSTOM_BACKGROUND_COLOR],
                 customTextColor = prefs[KEY_CUSTOM_TEXT_COLOR],
-                customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR]
+                customAccentColor = prefs[KEY_CUSTOM_ACCENT_COLOR],
+                blurBehind = prefs[KEY_BLUR_BEHIND] ?: true
             )
         }
     }
@@ -792,7 +798,8 @@ class PreferenceHelper @Inject constructor(
                 carouselSound = CarouselSound.entries.find { it.name == prefs[KEY_CAROUSEL_SOUND] }
                     ?: CarouselSound.Off,
                 carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50,
-                carouselReset = prefs[KEY_CAROUSEL_RESET] ?: true
+                carouselReset = prefs[KEY_CAROUSEL_RESET] ?: true,
+                blurBehind = prefs[KEY_BLUR_BEHIND] ?: true
             )
         }
     }
@@ -892,7 +899,8 @@ class PreferenceHelper @Inject constructor(
                 carouselSound = CarouselSound.entries.find { it.name == prefs[KEY_CAROUSEL_SOUND] }
                     ?: CarouselSound.Off,
                 carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50,
-                carouselReset = prefs[KEY_CAROUSEL_RESET] ?: true
+                carouselReset = prefs[KEY_CAROUSEL_RESET] ?: true,
+                blurBehind = prefs[KEY_BLUR_BEHIND] ?: true
             )
         }
     }

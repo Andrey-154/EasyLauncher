@@ -62,6 +62,7 @@ fun HomeNoteDialog(
     onSave: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    BlurBehind()
     val focusRequester = remember { FocusRequester() }
     var note by remember {
         mutableStateOf(TextFieldValue(currentNote, selection = TextRange(currentNote.length)))

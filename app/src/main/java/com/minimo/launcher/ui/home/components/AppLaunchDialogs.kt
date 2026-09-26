@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import com.minimo.launcher.ui.components.BlurBehind
 import android.os.SystemClock
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -109,6 +110,7 @@ fun AppLaunchConfirmationDialog(
     onLaunch: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    BlurBehind()
     val totalMillis = app.launchDelaySeconds.coerceAtLeast(0).toLong() * 1_000L
     var remainingMillis by remember(app.id, deadlineElapsedRealtimeMillis) {
         mutableLongStateOf(
@@ -176,6 +178,7 @@ internal fun AppDialog(
     onDismiss: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    BlurBehind()
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             modifier = Modifier.fillMaxWidth(),

@@ -339,4 +339,7 @@
 
     <string name="carousel_reset">Back to the First App</string>
     <string name="carousel_reset_description">The carousel returns to the first favourite when you leave Home or press Home</string>
+
+    <string name="blur_behind">Blur Behind Windows</string>
+    <string name="blur_behind_description">Blur the launcher behind open folders, app menus and dialogs</string>
 </resources>

@@ -1,5 +1,13 @@
 package com.minimo.launcher.ui.main
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
+import com.minimo.launcher.ui.components.BlurController
+import com.minimo.launcher.ui.components.LocalBlurController
 import com.minimo.launcher.R
 import com.minimo.launcher.utils.AppLock
 import android.content.Intent
@@ -120,10 +128,20 @@ class MainActivity : FragmentActivity() {
                     else -> Color.Transparent
                 }
 
+                val blurController = remember { BlurController() }
+                val blurRadius by animateDpAsState(
+                    targetValue = if (state.blurBehind && blurController.openOverlays > 0) 18.dp else 0.dp,
+                    animationSpec = tween(durationMillis = 220),
+                    label = "backgroundBlur"
+                )
+
+                CompositionLocalProvider(LocalBlurController provides blurController) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(backgroundColor)
+                        // Android 12+; on older versions this simply does nothing
+                        .blur(blurRadius)
                 ) {
                     AppNavGraph(
                         navController = navController,
@@ -135,6 +153,7 @@ class MainActivity : FragmentActivity() {
                             onBackPressedDispatcher.onBackPressed()
                         }
                     )
+                }
                 }
             }
         }

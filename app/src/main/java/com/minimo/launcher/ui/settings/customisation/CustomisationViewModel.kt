@@ -156,7 +156,8 @@ class CustomisationViewModel @Inject constructor(
                             carouselVibration = prefs.carouselVibration,
                             carouselSound = prefs.carouselSound,
                             carouselSoundVolume = prefs.carouselSoundVolume,
-                            carouselReset = prefs.carouselReset
+                            carouselReset = prefs.carouselReset,
+                            blurBehind = prefs.blurBehind
                         )
                     }
                 }
@@ -463,6 +464,10 @@ class CustomisationViewModel @Inject constructor(
     fun onCarouselVibrationChanged(percent: Int) {
         if (percent == _state.value.carouselVibration) return
         viewModelScope.launch { preferenceHelper.setCarouselVibration(percent) }
+    }
+
+    fun onToggleBlurBehind() {
+        viewModelScope.launch { preferenceHelper.setBlurBehind(!_state.value.blurBehind) }
     }
 
     fun onToggleCarouselReset() {

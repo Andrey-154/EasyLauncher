@@ -96,5 +96,6 @@ data class CustomisationState(
     val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
     val carouselSoundVolume: Int = 50,
-    val carouselReset: Boolean = true
+    val carouselReset: Boolean = true,
+    val blurBehind: Boolean = true
 )

@@ -20,5 +20,6 @@ data class MainState(
     val lightTextOnWallpaper: Boolean = true,
     val customBackgroundColor: Int? = null,
     val customTextColor: Int? = null,
-    val customAccentColor: Int? = null
+    val customAccentColor: Int? = null,
+    val blurBehind: Boolean = true
 )

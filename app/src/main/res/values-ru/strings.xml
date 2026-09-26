@@ -340,4 +340,7 @@
 
     <string name="carousel_reset">Возвращать к первому приложению</string>
     <string name="carousel_reset_description">Карусель возвращается к первому избранному, когда вы уходите с главного экрана или нажимаете «Домой»</string>
+
+    <string name="blur_behind">Размытие под окнами</string>
+    <string name="blur_behind_description">Размывать лаунчер под открытыми папками, меню приложений и диалогами</string>
 </resources>

@@ -46,7 +46,8 @@ data class MainPreferences(
     val lightTextOnWallpaper: Boolean = true,
     val customBackgroundColor: Int? = null,
     val customTextColor: Int? = null,
-    val customAccentColor: Int? = null
+    val customAccentColor: Int? = null,
+    val blurBehind: Boolean = true
 )
 
 data class HomePreferences(
@@ -114,7 +115,8 @@ data class HomePreferences(
     val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
     val carouselSoundVolume: Int = 50,
-    val carouselReset: Boolean = true
+    val carouselReset: Boolean = true,
+    val blurBehind: Boolean = true
 )
 
 data class CustomisationPreferences(
@@ -195,5 +197,6 @@ data class CustomisationPreferences(
     val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
     val carouselSoundVolume: Int = 50,
-    val carouselReset: Boolean = true
+    val carouselReset: Boolean = true,
+    val blurBehind: Boolean = true
 )

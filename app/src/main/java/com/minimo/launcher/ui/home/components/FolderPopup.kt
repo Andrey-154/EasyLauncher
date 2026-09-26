@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import com.minimo.launcher.ui.components.BlurBehind
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -112,6 +113,7 @@ fun FolderPopup(
     onAppClick: (AppInfo) -> Unit,
     onDismiss: () -> Unit
 ) {
+    BlurBehind()
     val apps = remember(folder) { folder.apps.mapNotNull(findApp) }
     val progress = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()

@@ -45,6 +45,7 @@ fun WeatherForecastDialog(
     loadForecast: suspend () -> WeatherForecast?,
     onDismiss: () -> Unit
 ) {
+    BlurBehind()
     var attempt by remember { mutableIntStateOf(0) }
     val forecastState by produceState<ForecastState>(ForecastState.Loading, attempt) {
         value = ForecastState.Loading

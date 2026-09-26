@@ -31,6 +31,7 @@ fun RenameDialog(
     onRenameClick: (String) -> Unit,
     onCancelClick: () -> Unit
 ) {
+    BlurBehind()
     val focusRequester = remember { FocusRequester() }
 
     var newName by remember {

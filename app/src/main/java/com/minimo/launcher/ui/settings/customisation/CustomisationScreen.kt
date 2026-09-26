@@ -267,6 +267,15 @@ fun CustomisationScreen(
                 onColorSelected = viewModel::onCustomAccentColorChanged
             )
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ToggleItem(
+                    title = stringResource(R.string.blur_behind),
+                    subtitle = stringResource(R.string.blur_behind_description),
+                    isChecked = state.blurBehind,
+                    onToggleClick = viewModel::onToggleBlurBehind
+                )
+            }
+
             SettingsDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             ToggleItem(

@@ -42,7 +42,8 @@ class MainViewModel @Inject constructor(
                             lightTextOnWallpaper = prefs.lightTextOnWallpaper,
                             customBackgroundColor = prefs.customBackgroundColor,
                             customTextColor = prefs.customTextColor,
-                            customAccentColor = prefs.customAccentColor
+                            customAccentColor = prefs.customAccentColor,
+                            blurBehind = prefs.blurBehind
                         )
                     }
                 }

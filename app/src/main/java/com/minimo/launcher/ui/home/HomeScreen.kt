@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home
 
+import com.minimo.launcher.ui.components.BlurBehind
 import com.minimo.launcher.ui.home.components.FolderPopup
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonType
@@ -337,6 +338,7 @@ fun DeleteShortcutConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    BlurBehind()
     AlertDialog(
         onDismissRequest = onDismiss,
         text = { Text(stringResource(R.string.delete_shortcut_confirmation)) },
