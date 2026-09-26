@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.components
 
+import androidx.compose.ui.layout.ContentScale
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -179,7 +180,10 @@ fun HomeActionButton(
             Image(
                 bitmap = appIcon,
                 contentDescription = contentDescription,
-                modifier = Modifier.size(size * 0.62f)
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(size * 0.62f)
+                    .clip(CircleShape)
             )
         } else {
             Icon(

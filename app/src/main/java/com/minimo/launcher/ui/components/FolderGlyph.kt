@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.components
 
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -95,6 +96,14 @@ fun FolderGlyph(
 private fun MiniAppIcon(app: AppInfo, size: Dp, loadAppIcon: suspend (AppInfo, Int) -> ImageBitmap?) {
     val sizePx = with(LocalDensity.current) { size.roundToPx() }
     val icon by produceState<ImageBitmap?>(null, app.id, sizePx) { value = loadAppIcon(app, sizePx) }
-    icon?.let { Image(bitmap = it, contentDescription = null, modifier = Modifier.size(size)) }
-        ?: Spacer(modifier = Modifier.size(size))
+    icon?.let {
+        Image(
+            bitmap = it,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(size)
+                .clip(CircleShape)
+        )
+    } ?: Spacer(modifier = Modifier.size(size))
 }

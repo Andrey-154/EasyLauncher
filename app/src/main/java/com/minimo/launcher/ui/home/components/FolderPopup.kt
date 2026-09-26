@@ -334,7 +334,6 @@ private fun PressableColumn(onClick: () -> Unit, content: @Composable () -> Unit
 private fun AppIconImage(app: AppInfo, size: Dp, loadAppIcon: suspend (AppInfo, Int) -> ImageBitmap?) {
     val sizePx = with(LocalDensity.current) { size.roundToPx() }
     val icon by produceState<ImageBitmap?>(null, app.id, sizePx) { value = loadAppIcon(app, sizePx) }
-    Box(modifier = Modifier.size(size), contentAlignment = Alignment.Center) {
-        icon?.let { Image(bitmap = it, contentDescription = app.name, modifier = Modifier.size(size)) }
-    }
+    // Same look as the home list: icon bitmaps are square, AppIcon clips them round
+    AppIcon(image = icon, size = size, isWorkProfile = app.isWorkProfile, showNotificationDot = false)
 }

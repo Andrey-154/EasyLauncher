@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,11 @@ sealed interface HomeEntry {
     }
 }
 
-/** A folder row styled like an app name: small folder glyph + folder name. */
+/**
+ * A folder row styled like an app row. With app icons shown, the folder glyph takes exactly the
+ * place of an app icon (same size, spacing and side), so names line up. Without icons the glyph
+ * goes after the name, so the folder name lines up with the other names.
+ */
 @Composable
 fun FolderListRow(
     modifier: Modifier,
@@ -54,13 +59,35 @@ fun FolderListRow(
     textShadow: Shadow?,
     appsArrangement: Arrangement.Horizontal,
     verticalPadding: Dp,
+    /** App icon size on Home, or null when app icons are hidden. */
+    appIconSize: Dp?,
+    iconOnRight: Boolean,
     findApp: (String) -> AppInfo?,
     loadAppIcon: suspend (AppInfo, Int) -> ImageBitmap?,
     /** Gets the folder glyph centre on the screen (the folder grows out of it). */
     onClick: (Offset) -> Unit
 ) {
-    val glyphSize = with(LocalDensity.current) { (textSize * 1.1f).toDp() }
     var glyphCenter by remember { mutableStateOf(Offset.Zero) }
+
+    val glyph: @Composable () -> Unit = {
+        val boxSize = appIconSize ?: with(LocalDensity.current) { (textSize * 0.95f).toDp() }
+        Box(
+            modifier = Modifier
+                .size(boxSize)
+                .onScreenCenter { glyphCenter = it },
+            contentAlignment = Alignment.Center
+        ) {
+            FolderGlyph(
+                folder = folder,
+                size = if (appIconSize != null) boxSize * 0.86f else boxSize,
+                color = textColor,
+                findApp = findApp,
+                loadAppIcon = loadAppIcon
+            )
+        }
+    }
+    val glyphFirst = appIconSize != null && !iconOnRight
+    val spacing = if (appIconSize != null) Dimens.APP_ICON_LABEL_SPACING else 8.dp
 
     Row(
         modifier = modifier
@@ -70,16 +97,10 @@ fun FolderListRow(
         horizontalArrangement = appsArrangement,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.onScreenCenter { glyphCenter = it }) {
-            FolderGlyph(
-                folder = folder,
-                size = glyphSize,
-                color = textColor,
-                findApp = findApp,
-                loadAppIcon = loadAppIcon
-            )
+        if (glyphFirst) {
+            glyph()
+            Spacer(modifier = Modifier.width(spacing))
         }
-        Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = folder.name,
             color = textColor,
@@ -87,7 +108,12 @@ fun FolderListRow(
             lineHeight = textSize * 1.2,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = LocalTextStyle.current.copy(shadow = textShadow)
+            style = LocalTextStyle.current.copy(shadow = textShadow),
+            modifier = Modifier.weight(1f, fill = false)
         )
+        if (!glyphFirst) {
+            Spacer(modifier = Modifier.width(spacing))
+            glyph()
+        }
     }
 }

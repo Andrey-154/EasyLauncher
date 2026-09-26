@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import com.minimo.launcher.utils.AppIconAlignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.material3.LocalTextStyle
@@ -324,6 +325,12 @@ fun HomeBody(
                     textShadow = textShadow,
                     appsArrangement = state.appsArrangementHorizontal,
                     verticalPadding = state.homeAppVerticalPadding.dp,
+                    appIconSize = if (state.showAppIconInHome) {
+                        appIconSizeFor(state.homeTextSize.sp, state.appIconSizePercent / 100f)
+                    } else {
+                        null
+                    },
+                    iconOnRight = state.homeAppIconAlignment == AppIconAlignment.Right,
                     findApp = viewModel::findAppByPreference,
                     loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
                     onClick = { center -> onFolderClick(entry.folder, center) }
