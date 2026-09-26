@@ -99,5 +99,7 @@ data class HomeScreenState(
     val homeButtons: List<HomeButton> = emptyList(),
     val homeButtonSize: HomeButtonSize = HomeButtonSize.Medium,
     val homeButtonStyle: HomeButtonStyle = HomeButtonStyle.Outline,
-    val homeButtonsEditMode: Boolean = false
+    val homeButtonsEditMode: Boolean = false,
+    val limitHomeApps: Boolean = false,
+    val maxHomeApps: Int = 5
 )

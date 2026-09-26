@@ -148,6 +148,8 @@ class PreferenceHelper @Inject constructor(
         private val KEY_FLASHLIGHT_AUTO_OFF = booleanPreferencesKey("KEY_FLASHLIGHT_AUTO_OFF")
         private val KEY_LIMIT_COLOR_TIME_ONLY = booleanPreferencesKey("KEY_LIMIT_COLOR_TIME_ONLY")
         private val KEY_HOME_BUTTONS = stringPreferencesKey("KEY_HOME_BUTTONS")
+        private val KEY_LIMIT_HOME_APPS = booleanPreferencesKey("KEY_LIMIT_HOME_APPS")
+        private val KEY_MAX_HOME_APPS = intPreferencesKey("KEY_MAX_HOME_APPS")
         private val KEY_HOME_BUTTON_SIZE = stringPreferencesKey("KEY_HOME_BUTTON_SIZE")
         private val KEY_HOME_BUTTON_STYLE = stringPreferencesKey("KEY_HOME_BUTTON_STYLE")
         private val KEY_LIMIT_WARNING_COLOR = intPreferencesKey("KEY_LIMIT_WARNING_COLOR")
@@ -433,6 +435,14 @@ class PreferenceHelper @Inject constructor(
             val current = HomeButtonsJson.fromJson(it[KEY_HOME_BUTTONS])
             it[KEY_HOME_BUTTONS] = HomeButtonsJson.toJson(transform(current))
         }
+    }
+
+    suspend fun setLimitHomeApps(enable: Boolean) {
+        preferences.edit { it[KEY_LIMIT_HOME_APPS] = enable }
+    }
+
+    suspend fun setMaxHomeApps(count: Int) {
+        preferences.edit { it[KEY_MAX_HOME_APPS] = count.coerceIn(1, 8) }
     }
 
     suspend fun setHomeButtonSize(size: HomeButtonSize) {
@@ -739,7 +749,9 @@ class PreferenceHelper @Inject constructor(
                 flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true,
                 limitColorTimeOnly = prefs[KEY_LIMIT_COLOR_TIME_ONLY] ?: true,
                 limitWarningColor = prefs[KEY_LIMIT_WARNING_COLOR],
-                limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR]
+                limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR],
+                limitHomeApps = prefs[KEY_LIMIT_HOME_APPS] ?: false,
+                maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5
             )
         }
     }
@@ -830,7 +842,9 @@ class PreferenceHelper @Inject constructor(
                 flashlightAutoOff = prefs[KEY_FLASHLIGHT_AUTO_OFF] ?: true,
                 limitColorTimeOnly = prefs[KEY_LIMIT_COLOR_TIME_ONLY] ?: true,
                 limitWarningColor = prefs[KEY_LIMIT_WARNING_COLOR],
-                limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR]
+                limitExceededColor = prefs[KEY_LIMIT_EXCEEDED_COLOR],
+                limitHomeApps = prefs[KEY_LIMIT_HOME_APPS] ?: false,
+                maxHomeApps = prefs[KEY_MAX_HOME_APPS] ?: 5
             )
         }
     }

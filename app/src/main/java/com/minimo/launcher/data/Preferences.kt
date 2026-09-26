@@ -106,7 +106,9 @@ data class HomePreferences(
     val flashlightAutoOff: Boolean = true,
     val limitColorTimeOnly: Boolean = true,
     val limitWarningColor: Int? = null,
-    val limitExceededColor: Int? = null
+    val limitExceededColor: Int? = null,
+    val limitHomeApps: Boolean = false,
+    val maxHomeApps: Int = 5
 )
 
 data class CustomisationPreferences(
@@ -180,5 +182,7 @@ data class CustomisationPreferences(
     val flashlightAutoOff: Boolean = true,
     val limitColorTimeOnly: Boolean = true,
     val limitWarningColor: Int? = null,
-    val limitExceededColor: Int? = null
+    val limitExceededColor: Int? = null,
+    val limitHomeApps: Boolean = false,
+    val maxHomeApps: Int = 5
 )

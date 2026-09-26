@@ -69,6 +69,7 @@ import com.minimo.launcher.ui.settings.customisation.components.AppsAlignmentVer
 import com.minimo.launcher.ui.settings.customisation.components.ClockAlignmentDropdown
 import com.minimo.launcher.ui.settings.customisation.components.ClockModeDropdown
 import com.minimo.launcher.ui.settings.customisation.components.ColorPickerItem
+import com.minimo.launcher.ui.settings.customisation.components.MaxHomeAppsSlider
 import com.minimo.launcher.ui.settings.customisation.components.ClockStyleDropdown
 import com.minimo.launcher.ui.settings.customisation.components.DimPercentageSlider
 import com.minimo.launcher.ui.settings.customisation.components.EnableAccessibilityDialog
@@ -486,6 +487,22 @@ fun CustomisationScreen(
                 ),
                 onOptionSelected = viewModel::onHomeAppsAlignmentVerticalChanged
             )
+
+            ToggleItem(
+                title = stringResource(R.string.limit_home_apps),
+                subtitle = stringResource(R.string.limit_home_apps_description),
+                isChecked = state.limitHomeApps,
+                onToggleClick = viewModel::onToggleLimitHomeApps
+            )
+
+            if (isSearching || state.limitHomeApps) {
+                SettingsSpacer(8.dp)
+
+                MaxHomeAppsSlider(
+                    maxHomeApps = state.maxHomeApps,
+                    onMaxHomeAppsChanged = viewModel::onMaxHomeAppsChanged
+                )
+            }
 
             AppsAlignmentHorizontalDropdown(
                 titleRes = R.string.drawer_apps_alignment_horizontal,

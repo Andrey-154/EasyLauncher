@@ -1,5 +1,13 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -223,11 +231,46 @@ fun HomeBody(
             }
         }
 
-        LazyColumn(
-            state = homeLazyListState,
+        // "Max apps on Home": the list is only as tall as N apps, the rest are reached by scrolling
+        val maxVisibleApps = state.maxHomeApps.takeIf {
+            state.limitHomeApps && state.favouriteApps.size > it
+        }
+        val itemHeightPx = homeLazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.size
+        val limitedListHeight = if (maxVisibleApps != null && itemHeightPx != null) {
+            with(LocalDensity.current) { (itemHeightPx * maxVisibleApps).toDp() } +
+                    lazyColumnPadding.calculateBottomPadding()
+        } else {
+            null
+        }
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(nestedScrollConnection),
+                .nestedScroll(nestedScrollConnection)
+                // Swipes on empty space around a short list still open the drawer / notifications
+                .scrollable(
+                    state = rememberScrollableState { 0f },
+                    orientation = Orientation.Vertical,
+                    enabled = maxVisibleApps != null
+                ),
+            contentAlignment = when (state.appsArrangementVertical) {
+                Arrangement.Top -> Alignment.TopStart
+                Arrangement.Bottom -> Alignment.BottomStart
+                else -> Alignment.CenterStart
+            }
+        ) {
+        LazyColumn(
+            state = homeLazyListState,
+            modifier = if (maxVisibleApps != null) {
+                Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if (limitedListHeight != null) Modifier.heightIn(max = limitedListHeight)
+                        else Modifier
+                    )
+            } else {
+                Modifier.fillMaxSize()
+            },
             contentPadding = lazyColumnPadding,
             verticalArrangement = state.appsArrangementVertical
         ) {
@@ -297,6 +340,7 @@ fun HomeBody(
                 )
             }
 
+        }
         }
     }
 }

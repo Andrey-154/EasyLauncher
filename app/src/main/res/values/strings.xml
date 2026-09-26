@@ -297,4 +297,8 @@
     <string name="home_button_app">App…</string>
     <string name="home_button_failed">Could not open it on this phone</string>
     <string name="home_button_app_missing">This app is not installed any more</string>
+
+    <string name="limit_home_apps">Limit Apps on Home</string>
+    <string name="limit_home_apps_description">Show only a few favourites at once; scroll the list to reach the rest. You can still add any number of favourites.</string>
+    <string name="max_home_apps">Apps on Home:</string>
 </resources>

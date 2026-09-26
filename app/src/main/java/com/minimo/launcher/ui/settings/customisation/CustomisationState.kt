@@ -89,5 +89,7 @@ data class CustomisationState(
     val flashlightAutoOff: Boolean = true,
     val limitColorTimeOnly: Boolean = true,
     val limitWarningColor: Int? = null,
-    val limitExceededColor: Int? = null
+    val limitExceededColor: Int? = null,
+    val limitHomeApps: Boolean = false,
+    val maxHomeApps: Int = 5
 )

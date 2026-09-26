@@ -149,7 +149,9 @@ class CustomisationViewModel @Inject constructor(
                             flashlightAutoOff = prefs.flashlightAutoOff,
                             limitColorTimeOnly = prefs.limitColorTimeOnly,
                             limitWarningColor = prefs.limitWarningColor,
-                            limitExceededColor = prefs.limitExceededColor
+                            limitExceededColor = prefs.limitExceededColor,
+                            limitHomeApps = prefs.limitHomeApps,
+                            maxHomeApps = prefs.maxHomeApps
                         )
                     }
                 }
@@ -450,6 +452,19 @@ class CustomisationViewModel @Inject constructor(
     fun onToggleShowHomeNote() {
         viewModelScope.launch {
             preferenceHelper.setShowHomeNote(_state.value.showHomeNote.not())
+        }
+    }
+
+    fun onToggleLimitHomeApps() {
+        viewModelScope.launch {
+            preferenceHelper.setLimitHomeApps(_state.value.limitHomeApps.not())
+        }
+    }
+
+    fun onMaxHomeAppsChanged(count: Int) {
+        if (count == _state.value.maxHomeApps) return
+        viewModelScope.launch {
+            preferenceHelper.setMaxHomeApps(count)
         }
     }
 

@@ -364,6 +364,8 @@ class HomeViewModel @Inject constructor(
                             sortAppsByUsage = prefs.sortAppsByUsage,
                             showFlashlight = prefs.showFlashlight,
                             limitColorTimeOnly = prefs.limitColorTimeOnly,
+                            limitHomeApps = prefs.limitHomeApps,
+                            maxHomeApps = prefs.maxHomeApps,
                             limitWarningColor = prefs.limitWarningColor
                                 ?: TimeLimitRepository.DEFAULT_WARNING_COLOR,
                             limitExceededColor = prefs.limitExceededColor
