@@ -369,4 +369,27 @@
     <string name="theme_coffee">Coffee</string>
     <string name="theme_paper">Paper</string>
     <string name="theme_sakura">Sakura</string>
+
+    <string name="group_look">Look</string>
+    <string name="group_apps">Apps</string>
+    <string name="group_system">System</string>
+    <string name="themes_subtitle">Ready-made looks and your own</string>
+    <string name="section_look">Appearance</string>
+    <string name="section_look_subtitle">Colours, font, theme, wallpaper, blur</string>
+    <string name="section_home">Home Screen</string>
+    <string name="section_home_subtitle">App size, icons, alignment, carousel, dots</string>
+    <string name="section_widgets">Clock &amp; Widgets</string>
+    <string name="section_widgets_subtitle">Clock, weather, note, screen time and limits</string>
+    <string name="home_buttons_subtitle">Round buttons and folders anywhere on Home</string>
+    <string name="section_drawer">App Drawer</string>
+    <string name="section_drawer_subtitle">Icons, alignment, fast scroller, sorting</string>
+    <string name="section_search">Search</string>
+    <string name="section_search_subtitle">Search bar, keyboard, auto open</string>
+    <string name="favourite_apps_subtitle">Apps on the home screen</string>
+    <string name="hidden_apps_subtitle">Apps out of sight, protection</string>
+    <string name="section_behavior">Gestures &amp; Behaviour</string>
+    <string name="section_behavior_subtitle">Swipes, double tap, Back, orientation, system bars</string>
+    <string name="set_default_launcher_subtitle">Make EasyLauncher your home app</string>
+    <string name="backup_subtitle">Save or restore all settings</string>
+    <string name="about_app_subtitle">Version and licence</string>
 </resources>

@@ -26,6 +26,23 @@ import kotlinx.coroutines.android.awaitFrame
 /** Current text of the settings search field; empty = show everything. */
 val LocalSettingsQuery = staticCompositionLocalOf { "" }
 
+/** Parts of the customisation settings, each opened as its own page from the settings menu. */
+enum class SettingsSection { Look, Home, Widgets, Drawer, Search, Behavior }
+
+/** The page being shown; null = all settings (used by the settings search). */
+val LocalSettingsSection = staticCompositionLocalOf<SettingsSection?> { null }
+
+/** Settings of one [section]: shown on its page (and in the full list / search). */
+@Composable
+fun InSection(section: SettingsSection, content: @Composable () -> Unit) {
+    val current = LocalSettingsSection.current
+    if (current == null || current == section) {
+        content()
+        // Pages have no section dividers, a little air between the settings instead
+        if (current != null) Spacer(modifier = Modifier.height(6.dp))
+    }
+}
+
 /** True when a setting with these texts (title, subtitle, ...) matches the search query. */
 @Composable
 fun settingVisible(vararg texts: String?): Boolean {
@@ -37,12 +54,16 @@ fun settingVisible(vararg texts: String?): Boolean {
 /** Section divider that disappears while searching (results are shown as one list). */
 @Composable
 fun SettingsDivider(modifier: Modifier = Modifier) {
-    if (LocalSettingsQuery.current.isBlank()) HorizontalDivider(modifier = modifier)
+    if (LocalSettingsQuery.current.isBlank() && LocalSettingsSection.current == null) {
+        HorizontalDivider(modifier = modifier)
+    }
 }
 
 @Composable
 fun SettingsSpacer(height: Dp) {
-    if (LocalSettingsQuery.current.isBlank()) Spacer(modifier = Modifier.height(height))
+    if (LocalSettingsQuery.current.isBlank() && LocalSettingsSection.current == null) {
+        Spacer(modifier = Modifier.height(height))
+    }
 }
 
 @Composable

@@ -370,4 +370,27 @@
     <string name="theme_coffee">Кофе</string>
     <string name="theme_paper">Бумага</string>
     <string name="theme_sakura">Сакура</string>
+
+    <string name="group_look">Внешний вид</string>
+    <string name="group_apps">Приложения</string>
+    <string name="group_system">Система</string>
+    <string name="themes_subtitle">Готовые варианты оформления и свои</string>
+    <string name="section_look">Оформление</string>
+    <string name="section_look_subtitle">Цвета, шрифт, тема, обои, размытие</string>
+    <string name="section_home">Главный экран</string>
+    <string name="section_home_subtitle">Размер приложений, значки, выравнивание, карусель</string>
+    <string name="section_widgets">Часы и виджеты</string>
+    <string name="section_widgets_subtitle">Часы, погода, заметка, экранное время и лимиты</string>
+    <string name="home_buttons_subtitle">Круглые кнопки и папки в любом месте экрана</string>
+    <string name="section_drawer">Список приложений</string>
+    <string name="section_drawer_subtitle">Значки, выравнивание, быстрая прокрутка, сортировка</string>
+    <string name="section_search">Поиск</string>
+    <string name="section_search_subtitle">Строка поиска, клавиатура, автооткрытие</string>
+    <string name="favourite_apps_subtitle">Приложения на главном экране</string>
+    <string name="hidden_apps_subtitle">Спрятанные приложения и их защита</string>
+    <string name="section_behavior">Жесты и поведение</string>
+    <string name="section_behavior_subtitle">Свайпы, двойное касание, «Назад», ориентация, панели</string>
+    <string name="set_default_launcher_subtitle">Сделать EasyLauncher главным экраном</string>
+    <string name="backup_subtitle">Сохранить или восстановить все настройки</string>
+    <string name="about_app_subtitle">Версия и лицензия</string>
 </resources>

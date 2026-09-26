@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.navigation
 
+import com.minimo.launcher.ui.settings.customisation.SettingsSection
 import com.minimo.launcher.ui.settings.themes.ThemesScreen
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
@@ -48,6 +49,7 @@ object Routes {
     const val ABOUT_APP = "ABOUT_APP"
     const val HOME_BUTTONS = "HOME_BUTTONS"
     const val THEMES = "THEMES"
+    const val SETTINGS_SECTION = "SETTINGS_SECTION"
 }
 
 /**
@@ -182,8 +184,8 @@ fun AppNavGraph(
                 onHiddenAppsClick = {
                     navController.navigate(Routes.HIDDEN_APPS)
                 },
-                onCustomisationClick = {
-                    navController.navigate(Routes.SETTINGS_CUSTOMISATION)
+                onSectionClick = { section ->
+                    navController.navigate("${Routes.SETTINGS_SECTION}/${section.name}")
                 },
                 onFavouriteAppsClick = {
                     navController.navigate(Routes.FAVOURITE_APPS)
@@ -197,6 +199,16 @@ fun AppNavGraph(
                 onThemesClick = {
                     navController.navigate(Routes.THEMES)
                 }
+            )
+        }
+        composable(route = "${Routes.SETTINGS_SECTION}/{section}") {
+            val section = SettingsSection.entries.find {
+                section -> section.name == it.arguments?.getString("section")
+            } ?: SettingsSection.Look
+            CustomisationScreen(
+                viewModel = hiltViewModel(it),
+                onBackClick = onBackPressed,
+                section = section
             )
         }
         composable(route = Routes.THEMES) {
