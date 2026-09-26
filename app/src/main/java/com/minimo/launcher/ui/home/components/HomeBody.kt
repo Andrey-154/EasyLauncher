@@ -1,5 +1,8 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.ui.BiasAlignment
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.material3.LocalTextStyle
 import com.minimo.launcher.utils.HomeButton
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -73,7 +76,7 @@ fun HomeBody(
     useDarkBottomSheetStatusBarIcons: Boolean,
     useDarkBottomSheetNavigationBarIcons: Boolean,
     onDeleteShortcutClick: (AppInfo) -> Unit,
-    onFolderClick: (HomeButton) -> Unit = {}
+    onFolderClick: (HomeButton, Offset) -> Unit = { _, _ -> }
 ) {
     val context = LocalContext.current
     val iconCacheRevision by viewModel.iconCacheRevision.collectAsStateWithLifecycle()
@@ -323,7 +326,7 @@ fun HomeBody(
                     verticalPadding = state.homeAppVerticalPadding.dp,
                     findApp = viewModel::findAppByPreference,
                     loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
-                    onClick = { onFolderClick(entry.folder) }
+                    onClick = { center -> onFolderClick(entry.folder, center) }
                 )
             }
         }
@@ -333,13 +336,62 @@ fun HomeBody(
             state.limitHomeApps && homeEntries.size > it
         }
 
+        // Row height of the carousel, the same for apps and folders:
+        // text line (or the app icon if bigger) + top and bottom padding
+        val homeTextSize = state.homeTextSize.sp
+        val density = LocalDensity.current
+        val carouselRowHeight = with(density) {
+            val line = (homeTextSize * 1.2).toDp()
+            val icon = if (state.showAppIconInHome) {
+                appIconSizeFor(homeTextSize, state.appIconSizePercent / 100f)
+            } else {
+                0.dp
+            }
+            max(line, icon) + state.homeAppVerticalPadding.dp * 2
+        }
+
+        // "Compact touch area": the carousel is only as wide as the longest name,
+        // so it can be scrolled only there
+        val homeIconSize = appIconSizeFor(homeTextSize, state.appIconSizePercent / 100f)
+        val textMeasurer = rememberTextMeasurer()
+        val textStyle = LocalTextStyle.current.copy(fontSize = homeTextSize)
+        val compactCarouselWidth = if (carouselRows != null && state.compactAppTouchArea) {
+            remember(homeEntries, textStyle, state.showAppIconInHome, state.appIconSizePercent) {
+                val widest = homeEntries.maxOfOrNull { entry ->
+                    val name = when (entry) {
+                        is HomeEntry.App -> entry.app.name
+                        is HomeEntry.Folder -> entry.folder.name
+                    }
+                    textMeasurer.measure(name, textStyle, maxLines = 1).size.width
+                } ?: 0
+                with(density) {
+                    val leading = if (state.showAppIconInHome) {
+                        homeIconSize + Dimens.APP_ICON_LABEL_SPACING
+                    } else {
+                        // room for a folder glyph / work profile icon / notification dot
+                        (homeTextSize * 1.1f).toDp() + 10.dp
+                    }
+                    widest.toDp() + leading + Dimens.APP_HORIZONTAL_SPACING * 2 + 16.dp
+                }
+            }
+        } else {
+            null
+        }
+
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = when (state.appsArrangementVertical) {
-                Arrangement.Top -> Alignment.TopStart
-                Arrangement.Bottom -> Alignment.BottomStart
-                else -> Alignment.CenterStart
-            }
+            contentAlignment = BiasAlignment(
+                horizontalBias = when (state.appsArrangementHorizontal) {
+                    Arrangement.Center -> 0f
+                    Arrangement.End -> 1f
+                    else -> -1f
+                },
+                verticalBias = when (state.appsArrangementVertical) {
+                    Arrangement.Top -> -1f
+                    Arrangement.Bottom -> 1f
+                    else -> 0f
+                }
+            )
         ) {
             if (carouselRows != null) {
                 // Empty space around the carousel keeps the swipes for the drawer / notifications.
@@ -357,6 +409,8 @@ fun HomeBody(
                 HomeAppsCarousel(
                     apps = homeEntries,
                     visibleCount = carouselRows,
+                    rowHeight = carouselRowHeight,
+                    width = compactCarouselWidth,
                     transformOriginX = when (state.appsArrangementHorizontal) {
                         Arrangement.Center -> 0.5f
                         Arrangement.End -> 1f

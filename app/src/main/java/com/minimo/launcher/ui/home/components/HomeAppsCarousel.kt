@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,15 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import kotlin.math.abs
 
 /** How many times the list is repeated in each direction; far more than anyone scrolls. */
@@ -37,27 +34,24 @@ private const val EDGE_ALPHA = 0.55f
 fun <T> HomeAppsCarousel(
     apps: List<T>,
     visibleCount: Int,
+    /** Every row gets exactly this height, so the window never changes size while scrolling. */
+    rowHeight: Dp,
     transformOriginX: Float,
     modifier: Modifier = Modifier,
+    /** Width of the scrollable strip ("compact touch area"); null = full width. */
+    width: Dp? = null,
     itemContent: @Composable (T, Modifier) -> Unit
 ) {
     val size = apps.size
     // Start in the middle, on the first app, so both directions have room
     val listState = remember(size) { LazyListState(firstVisibleItemIndex = size * (LOOPS / 2)) }
-    var rowHeightPx by remember { mutableIntStateOf(0) }
     val scaleEdges = visibleCount > 4
-
-    val heightModifier = if (rowHeightPx > 0) {
-        Modifier.height(with(LocalDensity.current) { (rowHeightPx * visibleCount).toDp() })
-    } else {
-        Modifier
-    }
 
     LazyColumn(
         state = listState,
         modifier = modifier
-            .fillMaxWidth()
-            .then(heightModifier),
+            .then(if (width != null) Modifier.width(width) else Modifier.fillMaxWidth())
+            .height(rowHeight * visibleCount),
         // Settle with a row exactly at the top: the window shows only whole rows
         flingBehavior = rememberSnapFlingBehavior(listState, SnapPosition.Start)
     ) {
@@ -65,7 +59,7 @@ fun <T> HomeAppsCarousel(
             itemContent(
                 apps[index % size],
                 Modifier
-                    .onSizeChanged { if (it.height > 0) rowHeightPx = it.height }
+                    .height(rowHeight)
                     .graphicsLayer {
                         if (!scaleEdges) return@graphicsLayer
                         val info = listState.layoutInfo

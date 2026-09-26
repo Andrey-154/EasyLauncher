@@ -1,5 +1,11 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -50,25 +56,29 @@ fun FolderListRow(
     verticalPadding: Dp,
     findApp: (String) -> AppInfo?,
     loadAppIcon: suspend (AppInfo, Int) -> ImageBitmap?,
-    onClick: () -> Unit
+    /** Gets the folder glyph centre on the screen (the folder grows out of it). */
+    onClick: (Offset) -> Unit
 ) {
     val glyphSize = with(LocalDensity.current) { (textSize * 1.1f).toDp() }
+    var glyphCenter by remember { mutableStateOf(Offset.Zero) }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable { onClick(glyphCenter) }
             .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING, vertical = verticalPadding),
         horizontalArrangement = appsArrangement,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FolderGlyph(
-            folder = folder,
-            size = glyphSize,
-            color = textColor,
-            findApp = findApp,
-            loadAppIcon = loadAppIcon
-        )
+        Box(modifier = Modifier.onScreenCenter { glyphCenter = it }) {
+            FolderGlyph(
+                folder = folder,
+                size = glyphSize,
+                color = textColor,
+                findApp = findApp,
+                loadAppIcon = loadAppIcon
+            )
+        }
         Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = folder.name,

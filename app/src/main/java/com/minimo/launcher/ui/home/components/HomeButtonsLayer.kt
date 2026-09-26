@@ -55,7 +55,8 @@ fun HomeButtonsLayer(
     flashlightOn: Boolean,
     findApp: (String) -> AppInfo?,
     loadAppIcon: suspend (AppInfo, Int) -> ImageBitmap?,
-    onClick: (HomeButton) -> Unit,
+    /** The button and its centre on the screen (folders grow out of it). */
+    onClick: (HomeButton, Offset) -> Unit,
     onEnterEditMode: () -> Unit,
     onMoved: (HomeButton, Float, Float) -> Unit,
     onRemove: (HomeButton) -> Unit,
@@ -98,6 +99,7 @@ fun HomeButtonsLayer(
                 mutableStateOf(Offset(button.x * freeWidth, button.y * freeHeight))
             }
             val dragging = remember(button.id) { mutableStateOf(false) }
+            val center = remember(button.id) { mutableStateOf(Offset.Zero) }
 
             // Follow the saved position and screen size changes, but never fight an active drag
             LaunchedEffect(button.x, button.y, freeWidth, freeHeight) {
@@ -111,6 +113,7 @@ fun HomeButtonsLayer(
                     .offset {
                         IntOffset(position.value.x.roundToInt(), position.value.y.roundToInt())
                     }
+                    .onScreenCenter { center.value = it }
                     .pointerInput(editMode, button.id, freeWidth, freeHeight) {
                         if (!editMode) return@pointerInput
                         fun save() {
@@ -155,7 +158,7 @@ fun HomeButtonsLayer(
                     } else {
                         null
                     },
-                    onClick = { if (!editMode) onClick(button) },
+                    onClick = { if (!editMode) onClick(button, center.value) },
                     onLongClick = { if (!editMode) onEnterEditMode() }
                 )
 
