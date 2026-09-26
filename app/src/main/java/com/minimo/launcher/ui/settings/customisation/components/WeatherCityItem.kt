@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.minimo.launcher.R
+import com.minimo.launcher.ui.components.BlurBehind
 import com.minimo.launcher.ui.settings.customisation.settingVisible
 import com.minimo.launcher.ui.theme.Dimens
 import com.minimo.launcher.utils.WeatherCity
@@ -85,13 +86,14 @@ fun WeatherCityItem(
 }
 
 @Composable
-private fun WeatherCityDialog(
+fun WeatherCityDialog(
     onSearch: (query: String, onResult: (List<WeatherCity>?) -> Unit) -> Unit,
     onCitySelected: (WeatherCity) -> Unit,
     onDetectLocation: (onResult: (Boolean) -> Unit) -> Unit,
     onLocationDetected: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    BlurBehind()
     val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     var query by remember { mutableStateOf("") }

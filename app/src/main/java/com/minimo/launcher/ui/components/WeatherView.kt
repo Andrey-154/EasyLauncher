@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.components
 
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +18,7 @@ import com.minimo.launcher.R
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherView(
     horizontalAlignment: Alignment.Horizontal,
@@ -23,6 +26,8 @@ fun WeatherView(
     cityMissing: Boolean = false,
     refreshWeather: () -> Unit,
     onClick: () -> Unit,
+    /** Long-press: change the city. */
+    onLongClick: () -> Unit = {},
     textColor: Color,
     textShadow: Shadow?
 ) {
@@ -39,7 +44,7 @@ fun WeatherView(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            modifier = Modifier.clickable { onClick() },
+            modifier = Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
             text = if (cityMissing) stringResource(R.string.weather_city_missing) else weatherText,
             fontWeight = if (cityMissing) null else FontWeight.Bold,
             fontSize = 18.sp,

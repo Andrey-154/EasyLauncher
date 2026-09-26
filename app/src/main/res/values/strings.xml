@@ -342,4 +342,10 @@
 
     <string name="blur_behind">Blur Behind Windows</string>
     <string name="blur_behind_description">Blur the launcher behind open folders, app menus and dialogs</string>
+
+    <string name="quick_clock_title">Clock</string>
+    <string name="quick_hide_clock">Hide Clock</string>
+    <string name="quick_note_edit">Edit</string>
+    <string name="quick_note_clear">Clear</string>
+    <string name="quick_note_hide">Hide the note from Home</string>
 </resources>

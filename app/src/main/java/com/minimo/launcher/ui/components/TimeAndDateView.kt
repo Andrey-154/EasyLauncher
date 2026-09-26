@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.components
 
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +34,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimeAndDateView(
     horizontalAlignment: Alignment.Horizontal,
@@ -43,6 +46,8 @@ fun TimeAndDateView(
     textShadow: Shadow?,
     onClockClick: () -> Unit,
     onDateClick: () -> Unit,
+    /** Long-press on the time or the date: quick clock settings. */
+    onLongClick: () -> Unit = {},
     onBatteryClick: () -> Unit,
     /** Shown to the right of the time, e.g. the flashlight button. */
     timeTrailingContent: (@Composable () -> Unit)? = null
@@ -88,7 +93,7 @@ fun TimeAndDateView(
         if (clockMode != HomeClockMode.DateOnly) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    modifier = Modifier.clickable(onClick = onClockClick),
+                    modifier = Modifier.combinedClickable(onClick = onClockClick, onLongClick = onLongClick),
                     text = currentDateTime.format(timeFormatter).uppercase(),
                     fontSize = timeFontSize,
                     lineHeight = timeFontSize,
@@ -106,7 +111,7 @@ fun TimeAndDateView(
             Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    modifier = Modifier.clickable(onClick = onDateClick),
+                    modifier = Modifier.combinedClickable(onClick = onDateClick, onLongClick = onLongClick),
                     text = currentDateTime.format(dateFormatter),
                     fontSize = dateFontSize,
                     fontWeight = dateFontWeight,

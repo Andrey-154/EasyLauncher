@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import com.minimo.launcher.ui.settings.customisation.components.WeatherCityDialog
 import com.minimo.launcher.utils.AppIconAlignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -118,7 +119,59 @@ fun HomeBody(
         onPauseOrDispose { }
     }
 
+    var showClockSettings by remember { mutableStateOf(false) }
+    if (showClockSettings) {
+        ClockQuickSettingsDialog(
+            style = state.homeClockStyle,
+            mode = state.homeClockMode,
+            twentyFourHours = state.twentyFourHourFormat,
+            showBattery = state.showBatteryLevel,
+            onStyleChange = viewModel::onQuickClockStyle,
+            onModeChange = viewModel::onQuickClockMode,
+            onTwentyFourHoursChange = viewModel::onQuickTwentyFourHours,
+            onShowBatteryChange = viewModel::onQuickShowBattery,
+            onHideClock = {
+                showClockSettings = false
+                viewModel.onQuickHideClock()
+            },
+            onDismiss = { showClockSettings = false }
+        )
+    }
+
+    var showCityPicker by remember { mutableStateOf(false) }
+    if (showCityPicker) {
+        WeatherCityDialog(
+            onSearch = viewModel::onWeatherCitySearch,
+            onCitySelected = { city ->
+                viewModel.onWeatherCitySelected(city)
+                showCityPicker = false
+            },
+            onDetectLocation = viewModel::onDetectWeatherLocation,
+            onLocationDetected = { showCityPicker = false },
+            onDismiss = { showCityPicker = false }
+        )
+    }
+
+    var showNoteMenu by remember { mutableStateOf(false) }
     var showNoteDialog by remember { mutableStateOf(false) }
+    if (showNoteMenu) {
+        NoteQuickDialog(
+            hasNote = state.homeNote.isNotEmpty(),
+            onEdit = {
+                showNoteMenu = false
+                showNoteDialog = true
+            },
+            onClear = {
+                showNoteMenu = false
+                viewModel.onHomeNoteChanged("")
+            },
+            onHide = {
+                showNoteMenu = false
+                viewModel.onQuickHideNote()
+            },
+            onDismiss = { showNoteMenu = false }
+        )
+    }
     if (showNoteDialog) {
         HomeNoteDialog(
             currentNote = state.homeNote,
@@ -182,7 +235,8 @@ fun HomeBody(
                             launchPreferredApp(state.batteryAppPreference) {
                                 context.openPowerUsageSummary()
                             }
-                        }
+                        },
+                        onLongClick = { showClockSettings = true }
                     )
                 }
 
@@ -199,6 +253,7 @@ fun HomeBody(
                         onClick = {
                             if (state.weatherLatitude != null) showWeatherForecast = true
                         },
+                        onLongClick = { showCityPicker = true },
                         textColor = textColor,
                         textShadow = textShadow
                     )
@@ -211,6 +266,7 @@ fun HomeBody(
                         horizontalAlignment = state.homeClockAlignment,
                         note = state.homeNote,
                         onClick = { showNoteDialog = true },
+                        onLongClick = { showNoteMenu = true },
                         textColor = textColor,
                         textShadow = textShadow
                     )

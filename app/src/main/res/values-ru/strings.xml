@@ -343,4 +343,10 @@
 
     <string name="blur_behind">Размытие под окнами</string>
     <string name="blur_behind_description">Размывать лаунчер под открытыми папками, меню приложений и диалогами</string>
+
+    <string name="quick_clock_title">Часы</string>
+    <string name="quick_hide_clock">Скрыть часы</string>
+    <string name="quick_note_edit">Изменить</string>
+    <string name="quick_note_clear">Очистить</string>
+    <string name="quick_note_hide">Убрать заметку с главного</string>
 </resources>

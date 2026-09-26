@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.components
 
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,11 +34,14 @@ import kotlinx.coroutines.android.awaitFrame
 private const val MAX_NOTE_LENGTH = 120
 
 /** One-line note under the clock; shows a faint hint when empty. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeNoteView(
     horizontalAlignment: Alignment.Horizontal,
     note: String,
     onClick: () -> Unit,
+    /** Long-press: edit / clear / hide. */
+    onLongClick: () -> Unit = {},
     textColor: Color,
     textShadow: Shadow?
 ) {
@@ -45,7 +50,7 @@ fun HomeNoteView(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            modifier = Modifier.clickable(onClick = onClick),
+            modifier = Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
             text = note.ifEmpty { stringResource(R.string.home_note_hint) },
             fontSize = 18.sp,
             color = if (note.isEmpty()) textColor.copy(alpha = 0.45f) else textColor,

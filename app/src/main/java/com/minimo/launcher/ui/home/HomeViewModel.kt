@@ -1,5 +1,9 @@
 package com.minimo.launcher.ui.home
 
+import com.minimo.launcher.utils.HomeClockMode
+import com.minimo.launcher.utils.HomeClockStyle
+import com.minimo.launcher.utils.LocationHelper
+import com.minimo.launcher.utils.WeatherCity
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
@@ -78,7 +82,8 @@ class HomeViewModel @Inject constructor(
     private val appLock: AppLock,
     private val carouselSoundPlayer: CarouselSoundPlayer,
     private val carouselHapticPlayer: CarouselHapticPlayer,
-    homePressedNotifier: HomePressedNotifier
+    homePressedNotifier: HomePressedNotifier,
+    private val locationHelper: LocationHelper
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
@@ -774,6 +779,57 @@ class HomeViewModel @Inject constructor(
         val state = _state.value
         carouselHapticPlayer.play(state.carouselVibration)
         carouselSoundPlayer.play(state.carouselSound, state.carouselSoundVolume / 100f)
+    }
+
+    // ---- quick settings from Home (long-press) ----
+
+    fun onQuickClockStyle(style: HomeClockStyle) {
+        viewModelScope.launch { preferenceHelper.setHomeClockStyle(style) }
+    }
+
+    fun onQuickClockMode(mode: HomeClockMode) {
+        viewModelScope.launch { preferenceHelper.setHomeClockMode(mode) }
+    }
+
+    fun onQuickTwentyFourHours(enable: Boolean) {
+        viewModelScope.launch { preferenceHelper.setTwentyFourHourFormat(enable) }
+    }
+
+    fun onQuickShowBattery(enable: Boolean) {
+        viewModelScope.launch { preferenceHelper.setShowBatteryLevel(enable) }
+    }
+
+    fun onQuickHideClock() {
+        viewModelScope.launch { preferenceHelper.setShowHomeClock(false) }
+    }
+
+    fun onQuickHideNote() {
+        viewModelScope.launch { preferenceHelper.setShowHomeNote(false) }
+    }
+
+    fun onWeatherCitySearch(query: String, onResult: (List<WeatherCity>?) -> Unit) {
+        if (query.isBlank()) return
+        viewModelScope.launch { onResult(weatherRepository.searchCities(query)) }
+    }
+
+    fun onWeatherCitySelected(city: WeatherCity) {
+        viewModelScope.launch {
+            preferenceHelper.setWeatherCity(city.name, city.latitude, city.longitude)
+        }
+    }
+
+    fun onDetectWeatherLocation(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val location = locationHelper.getLocation()
+            if (location == null) {
+                onResult(false)
+                return@launch
+            }
+            val name = locationHelper.cityName(location.latitude, location.longitude)
+                ?: "%.2f, %.2f".format(location.latitude, location.longitude)
+            preferenceHelper.setWeatherCity(name, location.latitude, location.longitude)
+            onResult(true)
+        }
     }
 
     fun onFlashlightClick() {
