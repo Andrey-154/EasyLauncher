@@ -316,4 +316,17 @@
     <string name="protect_needs_screen_lock">Set up a screen lock (PIN, pattern or fingerprint) in the phone settings first</string>
     <string name="unlock_hidden_apps">Unlock hidden apps</string>
     <string name="unlock_hidden_apps_subtitle">Use your fingerprint or screen lock</string>
+
+    <string name="folder_placement">Where</string>
+    <string name="folder_placement_button">Button on screen</string>
+    <string name="folder_placement_list">In the apps list</string>
+    <string name="folder_list_position">Position in the list: %1$d</string>
+    <string name="folder_icon_style">Folder icon</string>
+    <string name="folder_icon_folder">Folder</string>
+    <string name="folder_icon_preview">Mini icons</string>
+    <string name="folder_icon_letter">Letter</string>
+    <string name="folder_open_style">Opens as</string>
+    <string name="folder_open_grid">Grid</string>
+    <string name="folder_open_list">List</string>
+    <string name="folder_show_names">Show app names</string>
 </resources>

@@ -112,6 +112,8 @@ fun HomeActionButton(
     modifier: Modifier = Modifier,
     active: Boolean = false,
     appIcon: ImageBitmap? = null,
+    /** Drawn instead of [icon] (e.g. a folder preview); gets the icon colour. */
+    content: (@Composable (Color) -> Unit)? = null,
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
@@ -171,7 +173,9 @@ fun HomeActionButton(
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (appIcon != null) {
+        if (content != null) {
+            content(iconColor)
+        } else if (appIcon != null) {
             Image(
                 bitmap = appIcon,
                 contentDescription = contentDescription,

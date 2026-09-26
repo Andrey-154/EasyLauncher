@@ -317,4 +317,17 @@
     <string name="protect_needs_screen_lock">Сначала установите блокировку экрана (PIN, графический ключ или отпечаток) в настройках телефона</string>
     <string name="unlock_hidden_apps">Разблокировать скрытые приложения</string>
     <string name="unlock_hidden_apps_subtitle">Приложите палец или введите PIN-код телефона</string>
+
+    <string name="folder_placement">Где показывать</string>
+    <string name="folder_placement_button">Кнопка на экране</string>
+    <string name="folder_placement_list">В списке приложений</string>
+    <string name="folder_list_position">Позиция в списке: %1$d</string>
+    <string name="folder_icon_style">Значок папки</string>
+    <string name="folder_icon_folder">Папка</string>
+    <string name="folder_icon_preview">Мини-значки</string>
+    <string name="folder_icon_letter">Буква</string>
+    <string name="folder_open_style">Открывается как</string>
+    <string name="folder_open_grid">Сетка</string>
+    <string name="folder_open_list">Список</string>
+    <string name="folder_show_names">Показывать названия</string>
 </resources>

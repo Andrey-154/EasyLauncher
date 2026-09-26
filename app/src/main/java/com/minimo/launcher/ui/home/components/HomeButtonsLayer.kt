@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import com.minimo.launcher.ui.components.FolderGlyph
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -61,7 +62,9 @@ fun HomeButtonsLayer(
     onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (buttons.isEmpty() && !editMode) return
+    // Folders placed "in the list" are drawn by the favourites list, not here
+    val freeButtons = buttons.filterNot { it.isListFolder }
+    if (freeButtons.isEmpty() && !editMode) return
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val density = LocalDensity.current
@@ -83,7 +86,7 @@ fun HomeButtonsLayer(
             )
         }
 
-        buttons.forEach { button ->
+        freeButtons.forEach { button ->
             val app = if (button.type == HomeButtonType.APP) findApp(button.app) else null
             val appIcon by produceState<ImageBitmap?>(null, app?.id, sizePx) {
                 value = app?.let { loadAppIcon(it, sizePx.roundToInt()) }
@@ -139,6 +142,19 @@ fun HomeButtonsLayer(
                     style = buttonStyle,
                     active = button.type == HomeButtonType.FLASHLIGHT && flashlightOn,
                     appIcon = appIcon,
+                    content = if (button.type == HomeButtonType.FOLDER) {
+                        { tint ->
+                            FolderGlyph(
+                                folder = button,
+                                size = sizeDp * 0.58f,
+                                color = tint,
+                                findApp = findApp,
+                                loadAppIcon = loadAppIcon
+                            )
+                        }
+                    } else {
+                        null
+                    },
                     onClick = { if (!editMode) onClick(button) },
                     onLongClick = { if (!editMode) onEnterEditMode() }
                 )

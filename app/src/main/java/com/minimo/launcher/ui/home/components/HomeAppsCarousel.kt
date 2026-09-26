@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import com.minimo.launcher.ui.entities.AppInfo
 import kotlin.math.abs
 
 /** How many times the list is repeated in each direction; far more than anyone scrolls. */
@@ -35,12 +34,12 @@ private const val EDGE_ALPHA = 0.55f
  *  (matches the horizontal alignment of the apps).
  */
 @Composable
-fun HomeAppsCarousel(
-    apps: List<AppInfo>,
+fun <T> HomeAppsCarousel(
+    apps: List<T>,
     visibleCount: Int,
     transformOriginX: Float,
     modifier: Modifier = Modifier,
-    itemContent: @Composable (AppInfo, Modifier) -> Unit
+    itemContent: @Composable (T, Modifier) -> Unit
 ) {
     val size = apps.size
     // Start in the middle, on the first app, so both directions have room

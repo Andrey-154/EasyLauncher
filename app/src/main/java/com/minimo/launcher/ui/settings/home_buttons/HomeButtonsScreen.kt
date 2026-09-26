@@ -58,6 +58,7 @@ fun HomeButtonsScreen(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     var showTypePicker by remember { mutableStateOf(false) }
     val folderChoices by viewModel.folderChoices.collectAsStateWithLifecycle()
+    val favouritesCount by viewModel.favouritesCount.collectAsStateWithLifecycle()
     var creatingFolder by remember { mutableStateOf(false) }
     var editingFolder by remember { mutableStateOf<HomeButton?>(null) }
     var showAppPicker by remember { mutableStateOf(false) }
@@ -162,11 +163,11 @@ fun HomeButtonsScreen(
 
     if (creatingFolder) {
         FolderEditDialog(
-            initialName = "",
-            initialApps = emptyList(),
+            initial = null,
+            favouritesCount = favouritesCount,
             allApps = folderChoices,
-            onSave = { name, apps ->
-                viewModel.addFolder(name, apps)
+            onSave = { config ->
+                viewModel.addFolder(config)
                 creatingFolder = false
             },
             onDismiss = { creatingFolder = false }
@@ -175,11 +176,11 @@ fun HomeButtonsScreen(
 
     editingFolder?.let { folder ->
         FolderEditDialog(
-            initialName = folder.name,
-            initialApps = folder.apps,
+            initial = folder,
+            favouritesCount = favouritesCount,
             allApps = folderChoices,
-            onSave = { name, apps ->
-                viewModel.updateFolder(folder, name, apps)
+            onSave = { config ->
+                viewModel.updateFolder(folder, config)
                 editingFolder = null
             },
             onDismiss = { editingFolder = null }

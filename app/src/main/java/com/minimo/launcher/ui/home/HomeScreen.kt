@@ -1,5 +1,7 @@
 package com.minimo.launcher.ui.home
 
+import com.minimo.launcher.ui.home.components.FolderGridPopup
+import com.minimo.launcher.utils.FolderOpenStyle
 import com.minimo.launcher.ui.home.components.FolderDialog
 import com.minimo.launcher.utils.HomeButton
 import com.minimo.launcher.utils.HomeButtonType
@@ -73,6 +75,7 @@ fun HomeScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val homeLazyListState = rememberLazyListState()
     var shortcutToDelete by remember { mutableStateOf<AppInfo?>(null) }
+    var openFolder by remember { mutableStateOf<HomeButton?>(null) }
 
     // Calculate dynamic threshold based on window container height & width.
     val screenSize = LocalWindowInfo.current.containerSize
@@ -213,24 +216,35 @@ fun HomeScreen(
                     navigationBarVisible = navigationBarVisible,
                     useDarkBottomSheetStatusBarIcons = useDarkBottomSheetStatusBarIcons,
                     useDarkBottomSheetNavigationBarIcons = useDarkIconsOnSurface,
-                    onDeleteShortcutClick = { shortcutToDelete = it }
+                    onDeleteShortcutClick = { shortcutToDelete = it },
+                    onFolderClick = { openFolder = it }
                 )
             }
         }
 
         val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
-        var openFolder by remember { mutableStateOf<HomeButton?>(null) }
         openFolder?.let { folder ->
-            FolderDialog(
-                folder = folder,
-                findApp = viewModel::findAppByPreference,
-                loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
-                onAppClick = { app ->
-                    openFolder = null
-                    viewModel.onAppLaunchRequest(app)
-                },
-                onDismiss = { openFolder = null }
-            )
+            val onAppClick: (AppInfo) -> Unit = { app ->
+                openFolder = null
+                viewModel.onAppLaunchRequest(app)
+            }
+            if (folder.openStyle == FolderOpenStyle.Grid) {
+                FolderGridPopup(
+                    folder = folder,
+                    findApp = viewModel::findAppByPreference,
+                    loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
+                    onAppClick = onAppClick,
+                    onDismiss = { openFolder = null }
+                )
+            } else {
+                FolderDialog(
+                    folder = folder,
+                    findApp = viewModel::findAppByPreference,
+                    loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
+                    onAppClick = onAppClick,
+                    onDismiss = { openFolder = null }
+                )
+            }
         }
         val customTextColor = LocalCustomTextColor.current
         val buttonsColor = if (enableWallpaper && customTextColor == Color.Unspecified) {

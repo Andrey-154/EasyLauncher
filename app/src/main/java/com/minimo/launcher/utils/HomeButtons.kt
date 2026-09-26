@@ -20,11 +20,21 @@ enum class HomeButtonStyle {
     Outline, Filled
 }
 
+/** Where a folder lives: a free button, or a row inside the favourites list/carousel. */
+enum class FolderPlacement { Button, List }
+
+/** How a closed folder looks. */
+enum class FolderIconStyle { Folder, Preview, Letter }
+
+/** How a folder opens. */
+enum class FolderOpenStyle { Grid, List }
+
 /**
  * A button placed freely on the home screen.
  * [x] and [y] are 0..1 fractions of the free space, so positions survive other screen sizes.
  * [app] is the app preference value for [HomeButtonType.APP].
- * [name] and [apps] (app preference values) describe a [HomeButtonType.FOLDER].
+ * [name] and [apps] (app preference values) describe a [HomeButtonType.FOLDER];
+ * [listPosition] is its 0-based place among the favourites when [placement] is List.
  */
 data class HomeButton(
     val id: String = UUID.randomUUID().toString(),
@@ -33,8 +43,16 @@ data class HomeButton(
     val x: Float,
     val y: Float,
     val name: String = "",
-    val apps: List<String> = emptyList()
-)
+    val apps: List<String> = emptyList(),
+    val placement: FolderPlacement = FolderPlacement.Button,
+    val listPosition: Int = 0,
+    val iconStyle: FolderIconStyle = FolderIconStyle.Folder,
+    val openStyle: FolderOpenStyle = FolderOpenStyle.Grid,
+    val showNames: Boolean = true
+) {
+    val isListFolder: Boolean
+        get() = type == HomeButtonType.FOLDER && placement == FolderPlacement.List
+}
 
 object HomeButtonsJson {
     fun toJson(buttons: List<HomeButton>): String = JSONArray().apply {
@@ -48,6 +66,11 @@ object HomeButtonsJson {
                     .put("y", button.y.toDouble())
                     .put("name", button.name)
                     .put("apps", JSONArray(button.apps))
+                    .put("placement", button.placement.name)
+                    .put("listPosition", button.listPosition)
+                    .put("iconStyle", button.iconStyle.name)
+                    .put("openStyle", button.openStyle.name)
+                    .put("showNames", button.showNames)
             )
         }
     }.toString()
@@ -69,7 +92,12 @@ object HomeButtonsJson {
                     name = item.optString("name"),
                     apps = item.optJSONArray("apps")?.let { array ->
                         (0 until array.length()).map { array.getString(it) }
-                    } ?: emptyList()
+                    } ?: emptyList(),
+                    placement = enumOr(item.optString("placement"), FolderPlacement.Button),
+                    listPosition = item.optInt("listPosition", 0).coerceAtLeast(0),
+                    iconStyle = enumOr(item.optString("iconStyle"), FolderIconStyle.Folder),
+                    openStyle = enumOr(item.optString("openStyle"), FolderOpenStyle.Grid),
+                    showNames = item.optBoolean("showNames", true)
                 )
             }
         } catch (exception: Exception) {
@@ -78,3 +106,6 @@ object HomeButtonsJson {
         }
     }
 }
+
+private inline fun <reified T : Enum<T>> enumOr(name: String?, default: T): T =
+    enumValues<T>().find { it.name == name } ?: default

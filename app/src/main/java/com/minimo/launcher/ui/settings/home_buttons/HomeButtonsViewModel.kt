@@ -45,26 +45,39 @@ class HomeButtonsViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun addFolder(name: String, apps: List<String>) {
+    /** For the "position in the list" of list folders. */
+    val favouritesCount: StateFlow<Int> = appInfoDao.getFavouriteAppsFlow()
+        .map { it.size }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
+    fun addFolder(config: FolderConfig) {
         viewModelScope.launch {
             preferenceHelper.updateHomeButtons { buttons ->
                 val index = buttons.size
                 val x = 0.1f + (index % 5) * 0.2f
                 val y = (0.92f - (index / 5) * 0.1f).coerceAtLeast(0.1f)
-                buttons + HomeButton(
-                    type = HomeButtonType.FOLDER, x = x, y = y, name = name, apps = apps
-                )
+                buttons + HomeButton(type = HomeButtonType.FOLDER, x = x, y = y).withConfig(config)
             }
         }
     }
 
-    fun updateFolder(folder: HomeButton, name: String, apps: List<String>) {
+    fun updateFolder(folder: HomeButton, config: FolderConfig) {
         viewModelScope.launch {
             preferenceHelper.updateHomeButtons { buttons ->
-                buttons.map { if (it.id == folder.id) it.copy(name = name, apps = apps) else it }
+                buttons.map { if (it.id == folder.id) it.withConfig(config) else it }
             }
         }
     }
+
+    private fun HomeButton.withConfig(config: FolderConfig) = copy(
+        name = config.name,
+        apps = config.apps,
+        placement = config.placement,
+        listPosition = config.listPosition,
+        iconStyle = config.iconStyle,
+        openStyle = config.openStyle,
+        showNames = config.showNames
+    )
 
     fun addButton(type: HomeButtonType, app: String = "") {
         viewModelScope.launch {

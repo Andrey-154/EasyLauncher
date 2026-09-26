@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.home.components
 
+import com.minimo.launcher.utils.HomeButton
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
@@ -71,7 +72,8 @@ fun HomeBody(
     navigationBarVisible: Boolean,
     useDarkBottomSheetStatusBarIcons: Boolean,
     useDarkBottomSheetNavigationBarIcons: Boolean,
-    onDeleteShortcutClick: (AppInfo) -> Unit
+    onDeleteShortcutClick: (AppInfo) -> Unit,
+    onFolderClick: (HomeButton) -> Unit = {}
 ) {
     val context = LocalContext.current
     val iconCacheRevision by viewModel.iconCacheRevision.collectAsStateWithLifecycle()
@@ -298,9 +300,37 @@ fun HomeBody(
                 )
             }
 
+        // Favourites plus the folders placed "in the list", each at its chosen position
+        val homeEntries = remember(state.favouriteApps, state.homeButtons) {
+            val entries = state.favouriteApps.map<AppInfo, HomeEntry> { HomeEntry.App(it) }.toMutableList()
+            state.homeButtons.filter { it.isListFolder }
+                .sortedBy { it.listPosition }
+                .forEach { folder ->
+                    entries.add(folder.listPosition.coerceIn(0, entries.size), HomeEntry.Folder(folder))
+                }
+            entries.toList()
+        }
+        val homeEntryItem: @Composable (HomeEntry, Modifier) -> Unit = { entry, itemModifier ->
+            when (entry) {
+                is HomeEntry.App -> homeAppItem(entry.app, itemModifier)
+                is HomeEntry.Folder -> FolderListRow(
+                    modifier = itemModifier,
+                    folder = entry.folder,
+                    textSize = state.homeTextSize.sp,
+                    textColor = textColor,
+                    textShadow = textShadow,
+                    appsArrangement = state.appsArrangementHorizontal,
+                    verticalPadding = state.homeAppVerticalPadding.dp,
+                    findApp = viewModel::findAppByPreference,
+                    loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
+                    onClick = { onFolderClick(entry.folder) }
+                )
+            }
+        }
+
         // "Max apps on Home": an endless carousel showing exactly N whole rows
         val carouselRows = state.maxHomeApps.takeIf {
-            state.limitHomeApps && state.favouriteApps.size > it
+            state.limitHomeApps && homeEntries.size > it
         }
 
         Box(
@@ -325,7 +355,7 @@ fun HomeBody(
                 )
 
                 HomeAppsCarousel(
-                    apps = state.favouriteApps,
+                    apps = homeEntries,
                     visibleCount = carouselRows,
                     transformOriginX = when (state.appsArrangementHorizontal) {
                         Arrangement.Center -> 0.5f
@@ -333,7 +363,7 @@ fun HomeBody(
                         else -> 0f
                     },
                     modifier = Modifier.padding(bottom = lazyColumnPadding.calculateBottomPadding()),
-                    itemContent = homeAppItem
+                    itemContent = homeEntryItem
                 )
             } else {
                 LazyColumn(
@@ -344,8 +374,8 @@ fun HomeBody(
                     contentPadding = lazyColumnPadding,
                     verticalArrangement = state.appsArrangementVertical
                 ) {
-                    items(items = state.favouriteApps, key = { it.id }) { appInfo ->
-                        homeAppItem(appInfo, Modifier.animateItem())
+                    items(items = homeEntries, key = { it.key }) { entry ->
+                        homeEntryItem(entry, Modifier.animateItem())
                     }
                 }
             }
