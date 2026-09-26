@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -141,6 +142,19 @@ fun HomeButtonsLayer(
                     onClick = { if (!editMode) onClick(button) },
                     onLongClick = { if (!editMode) onEnterEditMode() }
                 )
+
+                if (button.type == HomeButtonType.FOLDER && button.name.isNotEmpty()) {
+                    Text(
+                        text = button.name,
+                        color = contentColor,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .offset(y = 18.dp)
+                            .wrapContentWidth(unbounded = true)
+                    )
+                }
 
                 if (editMode) {
                     Box(

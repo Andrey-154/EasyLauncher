@@ -1,5 +1,8 @@
 package com.minimo.launcher.ui.home
 
+import com.minimo.launcher.ui.home.components.FolderDialog
+import com.minimo.launcher.utils.HomeButton
+import com.minimo.launcher.utils.HomeButtonType
 import com.minimo.launcher.ui.home.components.HomeButtonsLayer
 import com.minimo.launcher.ui.theme.LocalCustomTextColor
 import android.os.Build
@@ -216,6 +219,19 @@ fun HomeScreen(
         }
 
         val flashlightOn by viewModel.flashlightOn.collectAsStateWithLifecycle()
+        var openFolder by remember { mutableStateOf<HomeButton?>(null) }
+        openFolder?.let { folder ->
+            FolderDialog(
+                folder = folder,
+                findApp = viewModel::findAppByPreference,
+                loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
+                onAppClick = { app ->
+                    openFolder = null
+                    viewModel.onAppLaunchRequest(app)
+                },
+                onDismiss = { openFolder = null }
+            )
+        }
         val customTextColor = LocalCustomTextColor.current
         val buttonsColor = if (enableWallpaper && customTextColor == Color.Unspecified) {
             if (state.lightTextOnWallpaper) Color.White else Color.Black
@@ -233,7 +249,11 @@ fun HomeScreen(
             findApp = viewModel::findAppByPreference,
             loadAppIcon = { app, sizePx -> viewModel.loadAppIcon(app, sizePx) },
             onClick = { button ->
-                context.performHomeButtonAction(button, viewModel, onOpenAppDrawer, onSettingsClick)
+                if (button.type == HomeButtonType.FOLDER) {
+                    openFolder = button
+                } else {
+                    context.performHomeButtonAction(button, viewModel, onOpenAppDrawer, onSettingsClick)
+                }
             },
             onEnterEditMode = viewModel::onEnterHomeButtonsEditMode,
             onMoved = viewModel::onHomeButtonMoved,

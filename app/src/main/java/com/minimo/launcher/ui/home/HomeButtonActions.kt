@@ -58,6 +58,7 @@ fun Context.performHomeButtonAction(
         HomeButtonType.NOTIFICATIONS -> showNotificationDrawer()
         HomeButtonType.SEARCH -> onOpenAppDrawer()
         HomeButtonType.SETTINGS -> onSettingsClick()
+        HomeButtonType.FOLDER -> Unit // opened as a dialog by HomeScreen
         HomeButtonType.APP -> {
             if (!viewModel.onPreferenceAppLaunchRequest(button.app)) {
                 Toast.makeText(this, R.string.home_button_app_missing, Toast.LENGTH_SHORT).show()

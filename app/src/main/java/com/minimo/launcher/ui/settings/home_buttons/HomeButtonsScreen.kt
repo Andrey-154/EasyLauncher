@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -56,6 +57,9 @@ fun HomeButtonsScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     var showTypePicker by remember { mutableStateOf(false) }
+    val folderChoices by viewModel.folderChoices.collectAsStateWithLifecycle()
+    var creatingFolder by remember { mutableStateOf(false) }
+    var editingFolder by remember { mutableStateOf<HomeButton?>(null) }
     var showAppPicker by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -126,7 +130,12 @@ fun HomeButtonsScreen(
                     } else {
                         ""
                     },
-                    onRemove = { viewModel.removeButton(button) }
+                    onRemove = { viewModel.removeButton(button) },
+                    onEdit = if (button.type == HomeButtonType.FOLDER) {
+                        { editingFolder = button }
+                    } else {
+                        null
+                    }
                 )
             }
 
@@ -138,7 +147,43 @@ fun HomeButtonsScreen(
             ) {
                 Text(stringResource(R.string.home_buttons_add))
             }
+
+            OutlinedButton(
+                onClick = { creatingFolder = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Dimens.APP_HORIZONTAL_SPACING)
+                    .padding(bottom = 16.dp)
+            ) {
+                Text(stringResource(R.string.folder_create))
+            }
         }
+    }
+
+    if (creatingFolder) {
+        FolderEditDialog(
+            initialName = "",
+            initialApps = emptyList(),
+            allApps = folderChoices,
+            onSave = { name, apps ->
+                viewModel.addFolder(name, apps)
+                creatingFolder = false
+            },
+            onDismiss = { creatingFolder = false }
+        )
+    }
+
+    editingFolder?.let { folder ->
+        FolderEditDialog(
+            initialName = folder.name,
+            initialApps = folder.apps,
+            allApps = folderChoices,
+            onSave = { name, apps ->
+                viewModel.updateFolder(folder, name, apps)
+                editingFolder = null
+            },
+            onDismiss = { editingFolder = null }
+        )
     }
 
     if (showTypePicker) {
@@ -151,7 +196,8 @@ fun HomeButtonsScreen(
                         .heightIn(max = 460.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    HomeButtonType.entries.forEach { type ->
+                    // Folders have their own "Create folder" button
+                    HomeButtonType.entries.filter { it != HomeButtonType.FOLDER }.forEach { type ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -193,7 +239,12 @@ fun HomeButtonsScreen(
 }
 
 @Composable
-private fun ButtonRow(button: HomeButton, appName: String, onRemove: () -> Unit) {
+private fun ButtonRow(
+    button: HomeButton,
+    appName: String,
+    onRemove: () -> Unit,
+    onEdit: (() -> Unit)? = null
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,14 +254,21 @@ private fun ButtonRow(button: HomeButton, appName: String, onRemove: () -> Unit)
         Icon(button.type.icon(), contentDescription = null, modifier = Modifier.size(24.dp))
         Spacer(modifier = Modifier.width(16.dp))
         Text(
-            text = if (button.type == HomeButtonType.APP && appName.isNotEmpty()) {
-                appName
-            } else {
-                stringResource(button.type.title())
+            text = when {
+                button.type == HomeButtonType.APP && appName.isNotEmpty() -> appName
+                button.type == HomeButtonType.FOLDER ->
+                    stringResource(R.string.folder_row, button.name, button.apps.size)
+
+                else -> stringResource(button.type.title())
             },
             fontSize = 18.sp,
             modifier = Modifier.weight(1f)
         )
+        if (onEdit != null) {
+            TextButton(onClick = onEdit) {
+                Text(stringResource(R.string.folder_edit_short))
+            }
+        }
         TextButton(onClick = onRemove) {
             Text(stringResource(R.string.delete))
         }

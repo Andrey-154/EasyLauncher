@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.FlashlightOn
+import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.PhotoCamera
@@ -71,6 +72,7 @@ fun HomeButtonType.icon(): ImageVector = when (this) {
     HomeButtonType.SEARCH -> Icons.Rounded.Search
     HomeButtonType.SETTINGS -> Icons.Rounded.Settings
     HomeButtonType.APP -> Icons.Rounded.Apps
+    HomeButtonType.FOLDER -> Icons.Rounded.Folder
 }
 
 @StringRes
@@ -92,6 +94,7 @@ fun HomeButtonType.title(): Int = when (this) {
     HomeButtonType.SEARCH -> R.string.home_button_search
     HomeButtonType.SETTINGS -> R.string.settings
     HomeButtonType.APP -> R.string.home_button_app
+    HomeButtonType.FOLDER -> R.string.folder
 }
 
 /**

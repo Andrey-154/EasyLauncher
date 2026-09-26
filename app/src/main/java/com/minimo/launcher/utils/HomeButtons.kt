@@ -9,7 +9,7 @@ import java.util.UUID
 enum class HomeButtonType {
     FLASHLIGHT, CAMERA, PHONE, MESSAGES, BROWSER, CALCULATOR, ALARM,
     WIFI, BLUETOOTH, VOLUME, MEDIA_PLAY_PAUSE, MEDIA_NEXT,
-    LOCK_SCREEN, NOTIFICATIONS, SEARCH, SETTINGS, APP
+    LOCK_SCREEN, NOTIFICATIONS, SEARCH, SETTINGS, APP, FOLDER
 }
 
 enum class HomeButtonSize(val dp: Int) {
@@ -24,13 +24,16 @@ enum class HomeButtonStyle {
  * A button placed freely on the home screen.
  * [x] and [y] are 0..1 fractions of the free space, so positions survive other screen sizes.
  * [app] is the app preference value for [HomeButtonType.APP].
+ * [name] and [apps] (app preference values) describe a [HomeButtonType.FOLDER].
  */
 data class HomeButton(
     val id: String = UUID.randomUUID().toString(),
     val type: HomeButtonType,
     val app: String = "",
     val x: Float,
-    val y: Float
+    val y: Float,
+    val name: String = "",
+    val apps: List<String> = emptyList()
 )
 
 object HomeButtonsJson {
@@ -43,6 +46,8 @@ object HomeButtonsJson {
                     .put("app", button.app)
                     .put("x", button.x.toDouble())
                     .put("y", button.y.toDouble())
+                    .put("name", button.name)
+                    .put("apps", JSONArray(button.apps))
             )
         }
     }.toString()
@@ -60,7 +65,11 @@ object HomeButtonsJson {
                     type = type,
                     app = item.optString("app"),
                     x = item.optDouble("x", 0.5).toFloat().coerceIn(0f, 1f),
-                    y = item.optDouble("y", 0.5).toFloat().coerceIn(0f, 1f)
+                    y = item.optDouble("y", 0.5).toFloat().coerceIn(0f, 1f),
+                    name = item.optString("name"),
+                    apps = item.optJSONArray("apps")?.let { array ->
+                        (0 until array.length()).map { array.getString(it) }
+                    } ?: emptyList()
                 )
             }
         } catch (exception: Exception) {

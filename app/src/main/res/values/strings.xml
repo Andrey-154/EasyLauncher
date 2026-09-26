@@ -301,4 +301,13 @@
     <string name="limit_home_apps">Limit Apps on Home</string>
     <string name="limit_home_apps_description">Show only a few favourites at once; scroll the list to reach the rest. You can still add any number of favourites.</string>
     <string name="max_home_apps">Apps on Home:</string>
+
+    <string name="folder">Folder</string>
+    <string name="folder_empty">The apps of this folder are not installed</string>
+    <string name="folder_create">Create Folder</string>
+    <string name="folder_edit">Edit Folder</string>
+    <string name="folder_edit_short">Edit</string>
+    <string name="folder_name">Folder name</string>
+    <string name="folder_selected_count">Selected: %1$d</string>
+    <string name="folder_row">📁 %1$s (%2$d)</string>
 </resources>

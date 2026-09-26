@@ -302,4 +302,13 @@
     <string name="limit_home_apps">Ограничить приложения на главном</string>
     <string name="limit_home_apps_description">Показывать только несколько избранных сразу, остальные — прокруткой списка. Добавлять в избранное можно сколько угодно.</string>
     <string name="max_home_apps">Приложений на главном:</string>
+
+    <string name="folder">Папка</string>
+    <string name="folder_empty">Приложения этой папки не установлены</string>
+    <string name="folder_create">Создать папку</string>
+    <string name="folder_edit">Изменить папку</string>
+    <string name="folder_edit_short">Изменить</string>
+    <string name="folder_name">Название папки</string>
+    <string name="folder_selected_count">Выбрано: %1$d</string>
+    <string name="folder_row">📁 %1$s (%2$d)</string>
 </resources>
