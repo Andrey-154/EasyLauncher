@@ -113,7 +113,8 @@ data class HomePreferences(
     val protectHiddenApps: Boolean = false,
     val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
-    val carouselSoundVolume: Int = 50
+    val carouselSoundVolume: Int = 50,
+    val carouselReset: Boolean = true
 )
 
 data class CustomisationPreferences(
@@ -193,5 +194,6 @@ data class CustomisationPreferences(
     val protectHiddenApps: Boolean = false,
     val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
-    val carouselSoundVolume: Int = 50
+    val carouselSoundVolume: Int = 50,
+    val carouselReset: Boolean = true
 )

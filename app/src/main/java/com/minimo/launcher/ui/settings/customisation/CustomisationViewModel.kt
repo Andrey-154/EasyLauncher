@@ -155,7 +155,8 @@ class CustomisationViewModel @Inject constructor(
                             maxHomeApps = prefs.maxHomeApps,
                             carouselVibration = prefs.carouselVibration,
                             carouselSound = prefs.carouselSound,
-                            carouselSoundVolume = prefs.carouselSoundVolume
+                            carouselSoundVolume = prefs.carouselSoundVolume,
+                            carouselReset = prefs.carouselReset
                         )
                     }
                 }
@@ -462,6 +463,10 @@ class CustomisationViewModel @Inject constructor(
     fun onCarouselVibrationChanged(percent: Int) {
         if (percent == _state.value.carouselVibration) return
         viewModelScope.launch { preferenceHelper.setCarouselVibration(percent) }
+    }
+
+    fun onToggleCarouselReset() {
+        viewModelScope.launch { preferenceHelper.setCarouselReset(!_state.value.carouselReset) }
     }
 
     fun onCarouselSoundChanged(sound: CarouselSound) {

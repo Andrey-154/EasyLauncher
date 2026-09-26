@@ -154,6 +154,7 @@ class PreferenceHelper @Inject constructor(
         private val KEY_CAROUSEL_HAPTIC = stringPreferencesKey("KEY_CAROUSEL_HAPTIC") // old
         private val KEY_CAROUSEL_VIBRATION = intPreferencesKey("KEY_CAROUSEL_VIBRATION")
         private val KEY_CAROUSEL_SOUND = stringPreferencesKey("KEY_CAROUSEL_SOUND")
+        private val KEY_CAROUSEL_RESET = booleanPreferencesKey("KEY_CAROUSEL_RESET")
         private val KEY_CAROUSEL_SOUND_VOLUME = intPreferencesKey("KEY_CAROUSEL_SOUND_VOLUME")
         private val KEY_MAX_HOME_APPS = intPreferencesKey("KEY_MAX_HOME_APPS")
         private val KEY_HOME_BUTTON_SIZE = stringPreferencesKey("KEY_HOME_BUTTON_SIZE")
@@ -452,6 +453,10 @@ class PreferenceHelper @Inject constructor(
         "Off" -> 0
         "Strong" -> 85
         else -> 35
+    }
+
+    suspend fun setCarouselReset(enable: Boolean) {
+        preferences.edit { it[KEY_CAROUSEL_RESET] = enable }
     }
 
     suspend fun setCarouselSound(sound: CarouselSound) {
@@ -786,7 +791,8 @@ class PreferenceHelper @Inject constructor(
                     ?: legacyCarouselVibration(prefs[KEY_CAROUSEL_HAPTIC]),
                 carouselSound = CarouselSound.entries.find { it.name == prefs[KEY_CAROUSEL_SOUND] }
                     ?: CarouselSound.Off,
-                carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50
+                carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50,
+                carouselReset = prefs[KEY_CAROUSEL_RESET] ?: true
             )
         }
     }
@@ -885,7 +891,8 @@ class PreferenceHelper @Inject constructor(
                     ?: legacyCarouselVibration(prefs[KEY_CAROUSEL_HAPTIC]),
                 carouselSound = CarouselSound.entries.find { it.name == prefs[KEY_CAROUSEL_SOUND] }
                     ?: CarouselSound.Off,
-                carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50
+                carouselSoundVolume = prefs[KEY_CAROUSEL_SOUND_VOLUME] ?: 50,
+                carouselReset = prefs[KEY_CAROUSEL_RESET] ?: true
             )
         }
     }

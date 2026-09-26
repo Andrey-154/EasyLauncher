@@ -337,4 +337,7 @@
     <string name="carousel_sound_tick">Тик</string>
     <string name="carousel_sound_click">Щелчок</string>
     <string name="carousel_sound_volume">Громкость звука:</string>
+
+    <string name="carousel_reset">Возвращать к первому приложению</string>
+    <string name="carousel_reset_description">Карусель возвращается к первому избранному, когда вы уходите с главного экрана или нажимаете «Домой»</string>
 </resources>

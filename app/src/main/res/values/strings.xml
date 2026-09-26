@@ -336,4 +336,7 @@
     <string name="carousel_sound_tick">Tick</string>
     <string name="carousel_sound_click">Click</string>
     <string name="carousel_sound_volume">Sound Volume:</string>
+
+    <string name="carousel_reset">Back to the First App</string>
+    <string name="carousel_reset_description">The carousel returns to the first favourite when you leave Home or press Home</string>
 </resources>

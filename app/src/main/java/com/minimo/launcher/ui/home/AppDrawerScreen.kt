@@ -456,7 +456,10 @@ fun AppDrawerScreen(
                                 secondaryText = decoration.text,
                                 usageColor = decoration.color,
                                 colorName = decoration.colorName,
-                                onTimeLimitClick = { viewModel.onTimeLimitClick(appInfo) }
+                                onTimeLimitClick = { viewModel.onTimeLimitClick(appInfo) },
+                                highlight = state.searchText.takeIf { it.isNotBlank() },
+                                // Accent colour on the plain background, only bold over a wallpaper
+                                highlightColor = if (enableWallpaper) null else MaterialTheme.colorScheme.primary
                             )
                         }
                     }

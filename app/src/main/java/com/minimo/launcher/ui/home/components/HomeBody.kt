@@ -419,6 +419,8 @@ fun HomeBody(
                     rowHeight = carouselRowHeight,
                     width = compactCarouselWidth,
                     onRowPassed = viewModel::onCarouselRowPassed,
+                    resetToStart = state.carouselReset,
+                    resetEvents = viewModel.homePressedEvents,
                     transformOriginX = when (state.appsArrangementHorizontal) {
                         Arrangement.Center -> 0.5f
                         Arrangement.End -> 1f

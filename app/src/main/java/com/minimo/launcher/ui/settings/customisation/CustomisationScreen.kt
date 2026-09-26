@@ -467,6 +467,13 @@ fun CustomisationScreen(
                     onMaxHomeAppsChanged = viewModel::onMaxHomeAppsChanged
                 )
 
+                ToggleItem(
+                    title = stringResource(R.string.carousel_reset),
+                    subtitle = stringResource(R.string.carousel_reset_description),
+                    isChecked = state.carouselReset,
+                    onToggleClick = viewModel::onToggleCarouselReset
+                )
+
                 CarouselFeedbackSettings(
                     vibration = state.carouselVibration,
                     sound = state.carouselSound,

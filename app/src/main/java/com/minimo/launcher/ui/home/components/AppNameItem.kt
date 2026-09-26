@@ -1,5 +1,9 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -77,7 +81,10 @@ fun AppNameItem(
     /** Limit colour for the usage text; also for the name when [colorName]. */
     usageColor: Color? = null,
     colorName: Boolean = false,
-    onTimeLimitClick: (() -> Unit)? = null
+    onTimeLimitClick: (() -> Unit)? = null,
+    /** Search text to highlight inside the name (drawer search). */
+    highlight: String? = null,
+    highlightColor: Color? = null
 ) {
     var appBottomSheetVisible by remember { mutableStateOf(false) }
     val lineHeight by remember { derivedStateOf { textSize * 1.2 } }
@@ -158,7 +165,7 @@ fun AppNameItem(
             }
 
             Text(
-                text = appName,
+                text = highlightedName(appName, highlight, highlightColor),
                 modifier = if (showAppIcon && appIconAlignment == AppIconAlignment.Right) {
                     Modifier.weight(1f, fill = false)
                 } else {
@@ -267,6 +274,24 @@ fun AppNameItem(
                     click()
                 }
             }
+        )
+    }
+}
+
+/** The name with the searched letters in bold (and accent colour), like "**Tel**egram". */
+private fun highlightedName(name: String, query: String?, color: Color?): AnnotatedString {
+    val text = query?.trim().orEmpty()
+    val start = if (text.isEmpty()) -1 else name.indexOf(text, ignoreCase = true)
+    if (start < 0) return AnnotatedString(name)
+    return buildAnnotatedString {
+        append(name)
+        addStyle(
+            SpanStyle(
+                fontWeight = FontWeight.Bold,
+                color = color ?: Color.Unspecified
+            ),
+            start,
+            start + text.length
         )
     }
 }

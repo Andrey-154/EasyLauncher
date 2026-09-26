@@ -109,5 +109,6 @@ data class HomeScreenState(
     /** 0..100 %, 0 = no vibration */
     val carouselVibration: Int = 35,
     val carouselSound: CarouselSound = CarouselSound.Off,
-    val carouselSoundVolume: Int = 50
+    val carouselSoundVolume: Int = 50,
+    val carouselReset: Boolean = true
 )

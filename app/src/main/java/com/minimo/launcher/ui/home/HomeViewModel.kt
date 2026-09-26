@@ -30,6 +30,8 @@ import com.minimo.launcher.utils.ShortcutsUtils
 import com.minimo.launcher.utils.AppLock
 import com.minimo.launcher.utils.CarouselSound
 import com.minimo.launcher.utils.CarouselHapticPlayer
+import com.minimo.launcher.utils.HomePressedNotifier
+import kotlinx.coroutines.flow.Flow
 import com.minimo.launcher.utils.CarouselSoundPlayer
 import com.minimo.launcher.utils.FlashlightController
 import com.minimo.launcher.utils.HomeButton
@@ -75,12 +77,16 @@ class HomeViewModel @Inject constructor(
     private val timeLimitRepository: TimeLimitRepository,
     private val appLock: AppLock,
     private val carouselSoundPlayer: CarouselSoundPlayer,
-    private val carouselHapticPlayer: CarouselHapticPlayer
+    private val carouselHapticPlayer: CarouselHapticPlayer,
+    homePressedNotifier: HomePressedNotifier
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeScreenState())
     val state: StateFlow<HomeScreenState> = _state
     val iconCacheRevision = appIconRepository.cacheRevision
     val flashlightOn: StateFlow<Boolean> = flashlightController.isOn
+
+    /** "Home" pressed while the launcher is already shown. */
+    val homePressedEvents: Flow<Unit> = homePressedNotifier.homePressedEvent
 
     /** False on devices without a flash (e.g. the setting came from a backup of another phone). */
     val flashlightAvailable: Boolean = flashlightController.isAvailable
@@ -378,6 +384,7 @@ class HomeViewModel @Inject constructor(
                             carouselVibration = prefs.carouselVibration,
                             carouselSound = prefs.carouselSound,
                             carouselSoundVolume = prefs.carouselSoundVolume,
+                            carouselReset = prefs.carouselReset,
                             limitWarningColor = prefs.limitWarningColor
                                 ?: TimeLimitRepository.DEFAULT_WARNING_COLOR,
                             limitExceededColor = prefs.limitExceededColor

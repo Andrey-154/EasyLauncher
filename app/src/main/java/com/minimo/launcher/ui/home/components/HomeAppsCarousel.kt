@@ -1,5 +1,10 @@
 package com.minimo.launcher.ui.home.components
 
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import android.os.SystemClock
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,12 +55,32 @@ fun <T> HomeAppsCarousel(
     width: Dp? = null,
     /** Called for every row that passes while scrolling (tick sound / vibration). */
     onRowPassed: () -> Unit = {},
+    /** Back to the first app: instantly when leaving Home, smoothly on these events ("Home"). */
+    resetToStart: Boolean = false,
+    resetEvents: Flow<Unit>? = null,
     itemContent: @Composable (T, Modifier) -> Unit
 ) {
     val size = apps.size
     // Start in the middle, on the first app, so both directions have room
     val listState = remember(size) { LazyListState(firstVisibleItemIndex = size * (LOOPS / 2)) }
     val scaleEdges = visibleCount > 4
+
+    // Nearest row that shows the first app again (the list repeats every `size` rows)
+    fun nearestStart(): Int {
+        val current = listState.firstVisibleItemIndex
+        val below = current - current % size
+        return if (current - below <= size / 2) below else below + size
+    }
+
+    val scope = rememberCoroutineScope()
+    if (resetToStart) {
+        LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+            scope.launch { listState.scrollToItem(nearestStart()) }
+        }
+        LaunchedEffect(resetEvents) {
+            resetEvents?.collect { listState.animateScrollToItem(nearestStart()) }
+        }
+    }
 
     // A "wheel" tick for each row that crosses the top edge; limited in rate for fast flings
     val currentOnRowPassed by rememberUpdatedState(onRowPassed)
