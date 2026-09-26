@@ -270,7 +270,7 @@
     <string name="weather_location_denied">Доступ к местоположению не выдан. Можно ввести город вручную.</string>
 
     <string name="home_buttons">Кнопки на главном экране</string>
-    <string name="home_buttons_description">Круглые быстрые кнопки, которые можно поставить в любое место главного экрана. Удерживайте кнопку на главном экране, чтобы перемещать или удалять кнопки.</string>
+    <string name="home_buttons_description">Круглые быстрые кнопки, которые можно поставить в любое место главного экрана. Удерживайте кнопку на главном экране, чтобы перемещать или удалять кнопки; нажатие на пустое место завершает.</string>
     <string name="home_buttons_add">Добавить кнопку</string>
     <string name="home_buttons_none">Кнопок пока нет</string>
     <string name="home_buttons_size">Размер</string>
@@ -280,8 +280,6 @@
     <string name="home_buttons_style">Стиль</string>
     <string name="home_buttons_style_outline">Контур</string>
     <string name="home_buttons_style_filled">Заливка</string>
-    <string name="home_buttons_edit_hint">Перетаскивайте кнопки · ✕ удаляет</string>
-    <string name="home_buttons_edit_empty">Кнопок нет. Добавьте их в настройках.</string>
     <string name="done">Готово</string>
     <string name="home_button_camera">Камера</string>
     <string name="home_button_phone">Телефон</string>

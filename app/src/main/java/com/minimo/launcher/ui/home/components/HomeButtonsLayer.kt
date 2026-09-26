@@ -3,38 +3,32 @@ package com.minimo.launcher.ui.home.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.minimo.launcher.R
 import com.minimo.launcher.ui.components.HomeActionButton
 import com.minimo.launcher.ui.components.icon
 import com.minimo.launcher.ui.components.title
@@ -47,7 +41,7 @@ import kotlin.math.roundToInt
 
 /**
  * Free-placed round buttons over the home screen. Long-press any button to enter edit mode,
- * then drag buttons anywhere, remove them with ✕ and press "Done".
+ * then drag buttons anywhere and remove them with ✕. Tap empty space or press Back to finish.
  */
 @Composable
 fun HomeButtonsLayer(
@@ -75,30 +69,63 @@ fun HomeButtonsLayer(
         val freeWidth = (constraints.maxWidth - sizePx).coerceAtLeast(1f)
         val freeHeight = (constraints.maxHeight - sizePx).coerceAtLeast(1f)
 
+        if (editMode) {
+            // Below the buttons: tapping empty space finishes editing
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onDone
+                    )
+            )
+        }
+
         buttons.forEach { button ->
             val app = if (button.type == HomeButtonType.APP) findApp(button.app) else null
             val appIcon by produceState<ImageBitmap?>(null, app?.id, sizePx) {
                 value = app?.let { loadAppIcon(it, sizePx.roundToInt()) }
             }
 
-            var position by remember(button.id, button.x, button.y, freeWidth, freeHeight) {
+            // One state object per button for its whole life: the drag handler (started once)
+            // must keep writing to the same object the offset reads from
+            val position = remember(button.id) {
                 mutableStateOf(Offset(button.x * freeWidth, button.y * freeHeight))
+            }
+            val dragging = remember(button.id) { mutableStateOf(false) }
+
+            // Follow the saved position and screen size changes, but never fight an active drag
+            LaunchedEffect(button.x, button.y, freeWidth, freeHeight) {
+                if (!dragging.value) {
+                    position.value = Offset(button.x * freeWidth, button.y * freeHeight)
+                }
             }
 
             Box(
                 modifier = Modifier
-                    .offset { IntOffset(position.x.roundToInt(), position.y.roundToInt()) }
+                    .offset {
+                        IntOffset(position.value.x.roundToInt(), position.value.y.roundToInt())
+                    }
                     .pointerInput(editMode, button.id, freeWidth, freeHeight) {
                         if (!editMode) return@pointerInput
+                        fun save() {
+                            dragging.value = false
+                            onMoved(
+                                button,
+                                position.value.x / freeWidth,
+                                position.value.y / freeHeight
+                            )
+                        }
                         detectDragGestures(
-                            onDragEnd = {
-                                onMoved(button, position.x / freeWidth, position.y / freeHeight)
-                            }
+                            onDragStart = { dragging.value = true },
+                            onDragEnd = { save() },
+                            onDragCancel = { save() }
                         ) { change, drag ->
                             change.consume()
-                            position = Offset(
-                                (position.x + drag.x).coerceIn(0f, freeWidth),
-                                (position.y + drag.y).coerceIn(0f, freeHeight)
+                            position.value = Offset(
+                                (position.value.x + drag.x).coerceIn(0f, freeWidth),
+                                (position.value.y + drag.y).coerceIn(0f, freeHeight)
                             )
                         }
                     }
@@ -131,34 +158,5 @@ fun HomeButtonsLayer(
             }
         }
 
-        if (editMode) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 8.dp, start = 16.dp, end = 16.dp),
-                shape = RoundedCornerShape(24.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                tonalElevation = 6.dp,
-                shadowElevation = 6.dp
-            ) {
-                Row(
-                    modifier = Modifier.padding(start = 20.dp, end = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(
-                            if (buttons.isEmpty()) R.string.home_buttons_edit_empty
-                            else R.string.home_buttons_edit_hint
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 14.sp
-                    )
-                    TextButton(onClick = onDone) {
-                        Text(stringResource(R.string.done))
-                    }
-                }
-            }
-        }
     }
 }

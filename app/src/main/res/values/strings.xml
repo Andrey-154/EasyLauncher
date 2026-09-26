@@ -269,7 +269,7 @@
     <string name="weather_location_denied">Location permission was not granted. You can type the city instead.</string>
 
     <string name="home_buttons">Home Screen Buttons</string>
-    <string name="home_buttons_description">Round quick buttons you can place anywhere on the home screen. Long-press a button on the home screen to move or remove buttons.</string>
+    <string name="home_buttons_description">Round quick buttons you can place anywhere on the home screen. Long-press a button on the home screen to move or remove buttons; tap empty space to finish.</string>
     <string name="home_buttons_add">Add Button</string>
     <string name="home_buttons_none">No buttons yet</string>
     <string name="home_buttons_size">Size</string>
@@ -279,8 +279,6 @@
     <string name="home_buttons_style">Style</string>
     <string name="home_buttons_style_outline">Outline</string>
     <string name="home_buttons_style_filled">Filled</string>
-    <string name="home_buttons_edit_hint">Drag buttons · ✕ removes</string>
-    <string name="home_buttons_edit_empty">No buttons. Add them in settings.</string>
     <string name="done">Done</string>
     <string name="home_button_camera">Camera</string>
     <string name="home_button_phone">Phone</string>
