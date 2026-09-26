@@ -14,8 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.minimo.launcher.ui.favourite_apps.FavouriteAppsScreen
@@ -43,7 +41,6 @@ object Routes {
     const val APP_DRAWER = "APP_DRAWER"
     const val SETTINGS = "SETTINGS"
     const val SETTINGS_CUSTOMISATION = "SETTINGS_CUSTOMISATION"
-    const val SETTINGS_SEARCH_ARG = "search"
     const val HIDDEN_APPS = "HIDDEN_APPS"
     const val FAVOURITE_APPS = "FAVOURITE_APPS"
     const val SETTINGS_REORDER_APPS = "SETTINGS_REORDER_APPS"
@@ -186,11 +183,6 @@ fun AppNavGraph(
                 onCustomisationClick = {
                     navController.navigate(Routes.SETTINGS_CUSTOMISATION)
                 },
-                onSearchClick = {
-                    navController.navigate(
-                        "${Routes.SETTINGS_CUSTOMISATION}?${Routes.SETTINGS_SEARCH_ARG}=true"
-                    )
-                },
                 onFavouriteAppsClick = {
                     navController.navigate(Routes.FAVOURITE_APPS)
                 },
@@ -221,19 +213,10 @@ fun AppNavGraph(
                 )
             }
         }
-        composable(
-            route = "${Routes.SETTINGS_CUSTOMISATION}?${Routes.SETTINGS_SEARCH_ARG}={${Routes.SETTINGS_SEARCH_ARG}}",
-            arguments = listOf(
-                navArgument(Routes.SETTINGS_SEARCH_ARG) {
-                    type = NavType.BoolType
-                    defaultValue = false
-                }
-            )
-        ) {
+        composable(route = Routes.SETTINGS_CUSTOMISATION) {
             CustomisationScreen(
                 viewModel = hiltViewModel(it),
-                onBackClick = onBackPressed,
-                focusSearch = it.arguments?.getBoolean(Routes.SETTINGS_SEARCH_ARG) ?: false
+                onBackClick = onBackPressed
             )
         }
         composable(route = Routes.FAVOURITE_APPS) {

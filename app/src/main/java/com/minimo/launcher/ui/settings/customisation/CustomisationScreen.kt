@@ -1,5 +1,6 @@
 package com.minimo.launcher.ui.settings.customisation
 
+import androidx.compose.foundation.layout.PaddingValues
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -115,9 +116,11 @@ import kotlinx.coroutines.android.awaitFrame
 fun CustomisationScreen(
     viewModel: CustomisationViewModel,
     onBackClick: () -> Unit,
-    focusSearch: Boolean = false
+    /** Filter from the main settings search field; empty shows everything. */
+    searchQuery: String = "",
+    /** Only the list, without the top bar (shown inside the main settings search). */
+    embedded: Boolean = false
 ) {
-    var searchQuery by rememberSaveable { mutableStateOf("") }
     // While searching, also show settings that normally appear only after their parent is enabled
     val isSearching = searchQuery.isNotBlank()
     val context = LocalContext.current
@@ -158,42 +161,8 @@ fun CustomisationScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .windowInsetsPadding(WindowInsets.statusBars.union(WindowInsets.displayCutout))
-                    .padding(horizontal = 4.dp)
-                    .height(64.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.customisation),
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 64.dp)
-                )
-
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_arrow_back),
-                        contentDescription = "Back",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.surface
-    ) { paddingValues ->
-        if (!state.initialLoaded) return@Scaffold
+    val content: @Composable (PaddingValues) -> Unit = content@{ paddingValues ->
+        if (!state.initialLoaded) return@content
 
         CompositionLocalProvider(LocalSettingsQuery provides searchQuery) {
         Column(
@@ -202,12 +171,6 @@ fun CustomisationScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            SettingsSearchField(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                focusOnStart = focusSearch
-            )
-
             OrientationDropdown(
                 selectedOption = StringUtils.screenOrientationText(
                     context = context,
@@ -1162,6 +1125,46 @@ fun CustomisationScreen(
                 }
             )
         }
+    }
+
+    if (embedded) {
+        content(PaddingValues())
+    } else {
+    Scaffold(
+            topBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .windowInsetsPadding(WindowInsets.statusBars.union(WindowInsets.displayCutout))
+                        .padding(horizontal = 4.dp)
+                        .height(64.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.customisation),
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 64.dp)
+                    )
+    
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_back),
+                            contentDescription = "Back",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) { paddingValues -> content(paddingValues) }
     }
 }
 

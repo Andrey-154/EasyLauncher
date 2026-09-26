@@ -1,5 +1,9 @@
 package com.minimo.launcher.ui.settings
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.minimo.launcher.ui.settings.customisation.CustomisationScreen
+import com.minimo.launcher.ui.settings.customisation.SettingsSearchField
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,11 +46,11 @@ fun SettingsScreen(
     onFavouriteAppsClick: () -> Unit,
     onHiddenAppsClick: () -> Unit,
     onCustomisationClick: () -> Unit,
-    onSearchClick: () -> Unit,
     onAboutAppClick: () -> Unit,
     onHomeButtonsClick: () -> Unit
 ) {
     val context = LocalContext.current
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val backupViewModel: BackupViewModel = hiltViewModel()
     var showBackupDialog by remember { mutableStateOf(false) }
     var pendingImportUri by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -115,42 +119,46 @@ fun SettingsScreen(
         },
         containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
+        val menuItems = listOf(
+            stringResource(R.string.favourite_apps) to onFavouriteAppsClick,
+            stringResource(R.string.hidden_apps) to onHiddenAppsClick,
+            stringResource(R.string.customisation) to onCustomisationClick,
+            stringResource(R.string.home_buttons) to onHomeButtonsClick,
+            stringResource(R.string.set_default_launcher) to context::openHomeSettings,
+            stringResource(R.string.backup) to { showBackupDialog = true },
+            stringResource(R.string.about_app) to onAboutAppClick
+        )
+
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
         ) {
-            SettingsItem(
-                name = "🔍  " + stringResource(R.string.search_settings),
-                onClick = onSearchClick
-            )
-            SettingsItem(
-                name = stringResource(R.string.favourite_apps),
-                onClick = onFavouriteAppsClick
-            )
-            SettingsItem(name = stringResource(R.string.hidden_apps), onClick = onHiddenAppsClick)
-            SettingsItem(
-                name = stringResource(R.string.customisation),
-                onClick = onCustomisationClick
-            )
-            SettingsItem(
-                name = stringResource(R.string.home_buttons),
-                onClick = onHomeButtonsClick
-            )
-            SettingsItem(
-                name = stringResource(R.string.set_default_launcher),
-                onClick = context::openHomeSettings
-            )
-            SettingsItem(
-                name = stringResource(R.string.backup),
-                onClick = { showBackupDialog = true }
-            )
-            SettingsItem(
-                name = stringResource(R.string.about_app),
-                onClick = onAboutAppClick
+            SettingsSearchField(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it },
+                focusOnStart = false
             )
 
+            if (searchQuery.isBlank()) {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    menuItems.forEach { (name, onClick) -> SettingsItem(name = name, onClick = onClick) }
+                }
+            } else {
+                // Matching sections of this menu, then every matching setting of Customisation
+                menuItems
+                    .filter { (name, _) -> name.contains(searchQuery.trim(), ignoreCase = true) }
+                    .forEach { (name, onClick) -> SettingsItem(name = name, onClick = onClick) }
+
+                Box(modifier = Modifier.weight(1f)) {
+                    CustomisationScreen(
+                        viewModel = hiltViewModel(),
+                        onBackClick = {},
+                        searchQuery = searchQuery,
+                        embedded = true
+                    )
+                }
+            }
         }
     }
 }
